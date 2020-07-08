@@ -51,7 +51,11 @@ class RenderWeekLog extends React.Component{
         });
         console.log(e.currentTarget.value);
     }
-
+    deleteThisWeekToDos(){
+        this.setState(preState=>{
+            
+        })
+    }
     addThisWeekToDos(){
         this.setState(preState=>{
             let thing = preState.note;

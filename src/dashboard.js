@@ -93,7 +93,7 @@ class Dashboard extends React.Component{
                             <div className="inner_board">
 
                                 {/* 左面版 */}
-                                <Route exact path="/"><RenderMonthLog/></Route>
+                                <Route exact path="/"><RenderWeekLog/></Route>
                                 <Route path="/dashboard/month_log"><RenderMonthLog/></Route>
                                 <Route path="/dashboard/week_log"><RenderWeekLog/></Route>
                                 {/* 左面版結束 */}

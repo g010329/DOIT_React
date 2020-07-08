@@ -14,8 +14,8 @@ class App extends React.Component {
     render() {
         return <div>
             <Route exact path="/">
-                <Dashboard/>
-                {/* <Login/> */}
+                {/* <Dashboard/>  */}
+                <Login/>
             </Route>
             <Route path="/dashboard">
                 <Dashboard/>
