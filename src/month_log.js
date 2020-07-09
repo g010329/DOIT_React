@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import * as firebase from "firebase";
+import 'firebase/auth';
+import 'firebase/database';
 
 class RenderMonthLog extends React.Component{
     constructor(props){
@@ -11,8 +14,7 @@ class RenderMonthLog extends React.Component{
             day: new Date().getDay(), //五
             daysOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //31
             thisMonthToDos:[
-                {"title":1,"index":1,"ifDone":false},
-                {"title":2,"index":1,"ifDone":false}
+                {"title":'add somthing todo',"index":1,"ifDone":false}
             ],
             eachDayToDos:[
                 // {date:1, 1號
@@ -40,6 +42,9 @@ class RenderMonthLog extends React.Component{
         this.showEachDateInput = this.showEachDateInput.bind(this);
         this.turnOffEachDayIfInput = this.turnOffEachDayIfInput.bind(this);
         this.addThisDayToDos = this.addThisDayToDos.bind(this);
+        this.addToDB = this.addToDB.bind(this);
+        this.deleteInDB = this.deleteInDB.bind(this);
+        this.getDBdata = this.getDBdata.bind(this);
     }
 
 
@@ -60,6 +65,22 @@ class RenderMonthLog extends React.Component{
         });
     }
 
+    addToDB(){}
+    deleteInDB(){}
+    getDBdata(){
+        let db = firebase.firestore();
+        db.collection("members").doc(uid).set({
+            date: 9,
+            isDone: false,
+            month: 7,
+            overdue: false,
+            title: "睡覺",
+            todoID: "WDBS1Iw17bRj32j32BGP6GX",
+            type: "task",
+            week: 28,
+            year: 2020
+        });
+    }
 
     componentDidMount(){
         this.updateEachDayToDos();
@@ -203,11 +224,8 @@ class RenderMonthLog extends React.Component{
                     <span onClick={this.addThisMonthToDos}>add</span>
                 </span>
             </div>
-        
         )
     }
-
-
     addThisMonthToDos(){
         this.setState(preState=>{
             let thing = preState.note;

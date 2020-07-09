@@ -37,7 +37,7 @@ class Dashboard extends React.Component{
                     
                 </div>
                 <span className="header_member">
-                    <Link to="/" style={{ textDecoration: 'none' }}><div className="login">LOGOUT</div></Link>
+                    <div className="login" onClick={this.props.toggleSignIn}>LOGOUT</div>
                     <span className="top_nav_logo"><i className="fas fa-user"></i></span>
                 </span>   
             </header>
@@ -84,8 +84,8 @@ class Dashboard extends React.Component{
                         <div className="inner2_board">
                         {/* top nav */}
                             <div className="top_nav">
-                                <Link to="/dashboard/month_log"><span className="top_nav_btn">month</span></Link>
-                                <Link to="/dashboard/week_log"><span className="top_nav_btn">week</span></Link>
+                                <span className="top_nav_btn">month</span>
+                                <span className="top_nav_btn">week</span>
                                 <span className="top_nav_btn">today</span>
                                 <span className="top_nav_btn">overdue</span>
                             </div>
@@ -93,13 +93,13 @@ class Dashboard extends React.Component{
                             <div className="inner_board">
 
                                 {/* 左面版 */}
-                                <Route exact path="/"><RenderWeekLog/></Route>
-                                <Route path="/dashboard/month_log"><RenderMonthLog/></Route>
-                                <Route path="/dashboard/week_log"><RenderWeekLog/></Route>
+                                
+                                <Route path="/dashboard"><RenderMonthLog/></Route>
+                                {/* <Route path="/dashboard/week_log"><RenderWeekLog/></Route> */}
                                 {/* 左面版結束 */}
 
                                 {/* 右面板 */}
-                                <Route exact path="/"><RenderDayLog/></Route>
+                                <Route path="/dashboard"><RenderDayLog/></Route>
                             </div>
 
 
@@ -111,3 +111,7 @@ class Dashboard extends React.Component{
     }
 }
 export default Dashboard;
+
+// 在dashboard裡面有 month,week,day不同部位，使用者點擊上方按鈕，選擇要在dashboard顯示的部位
+// =>類似開關的概念，不需要用到Route上一頁(分頁的概念)，dashboard用一個Route就好
+// 若有需要上一頁、回到上個頁面的感覺，再用Route
