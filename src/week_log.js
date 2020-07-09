@@ -10,8 +10,8 @@ class RenderWeekLog extends React.Component{
             weekNum: null,
             // 根據今天日期取得週數
             thisWeekToDos:[
-                {"title":1,"index":1,"ifDone":false},
-                {"title":2,"index":1,"ifDone":false}
+                // {"title":1,"index":1,"ifDone":false},
+                // {"title":2,"index":1,"ifDone":false}
             ],
             eachDayToDos:[
                 // {month:

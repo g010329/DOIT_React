@@ -46,7 +46,7 @@ class RenderMonthLog extends React.Component{
         // DB
         this.addToDB = this.addToDB.bind(this);
         this.deleteInDB = this.deleteInDB.bind(this);
-        // this.getDBdataInState = this.getDBdataInState.bind(this);
+        this.getDBdataInState = this.getDBdataInState.bind(this);
     }
 
 
@@ -84,32 +84,46 @@ class RenderMonthLog extends React.Component{
         console.log('add');
     }
 
-    // getDBdataInState(month,year){
-    //     let db = firebase.firestore();
-    //     let ref = db.collection("members").doc(this.props.uid).collection("todos");
+    getDBdataInState(month,year,date){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
         
-    //     let thisMonthToDos = [];
-    //     ref.where('month','==',month).where('year','==',year).get().then(querySnapshot => {
-    //         querySnapshot.forEach(doc=>{
-    //             thisMonthToDos.push({
-    //                 title: doc.data().title,
-    //                 ifDone: doc.data().isDone
-    //             });
-    //             console.log(doc.data());
-                
-    //         });
-    //         this.setState(preState=>{
-    //             return{
-    //                 thisMonthToDos:thisMonthToDos
-    //             }
-    //         })
-    //     });
+        let thisMonthToDos = [];
         
-    // }
-
+        if(date == 0){
+            ref.where('month','==',month).where('year','==',year).where('date','==',date).get().then(querySnapshot => {
+                querySnapshot.forEach(doc=>{
+                    thisMonthToDos.push({
+                        title: doc.data().title,
+                        ifDone: doc.data().isDone
+                    });
+                    // console.log(doc.data());
+                    
+                });
+                this.setState(preState=>{
+                    return{
+                        thisMonthToDos:thisMonthToDos
+                    }
+                })
+            });
+        }else{
+            ref.where('month','==',month).where('year','==',year).where('date','==',date).get().then(querySnapshot => {
+                querySnapshot.forEach(doc=>{
+                    this.setState(preState=>{
+                        let eachDayToDos = preState.eachDayToDos;
+                        eachDayToDos[doc.data().date-1].todos.push(doc.data().title);
+                        return{
+                            eachDayToDos: eachDayToDos
+                        }
+                    });
+                    console.log(doc.data());
+                });
+            });
+        }
+    }
     componentDidMount(){
         this.updateEachDayToDos();
-        // this.getDBdataInState(this.state.month,this.state.year);
+        this.getDBdataInState(this.state.month,this.state.year,0);
         
     }
     addThisMonthToDos(){
@@ -129,15 +143,18 @@ class RenderMonthLog extends React.Component{
             };
         });
     }
-
     deleteInDB(){}
     
-
     
     updateEachDayToDos(){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+
         this.setState(preState=>{
             // let {daysOfMonth} = this.state;
             // console.log("month", preState.month);
+            let {year} = preState;
+            let {month} = preState;
             let daysOfMonth = preState.daysOfMonth;
             let eachDayToDos = preState.eachDayToDos;
             // let {eachDayToDos} = this.state;
@@ -148,6 +165,7 @@ class RenderMonthLog extends React.Component{
                     todos:[],
                     ifInput: false
                 });
+                this.getDBdataInState(month,year,i+1);
             }
             console.log(eachDayToDos);
             return{eachDayToDos:eachDayToDos}
@@ -163,7 +181,6 @@ class RenderMonthLog extends React.Component{
             }
         })
     }
-
     showEachDateInput(i){
         return(
         <div className="month_todo" >
@@ -172,7 +189,7 @@ class RenderMonthLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.turnOffEachDayIfInput}>cancel</span>
-                    <span data-addday={i} onClick={this.addThisDayToDos} onClick={this.addToDB}>add</span>
+                    <span data-addday={i} onClick={this.addThisDayToDos} >add</span>
                 </span>
             </div>
         )
@@ -182,10 +199,14 @@ class RenderMonthLog extends React.Component{
         let indexDay = day.currentTarget.getAttribute("data-addday");
         console.log(day.currentTarget.getAttribute("data-addday"));
         this.setState(preState=>{
+            let year = preState.year;
+            let month = preState.month;
+            let date = parseInt(indexDay)+1;
             let thing = preState.note;
             let eachDayToDos = preState.eachDayToDos;
             eachDayToDos[indexDay].todos.push(thing);
             eachDayToDos[indexDay].ifInput = false;
+            this.addToDB(thing, year, month, date, 0);
             return{
                 eachDayToDos:eachDayToDos,
                 note:""
@@ -199,6 +220,7 @@ class RenderMonthLog extends React.Component{
             let {month} = this.state;
             let {eachDayToDos} = this.state;
             if(month<11){
+                this.getDBdataInState(this.state.month+1,this.state.year,0);
                 return{
                     month: month+1,
                     daysOfMonth: new Date(year,month+1,0).getDate(),
@@ -206,7 +228,7 @@ class RenderMonthLog extends React.Component{
                 }
             }else{
                 // console.log('123')
-                
+                this.getDBdataInState(0,this.state.year+1,0);
                 return{
                     year: year+1,
                     month: 0,
@@ -223,6 +245,7 @@ class RenderMonthLog extends React.Component{
             let {month} = this.state;
             let {eachDayToDos} = this.state;
             if(month==0){
+                this.getDBdataInState(11,this.state.year-1,0);
                 return{
                     year: year-1,
                     month: 11,
@@ -230,6 +253,7 @@ class RenderMonthLog extends React.Component{
                     eachDayToDos:[] //清空
                 }
             }else{
+                this.getDBdataInState(this.state.month-1,this.state.year,0);
                 return{
                     month: month-1,
                     daysOfMonth: new Date(year,month-1,0).getDate(),

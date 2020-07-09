@@ -94,7 +94,7 @@ class Dashboard extends React.Component{
 
                                 {/* 左面版 */}
                                 
-                                <Route path="/dashboard"><RenderMonthLog uid={this.props.uid}/></Route>
+                                <Route path="/dashboard"><RenderWeekLog uid={this.props.uid}/></Route>
                                 {/* <Route path="/dashboard/week_log"><RenderWeekLog/></Route> */}
                                 {/* 左面版結束 */}
 
