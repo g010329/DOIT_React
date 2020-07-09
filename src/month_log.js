@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
+// 有使用者的uid: this.props.uid
 
 class RenderMonthLog extends React.Component{
     constructor(props){
@@ -14,7 +15,7 @@ class RenderMonthLog extends React.Component{
             day: new Date().getDay(), //五
             daysOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //31
             thisMonthToDos:[
-                {"title":'add somthing todo',"index":1,"ifDone":false}
+                // {"title":'add somthing todo',"index":1,"ifDone":false}
             ],
             eachDayToDos:[
                 // {date:1, 1號
@@ -42,9 +43,10 @@ class RenderMonthLog extends React.Component{
         this.showEachDateInput = this.showEachDateInput.bind(this);
         this.turnOffEachDayIfInput = this.turnOffEachDayIfInput.bind(this);
         this.addThisDayToDos = this.addThisDayToDos.bind(this);
+        // DB
         this.addToDB = this.addToDB.bind(this);
         this.deleteInDB = this.deleteInDB.bind(this);
-        this.getDBdata = this.getDBdata.bind(this);
+        // this.getDBdataInState = this.getDBdataInState.bind(this);
     }
 
 
@@ -65,27 +67,73 @@ class RenderMonthLog extends React.Component{
         });
     }
 
-    addToDB(){}
-    deleteInDB(){}
-    getDBdata(){
+    addToDB(title,year,month,date,week){
         let db = firebase.firestore();
-        db.collection("members").doc(uid).set({
-            date: 9,
-            isDone: false,
-            month: 7,
-            overdue: false,
-            title: "睡覺",
-            todoID: "WDBS1Iw17bRj32j32BGP6GX",
+        let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
+        ref.set({
+            title: title,
+            year: year,
+            // 存入DB的月份，假設七月，會顯示6
+            month: month,
+            date: date,
+            week: week,
             type: "task",
-            week: 28,
-            year: 2020
+            isDone: false,
+            overdue: false           
         });
+        console.log('add');
     }
+
+    // getDBdataInState(month,year){
+    //     let db = firebase.firestore();
+    //     let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        
+    //     let thisMonthToDos = [];
+    //     ref.where('month','==',month).where('year','==',year).get().then(querySnapshot => {
+    //         querySnapshot.forEach(doc=>{
+    //             thisMonthToDos.push({
+    //                 title: doc.data().title,
+    //                 ifDone: doc.data().isDone
+    //             });
+    //             console.log(doc.data());
+                
+    //         });
+    //         this.setState(preState=>{
+    //             return{
+    //                 thisMonthToDos:thisMonthToDos
+    //             }
+    //         })
+    //     });
+        
+    // }
 
     componentDidMount(){
         this.updateEachDayToDos();
+        // this.getDBdataInState(this.state.month,this.state.year);
         
     }
+    addThisMonthToDos(){
+        this.setState(preState=>{
+            let year = preState.year;
+            let month = preState.month;
+            let thing = preState.note;
+            let thisMonthToDos = preState.thisMonthToDos;
+            let ifInput = preState.ifInput;
+            thisMonthToDos.push({"title":thing,"index":thisMonthToDos.length,"ifDone":false});
+            this.addToDB(thing, year, month, 0, 0);
+            // console.log(list);
+            return{
+                thisMonthToDos:thisMonthToDos,
+                note:"",
+                ifInput:!ifInput
+            };
+        });
+    }
+
+    deleteInDB(){}
+    
+
+    
     updateEachDayToDos(){
         this.setState(preState=>{
             // let {daysOfMonth} = this.state;
@@ -124,7 +172,7 @@ class RenderMonthLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.turnOffEachDayIfInput}>cancel</span>
-                    <span data-addday={i} onClick={this.addThisDayToDos}>add</span>
+                    <span data-addday={i} onClick={this.addThisDayToDos} onClick={this.addToDB}>add</span>
                 </span>
             </div>
         )
@@ -158,6 +206,7 @@ class RenderMonthLog extends React.Component{
                 }
             }else{
                 // console.log('123')
+                
                 return{
                     year: year+1,
                     month: 0,
@@ -226,20 +275,7 @@ class RenderMonthLog extends React.Component{
             </div>
         )
     }
-    addThisMonthToDos(){
-        this.setState(preState=>{
-            let thing = preState.note;
-            let thisMonthToDos = preState.thisMonthToDos;
-            let ifInput = preState.ifInput;
-            thisMonthToDos.push({"title":thing,"index":thisMonthToDos.length,"ifDone":false});
-            // console.log(list);
-            return{
-                thisMonthToDos:thisMonthToDos,
-                note:"",
-                ifInput:!ifInput
-            };
-        });
-    }
+    
 
     render(){
         // console.log(`${this.state.year}/${this.state.month}`);

@@ -131,6 +131,10 @@ class App extends React.Component {
                     let ref = db.collection('members').doc(`${user.uid}`);
                     ref.get().then(doc => {
                         // currentUserData = doc.data();
+                        this.setState({
+                            isLogin: true,
+                            uid: user.uid
+                        })
                     }); 
                     // this.changeLoginStatus();
                 }
@@ -153,7 +157,7 @@ class App extends React.Component {
     render() {
         if(this.state.isLogin == true){
             return <div><Redirect to ="/dashboard"/>
-            <Route path="/dashboard"><Dashboard toggleSignIn={this.toggleSignIn.bind(this)}/></Route></div>
+            <Route path="/dashboard"><Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/></Route></div>
         }else{    
             return <div>
                 <Redirect to ="/"/>
@@ -180,5 +184,6 @@ ReactDOM.render(
 // （因為“使用者登入登出狀態isLogin”，每一層都會參考使用到，所以可放在頂層)
 // 下層的Component可以讀取上層的props,使用上層的method
 // ex: 上層裡寫<Login email={this.props.email} password={this.props.password}/>
+// ex: <Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/>
 // 下層可以將自己那一層的state，用參數的形式傳回上層的method裡
 // ex: 下層裡寫<div className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email)}}>LOGIN</div>

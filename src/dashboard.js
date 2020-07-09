@@ -4,7 +4,7 @@ import RenderMonthLog from "./month_log";
 import RenderWeekLog from "./week_log";
 import RenderDayLog from "./day_log";
 // 此頁有 dashboard 的 sidebar和top nav
-
+// 有使用者的uid: this.props.uid
 class Dashboard extends React.Component{
     constructor(props){
         super(props);
@@ -27,7 +27,7 @@ class Dashboard extends React.Component{
         
     }
     render(){
-        
+        console.log(this.props.uid);
         return <div>
             <header>
                 <div>
@@ -94,12 +94,12 @@ class Dashboard extends React.Component{
 
                                 {/* 左面版 */}
                                 
-                                <Route path="/dashboard"><RenderMonthLog/></Route>
+                                <Route path="/dashboard"><RenderMonthLog uid={this.props.uid}/></Route>
                                 {/* <Route path="/dashboard/week_log"><RenderWeekLog/></Route> */}
                                 {/* 左面版結束 */}
 
                                 {/* 右面板 */}
-                                <Route path="/dashboard"><RenderDayLog/></Route>
+                                <Route path="/dashboard"><RenderDayLog uid={this.props.uid}/></Route>
                             </div>
 
 
