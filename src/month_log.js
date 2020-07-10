@@ -91,38 +91,39 @@ class RenderMonthLog extends React.Component{
         let thisMonthToDos = [];
         
         if(date == 0){
-            ref.where('month','==',month).where('year','==',year).where('date','==',date).get().then(querySnapshot => {
-                querySnapshot.forEach(doc=>{
-                    thisMonthToDos.push({
-                        title: doc.data().title,
-                        ifDone: doc.data().isDone
+            ref.where('month','==',month).where('year','==',year).where('date','==',date)
+                .get().then(querySnapshot => {
+                    querySnapshot.forEach(doc=>{
+                        thisMonthToDos.push({
+                            title: doc.data().title,
+                            ifDone: doc.data().isDone
+                        });
+                        // console.log(doc.data());
+                        
                     });
-                    // console.log(doc.data());
-                    
-                });
-                this.setState(preState=>{
-                    return{
+                    this.setState({
                         thisMonthToDos:thisMonthToDos
-                    }
-                })
-            });
-        }else{
-            ref.where('month','==',month).where('year','==',year).where('date','==',date).get().then(querySnapshot => {
-                querySnapshot.forEach(doc=>{
-                    this.setState(preState=>{
-                        let eachDayToDos = preState.eachDayToDos;
-                        eachDayToDos[doc.data().date-1].todos.push(doc.data().title);
-                        return{
-                            eachDayToDos: eachDayToDos
-                        }
-                    });
-                    console.log(doc.data());
+                    })
                 });
-            });
+        }else{
+            ref.where('month','==',month).where('year','==',year).where('date','==',date)
+                .get().then(querySnapshot => {
+                    querySnapshot.forEach(doc=>{
+                        this.setState(preState=>{
+                            let eachDayToDos = preState.eachDayToDos;
+                            eachDayToDos[doc.data().date-1].todos.push(doc.data().title);
+                            return{
+                                eachDayToDos: eachDayToDos
+                            }
+                        });
+                        console.log(doc.data());
+                    });
+                });
         }
     }
     componentDidMount(){
         this.updateEachDayToDos();
+        // 將該月未安排事件放入state
         this.getDBdataInState(this.state.month,this.state.year,0);
         
     }
@@ -134,6 +135,7 @@ class RenderMonthLog extends React.Component{
             let thisMonthToDos = preState.thisMonthToDos;
             let ifInput = preState.ifInput;
             thisMonthToDos.push({"title":thing,"index":thisMonthToDos.length,"ifDone":false});
+            // 將該月未安排日期事項存入DB
             this.addToDB(thing, year, month, 0, 0);
             // console.log(list);
             return{
@@ -149,7 +151,7 @@ class RenderMonthLog extends React.Component{
     updateEachDayToDos(){
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-
+        //setState 將月/日/空todo存入陣列 生成週曆
         this.setState(preState=>{
             // let {daysOfMonth} = this.state;
             // console.log("month", preState.month);
