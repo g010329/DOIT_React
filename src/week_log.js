@@ -94,7 +94,7 @@ class RenderWeekLog extends React.Component{
         console.log('add');
     }
 
-    getDBdataInState(week,year,date){
+    getDBdataInState(week,year,date,day){
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         let thisWeekToDos = [];
@@ -117,18 +117,18 @@ class RenderWeekLog extends React.Component{
         }else{
             ref.where('week','==',week).where('year','==',year).where('date','==',date)
                 .get().then(querySnapshot => {
-                    console.log('hhhhaaaaaaa');
-                    console.log(week,year,date);
-                    querySnapshot.forEach((doc,index)=>{
-                        console.log(index);
-                        // this.setState(preState=>{
-                        //     let eachDayToDos = preState.eachDayToDos;
-                        //     eachDayToDos[index+1].todos.push(doc.data().title);
-                        //     return{
-                        //         eachDayToDos: eachDayToDos
-                        //     }
-                        // });
-                        console.log('yaaaaaooooo');
+                    console.log('getDBdataInState');
+                    // console.log(week,year,date);
+                    querySnapshot.forEach(doc=>{
+                        console.log(day);
+                        this.setState(preState=>{
+                            let eachDayToDos = preState.eachDayToDos;
+                            eachDayToDos[day].todos.push(doc.data().title);
+                            return{
+                                eachDayToDos: eachDayToDos
+                            }
+                        });
+                        console.log('getDBdataInState');
                         console.log(doc.data());
                     });
                 })
@@ -143,8 +143,7 @@ class RenderWeekLog extends React.Component{
             let date = preState.date;
             // 將該週未安排事件放入state
             this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),this.state.year,0);
-            // 將該週已安排事件放入state
-            this.updateEachDayToDosOfWeek()
+            
             // console.log(`${year}-${month+1}-${date}`);
             // console.log(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)));
             
@@ -160,17 +159,16 @@ class RenderWeekLog extends React.Component{
             let eachDayToDos = preState.eachDayToDos;
             let {year} = preState;
             let {month} = preState;
-            let {date} = preState;
-            let {weekNum} = preState;
+            let date = preState.date;
+            let weekNum = preState.weekNum;
             let todayDay = new Date(`${year}-${month+1}-${date}`).getDay();
             eachDayToDos[indexDay].todos.push(thing);
             eachDayToDos[indexDay].ifInput = false;
+            console.log(eachDayToDos[indexDay].month+1+' / '+eachDayToDos[indexDay].date);
             
-            //先宣告indexdate為當天，用setDate(加上點擊日為星期幾)，得到滑鼠點擊新增事件的日期
-            let indexDate = new Date(`${year}-${month+1}-${date}`);
-            indexDate.setDate(indexDate.getDay()+parseInt(indexDay)+1);
-            console.log(indexDate);
-            this.addToDB(thing,year,month,indexDate.getDate(),weekNum);
+            // 因為已經將月份日期存入eachDayToDos[]陣列裡，可以透過點擊index取出月份日期，再存入DB
+            this.addToDB(thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
+
             return{
                 eachDayToDos:eachDayToDos,
                 note:""
@@ -202,7 +200,7 @@ class RenderWeekLog extends React.Component{
                     todos:[],
                     ifInput:false
                 });
-                this.getDBdataInState(weekNum,year,firstday.getDate());
+                this.getDBdataInState(weekNum,year,firstday.getDate(),i);
             }
             console.log(this.state.eachDayToDos);
             return{eachDayToDos:eachDayToDos}
@@ -284,6 +282,7 @@ class RenderWeekLog extends React.Component{
         // 先將週數set完成，再呼叫render這週每天事項的method
         // updateEachDayToDosOfWeek()寫在setWeekNum()裡面
         this.setWeekNum();
+        this.updateEachDayToDosOfWeek();
     }
 
     countWeekNum(d){

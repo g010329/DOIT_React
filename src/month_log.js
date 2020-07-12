@@ -151,7 +151,7 @@ class RenderMonthLog extends React.Component{
     updateEachDayToDos(){
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        //setState 將月/日/空todo存入陣列 生成週曆
+
         this.setState(preState=>{
             // let {daysOfMonth} = this.state;
             // console.log("month", preState.month);
