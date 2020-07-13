@@ -4,7 +4,7 @@ import RenderMonthLog from "./month_log";
 import RenderWeekLog from "./week_log";
 import RenderDayLog from "./day_log";
 // 此頁有 dashboard 的 sidebar和top nav
-
+// 有使用者的uid: this.props.uid
 class Dashboard extends React.Component{
     constructor(props){
         super(props);
@@ -23,11 +23,31 @@ class Dashboard extends React.Component{
             sider.style.display = "block";
         }
     }
-    getDate(){
+    toggleBtn(e){
+        let logBtn = e.currentTarget.getAttribute("data-btn");
+        let toggleLog = document.getElementById(`${logBtn}`);
+        if (logBtn == "month"){
+            if(toggleLog.style.display == "block"){
+                toggleLog.style.display = "none";
+                document.getElementById("week").style.display = "block";
+            }else{
+                toggleLog.style.display = "block";
+                document.getElementById("week").style.display = "none";
+            }
+        }else if (logBtn == "week"){
+            if(toggleLog.style.display == "block"){
+                toggleLog.style.display = "none";
+                document.getElementById("month").style.display = "block";
+            }else{
+                toggleLog.style.display = "block";
+                document.getElementById("month").style.display = "none";
+            }
+        }
         
+        console.log(logBtn);
     }
     render(){
-        
+        console.log(this.props.uid);
         return <div>
             <header>
                 <div>
@@ -37,7 +57,7 @@ class Dashboard extends React.Component{
                     
                 </div>
                 <span className="header_member">
-                    <Link to="/" style={{ textDecoration: 'none' }}><div className="login">LOGOUT</div></Link>
+                    <div className="login" onClick={this.props.toggleSignIn}>LOGOUT</div>
                     <span className="top_nav_logo"><i className="fas fa-user"></i></span>
                 </span>   
             </header>
@@ -84,22 +104,22 @@ class Dashboard extends React.Component{
                         <div className="inner2_board">
                         {/* top nav */}
                             <div className="top_nav">
-                                <Link to="/dashboard/month_log"><span className="top_nav_btn">month</span></Link>
-                                <Link to="/dashboard/week_log"><span className="top_nav_btn">week</span></Link>
-                                <span className="top_nav_btn">today</span>
-                                <span className="top_nav_btn">overdue</span>
+                                <span className="top_nav_btn" data-btn={"month"} onClick={this.toggleBtn}>month</span>
+                                <span className="top_nav_btn" data-btn={"week"} onClick={this.toggleBtn}>week</span>
+                                <span className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn}>today</span>
+                                <span className="top_nav_btn" data-btn={"overdue"} onClick={this.toggleBtn}>overdue</span>
                             </div>
                             {/* 主控制面板 */}
                             <div className="inner_board">
 
                                 {/* 左面版 */}
-                                <Route exact path="/"><RenderMonthLog/></Route>
-                                <Route path="/dashboard/month_log"><RenderMonthLog/></Route>
-                                <Route path="/dashboard/week_log"><RenderWeekLog/></Route>
+                                <Route path="/dashboard"><RenderMonthLog uid={this.props.uid}/></Route>
+                                <Route path="/dashboard"><RenderWeekLog uid={this.props.uid}/></Route>
+                                {/* <Route path="/dashboard/week_log"><RenderWeekLog/></Route> */}
                                 {/* 左面版結束 */}
 
                                 {/* 右面板 */}
-                                <Route exact path="/"><RenderDayLog/></Route>
+                                <Route path="/dashboard"><RenderDayLog uid={this.props.uid}/></Route>
                             </div>
 
 
@@ -111,3 +131,7 @@ class Dashboard extends React.Component{
     }
 }
 export default Dashboard;
+
+// 在dashboard裡面有 month,week,day不同部位，使用者點擊上方按鈕，選擇要在dashboard顯示的部位
+// =>類似開關的概念，不需要用到Route上一頁(分頁的概念)，dashboard用一個Route就好
+// 若有需要上一頁、回到上個頁面的感覺，再用Route

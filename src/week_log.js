@@ -1,4 +1,7 @@
 import React from "react";
+import * as firebase from "firebase";
+import 'firebase/auth';
+import 'firebase/database';
 class RenderWeekLog extends React.Component{
     constructor(props){
         super(props);
@@ -10,8 +13,8 @@ class RenderWeekLog extends React.Component{
             weekNum: null,
             // 根據今天日期取得週數
             thisWeekToDos:[
-                {"title":1,"index":1,"ifDone":false},
-                {"title":2,"index":1,"ifDone":false}
+                // {"title":1,"index":1,"ifDone":false},
+                // {"title":2,"index":1,"ifDone":false}
             ],
             eachDayToDos:[
                 // {month:
@@ -43,22 +46,78 @@ class RenderWeekLog extends React.Component{
         this.showEachDayInput = this.showEachDayInput.bind(this);
         this.turnOffEachDayIfInput = this.turnOffEachDayIfInput.bind(this);
         this.addThisDayToDos = this.addThisDayToDos.bind(this);
+        // DB
+        this.addToDB = this.addToDB.bind(this);
+        this.getDBdataInState = this.getDBdataInState.bind(this);
+        this.deleteInDB = this.deleteInDB.bind(this);
+        this.deleteEachDay = this.deleteEachDay.bind(this);
+    }
+
+    deleteInDB(bt){
+        let deleteTitle = bt.currentTarget.getAttribute("data-title");
+        let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        ref.where("week","==",this.state.weekNum).where("year","==",this.state.year).where("title","==",deleteTitle)
+            .get().then(querySnapshot=>{
+                querySnapshot.forEach(doc=>{
+                    doc.ref.delete();
+                })
+            });
+        this.setState(preState=>{
+            let thisWeekToDos = preState.thisWeekToDos;
+            thisWeekToDos.splice(deleteIndex,1);
+            return{
+                thisWeekToDos:thisWeekToDos
+            }
+        });
+    }
+
+    deleteEachDay(bt){
+        let deleteTitle = bt.currentTarget.getAttribute("data-title");
+        let targetMonth = bt.currentTarget.getAttribute("data-month");
+        let targetDate = bt.currentTarget.getAttribute("data-date");
+        let outerIndex = bt.currentTarget.getAttribute("data-outer-index");
+        let innerIndex = bt.currentTarget.getAttribute("data-inner-index");
+        console.log(outerIndex,innerIndex);
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        ref.where("month","==",parseInt(targetMonth)).where("date","==",parseInt(targetDate)).where("year","==",this.state.year).where("title","==",deleteTitle)
+            .get().then(querySnapshot=>{
+                querySnapshot.forEach(doc=>{
+                    // console.log(doc.data());
+                    doc.ref.delete();
+                })
+            });
+        // console.log(deleteIndex);
+        this.setState(preState=>{
+            let eachDayToDos = preState.eachDayToDos;
+            // 刪除state array內某天某件事
+            eachDayToDos[outerIndex].todos.splice(innerIndex,1);
+            return{
+                eachDayToDos:eachDayToDos
+            }
+        });
     }
     
     handleNoteChange(e){
         this.setState({
             note:e.currentTarget.value
         });
-        console.log(e.currentTarget.value);
+        // console.log(e.currentTarget.value);
     }
-
+    
     addThisWeekToDos(){
         this.setState(preState=>{
             let thing = preState.note;
+            let {year} = preState;
+            let {month} = preState;
+            let {weekNum} = preState;
             let thisWeekToDos = preState.thisWeekToDos;
             let ifInput = preState.ifInput;
-            thisWeekToDos.push({"title":thing,"index":thisWeekToDos.length,"ifDone":false});
+            thisWeekToDos.push({"title":thing,"index":thisWeekToDos.length,"iDone":false});
             // console.log(list);
+            this.addToDB(thing, year, month, 0, weekNum);
             return{
                 thisWeekToDos:thisWeekToDos,
                 note:"",
@@ -67,14 +126,96 @@ class RenderWeekLog extends React.Component{
         });
     }
 
+    addToDB(title,year,month,date,week){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
+        ref.set({
+            title: title,
+            year: year,
+            // 存入DB的月份，假設七月，會顯示6
+            month: month,
+            date: date,
+            week: week,
+            type: "task",
+            isDone: false,
+            overdue: false           
+        });
+        // console.log('add');
+    }
+
+    getDBdataInState(week,year,date,day,month){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        let thisWeekToDos = [];
+        
+        if (date == 0){
+            ref.where('week','==',week).where('year','==',year).where('date','==',date)
+                .get().then(querySnapshot => {
+                    querySnapshot.forEach(doc=>{
+                        
+                        thisWeekToDos.push({
+                            title: doc.data().title,
+                            ifDone: doc.data().isDone
+                        });
+                        // console.log(doc.data());
+                    });
+                    this.setState({
+                        thisWeekToDos:thisWeekToDos
+                    });
+                });
+        }else{
+            ref.where('month','==',month).where('year','==',year).where('date','==',date)
+                .get().then(querySnapshot => {
+                    // console.log(week,year,date);
+                    querySnapshot.forEach(doc=>{
+                        // console.log(day);
+                        this.setState(preState=>{
+                            let eachDayToDos = preState.eachDayToDos;
+                            eachDayToDos[day].todos.push({title:doc.data().title,ifDone:false});
+                            return{
+                                eachDayToDos: eachDayToDos
+                            }
+                        });
+                        // console.log(doc.data());
+                    });
+                })
+        }
+    }
+
+
+    setWeekNum(){
+        this.setState(preState=>{
+            let year = preState.year;
+            let month = preState.month;
+            let date = preState.date;
+            // 將該週未安排事件放入state
+            this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),this.state.year,0);
+            
+            // console.log(`${year}-${month+1}-${date}`);
+            // console.log(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)));
+            
+            return {weekNum:this.countWeekNum(new Date(`${year}-${month+1}-${date}`))}
+        })
+    }
+
     addThisDayToDos(day){
         let indexDay = day.currentTarget.getAttribute("data-addday");
-        console.log(day.currentTarget.getAttribute("data-addday"));
+        // console.log(day.currentTarget.getAttribute("data-addday"));
         this.setState(preState=>{
             let thing = preState.note;
             let eachDayToDos = preState.eachDayToDos;
-            eachDayToDos[indexDay].todos.push(thing);
+            let {year} = preState;
+            let {month} = preState;
+            let date = preState.date;
+            let weekNum = preState.weekNum;
+            let todayDay = new Date(`${year}-${month+1}-${date}`).getDay();
+            eachDayToDos[indexDay].todos.push({title:thing,ifDone:false});
             eachDayToDos[indexDay].ifInput = false;
+            // console.log(eachDayToDos[indexDay].month+1+' / '+eachDayToDos[indexDay].date);
+            
+            // 因為已經將月份日期存入eachDayToDos[]陣列裡，可以透過點擊index取出月份日期，再存入DB
+            this.addToDB(thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
+
             return{
                 eachDayToDos:eachDayToDos,
                 note:""
@@ -82,9 +223,41 @@ class RenderWeekLog extends React.Component{
         });
     }
 
+
+    updateEachDayToDosOfWeek(){
+        //取得該週第一天的月份日期
+        //根據今日算出這一週的第一天是幾月幾號
+        //setState 將月/日/空todo存入陣列 生成週曆
+        this.setState(preState=>{
+            let year = preState.year;
+            let month = preState.month;
+            let {weekNum} = preState;
+            let date = preState.date;
+            let eachDayToDos = preState.eachDayToDos;
+            for (let i=0; i<7; i++){
+                let curr = new Date(`${year}-${month+1}-${date}`);
+                let first = curr.getDate() - curr.getDay()+1;
+                let firstday = new Date(curr.setDate(first));
+                firstday.setDate(firstday.getDate()+i);
+                // console.log(firstday);
+                eachDayToDos.push({
+                    month:firstday.getMonth(),
+                    date:firstday.getDate(),
+                    day:i+1,
+                    todos:[],
+                    ifInput:false
+                });
+                this.getDBdataInState(weekNum,year,firstday.getDate(),i,month);
+                console.log(month,year,firstday.getDate());
+            }
+            
+            return{eachDayToDos:eachDayToDos}
+        });    
+    }
+
     toggleEachDayIfInput(eachday){
         // 取得要新增事件的那一天綁定在onClick上
-        console.log(eachday.currentTarget.getAttribute("data-addindex"));
+        // console.log(eachday.currentTarget.getAttribute("data-addindex"));
         let index = eachday.currentTarget.getAttribute("data-addindex");
         this.setState(preState=>{
             let eachDayToDos = preState.eachDayToDos;
@@ -93,7 +266,7 @@ class RenderWeekLog extends React.Component{
             eachDayToDos[index].ifInput = true;
             
             // console.log(eachDayToDos[index].ifInput);
-            console.log(eachDayToDos);
+            // console.log(eachDayToDos);
             return {
                 eachDayToDos: eachDayToDos,
                 ifInput: false
@@ -154,8 +327,10 @@ class RenderWeekLog extends React.Component{
     }
 
     componentDidMount(){
-        this.updateEachDayToDosOfWeek();
+        // 先將週數set完成，再呼叫render這週每天事項的method
+        // updateEachDayToDosOfWeek()寫在setWeekNum()裡面
         this.setWeekNum();
+        this.updateEachDayToDosOfWeek();
     }
 
     countWeekNum(d){
@@ -176,8 +351,8 @@ class RenderWeekLog extends React.Component{
             let newdate = new Date(`${year}-${month+1}-${date}`);
             newdate = newdate.setDate(newdate.getDate()+7);
             newdate = new Date(newdate);
-            console.log(newdate);
-            console.log(preState.thisWeekToDos)
+            // console.log(newdate);
+            // console.log(preState.thisWeekToDos)
             return{
                 year: newdate.getFullYear(),
                 month: newdate.getMonth(),
@@ -207,48 +382,8 @@ class RenderWeekLog extends React.Component{
         this.setWeekNum();
         this.updateEachDayToDosOfWeek();
     }
-    setWeekNum(){
-        this.setState(preState=>{
-            let year = preState.year;
-            let month = preState.month;
-            let date = preState.date;
-            // console.log(`${year}-${month+1}-${date}`);
-            // console.log(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)));
-            return {weekNum:this.countWeekNum(new Date(`${year}-${month+1}-${date}`))}
-        })
-    }
-
-
-    updateEachDayToDosOfWeek(){
-        //取得該週第一天的月份日期
-        //根據今日算出這一週的第一天是幾月幾號
-        //setState 將月/日/todo存入陣列
-        this.setState(preState=>{
-            let year = preState.year;
-            let month = preState.month;
-            let date = preState.date;
-            let eachDayToDos = preState.eachDayToDos;
-            for (let i=0; i<7; i++){
-                let curr = new Date(`${year}-${month+1}-${date}`);
-                let first = curr.getDate() - curr.getDay()+1;
-                let firstday = new Date(curr.setDate(first));
-                firstday.setDate(firstday.getDate()+i);
-                // console.log(firstday);
-                eachDayToDos.push({
-                    month:firstday.getMonth(),
-                    date:firstday.getDate(),
-                    day:i+1,
-                    todos:[123,1234],
-                    ifInput:false
-                });
-            }
-            console.log(this.state.eachDayToDos);
-            return{eachDayToDos:eachDayToDos}
-        });    
-    }
 
     componentDidUpdate(){
-        
     }
 
     
@@ -259,7 +394,7 @@ class RenderWeekLog extends React.Component{
                 <span><input type="checkbox" name="" id=""></input>{todo.title}</span>
                 <span className="month_todo_feacture">
                     <span><i className="fas fa-angle-double-right"></i></span>
-                    <span ><i className="fas fa-info-circle"></i></span>
+                    <span ><i className="fas fa-info-circle" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                     <span><i className="fas fa-arrows-alt"></i></span>
                 </span>
             </div>);
@@ -275,12 +410,12 @@ class RenderWeekLog extends React.Component{
                 {/* 每日新增todo */}
                 {eachday.ifInput? this.showEachDayInput(index) : ''}
 
-                {eachday.todos.map((todo,index)=>
-                    <div className="month_todo" key={index}>
-                        <span key={index}><input type="checkbox"></input>{todo}</span>
+                {eachday.todos.map((todo,innerindex)=>
+                    <div className="month_todo" key={innerindex}>
+                        <span key={innerindex}><input type="checkbox"></input>{todo.title}</span>
                         <span className="month_todo_feacture">
                             <span><i className="fas fa-angle-double-right"></i></span>
-                            <span><i className="fas fa-info-circle"></i></span>
+                            <span><i className="fas fa-info-circle" data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                             <span><i className="fas fa-arrows-alt"></i></span>
                         </span>
                     </div>)}
@@ -299,7 +434,7 @@ class RenderWeekLog extends React.Component{
         
 
         // console.log(this.state.eachDayToDos);
-        return <div className="left_board">
+        return <div id="week" className="left_board">
             <div className="month_title">
                 <span className="title_month">Week {this.state.weekNum}</span>
                 <span className="title_right">

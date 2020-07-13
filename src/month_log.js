@@ -1,5 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import * as firebase from "firebase";
+import 'firebase/auth';
+import 'firebase/database';
+// 有使用者的uid: this.props.uid
 
 class RenderMonthLog extends React.Component{
     constructor(props){
@@ -11,8 +15,7 @@ class RenderMonthLog extends React.Component{
             day: new Date().getDay(), //五
             daysOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //31
             thisMonthToDos:[
-                {"title":1,"index":1,"ifDone":false},
-                {"title":2,"index":1,"ifDone":false}
+                // {"title":'add somthing todo',"index":1,"ifDone":false}
             ],
             eachDayToDos:[
                 // {date:1, 1號
@@ -40,19 +43,22 @@ class RenderMonthLog extends React.Component{
         this.showEachDateInput = this.showEachDateInput.bind(this);
         this.turnOffEachDayIfInput = this.turnOffEachDayIfInput.bind(this);
         this.addThisDayToDos = this.addThisDayToDos.bind(this);
+        // DB
+        this.addToDB = this.addToDB.bind(this);
+        this.deleteInDB = this.deleteInDB.bind(this);
+        this.getDBdataInState = this.getDBdataInState.bind(this);
     }
-
 
     toggleEachDateIfInput(eachday){
         // 取得要新增事件的那一天index綁定在onClick上
-        console.log(eachday.currentTarget.getAttribute("data-addindex"));
+        // console.log(eachday.currentTarget.getAttribute("data-addindex"));
         let index = eachday.currentTarget.getAttribute("data-addindex");
         this.setState(preState=>{
             let eachDayToDos = preState.eachDayToDos;
             let ifInput = preState.ifInput;
             eachDayToDos.map((eachday,index)=>{eachday.ifInput = false});
             eachDayToDos[index].ifInput = true;
-            console.log(eachDayToDos);
+            // console.log(eachDayToDos);
             return {
                 eachDayToDos: eachDayToDos,
                 ifInput: false
@@ -60,15 +66,116 @@ class RenderMonthLog extends React.Component{
         });
     }
 
+    addToDB(title,year,month,date,week){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
+        ref.set({
+            title: title,
+            year: year,
+            // 存入DB的月份，假設七月，會顯示6
+            month: month,
+            date: date,
+            week: week,
+            type: "task",
+            isDone: false,
+            overdue: false           
+        });
+        // console.log('add');
+    }
 
+    getDBdataInState(month,year,date){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        
+        let thisMonthToDos = [];
+        
+        if(date == 0){
+            ref.where('month','==',month).where('year','==',year).where('date','==',date)
+                .get().then(querySnapshot => {
+                    querySnapshot.forEach(doc=>{
+                        thisMonthToDos.push({
+                            title: doc.data().title,
+                            ifDone: doc.data().isDone
+                        });
+                        // console.log(doc.data());
+                        
+                    });
+                    this.setState({
+                        thisMonthToDos:thisMonthToDos
+                    })
+                });
+        }else{
+            ref.where('month','==',month).where('year','==',year).where('date','==',date)
+                .get().then(querySnapshot => {
+                    querySnapshot.forEach(doc=>{
+                        this.setState(preState=>{
+                            let eachDayToDos = preState.eachDayToDos;
+                            eachDayToDos[doc.data().date-1].todos.push(doc.data().title);
+                            return{
+                                eachDayToDos: eachDayToDos
+                            }
+                        });
+                        // console.log(doc.data());
+                    });
+                });
+        }
+    }
     componentDidMount(){
         this.updateEachDayToDos();
+        // 將該月未安排事件放入state
+        this.getDBdataInState(this.state.month,this.state.year,0);
         
     }
+    addThisMonthToDos(){
+        this.setState(preState=>{
+            let year = preState.year;
+            let month = preState.month;
+            let thing = preState.note;
+            let thisMonthToDos = preState.thisMonthToDos;
+            let ifInput = preState.ifInput;
+            thisMonthToDos.push({"title":thing,"index":thisMonthToDos.length,"ifDone":false});
+            // 將該月未安排日期事項存入DB
+            this.addToDB(thing, year, month, 0, 0);
+            // console.log(list);
+            return{
+                thisMonthToDos:thisMonthToDos,
+                note:"",
+                ifInput:!ifInput
+            };
+        });
+    }
+    deleteInDB(bt){
+        
+        let deleteTitle = bt.currentTarget.getAttribute("data-title");
+        let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        ref.where("month","==",this.state.month).where("year","==",this.state.year).where("title","==",deleteTitle)
+            .get().then(querySnapshot=>{
+                querySnapshot.forEach(doc=>{
+                    doc.ref.delete();
+                })
+            });
+
+        this.setState(preState=>{
+            let thisMonthToDos = preState.thisMonthToDos;
+            thisMonthToDos.splice(deleteIndex,1);
+            return{
+                thisMonthToDos:thisMonthToDos
+            }
+        });
+    }
+    
+    
     updateEachDayToDos(){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+
         this.setState(preState=>{
             // let {daysOfMonth} = this.state;
             // console.log("month", preState.month);
+            let {year} = preState;
+            let {month} = preState;
             let daysOfMonth = preState.daysOfMonth;
             let eachDayToDos = preState.eachDayToDos;
             // let {eachDayToDos} = this.state;
@@ -79,8 +186,9 @@ class RenderMonthLog extends React.Component{
                     todos:[],
                     ifInput: false
                 });
+                this.getDBdataInState(month,year,i+1);
             }
-            console.log(eachDayToDos);
+            // console.log(eachDayToDos);
             return{eachDayToDos:eachDayToDos}
         });
     }
@@ -94,7 +202,6 @@ class RenderMonthLog extends React.Component{
             }
         })
     }
-
     showEachDateInput(i){
         return(
         <div className="month_todo" >
@@ -103,7 +210,7 @@ class RenderMonthLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.turnOffEachDayIfInput}>cancel</span>
-                    <span data-addday={i} onClick={this.addThisDayToDos}>add</span>
+                    <span data-addday={i} onClick={this.addThisDayToDos} >add</span>
                 </span>
             </div>
         )
@@ -111,12 +218,16 @@ class RenderMonthLog extends React.Component{
 
     addThisDayToDos(day){
         let indexDay = day.currentTarget.getAttribute("data-addday");
-        console.log(day.currentTarget.getAttribute("data-addday"));
+        // console.log(day.currentTarget.getAttribute("data-addday"));
         this.setState(preState=>{
+            let year = preState.year;
+            let month = preState.month;
+            let date = parseInt(indexDay)+1;
             let thing = preState.note;
             let eachDayToDos = preState.eachDayToDos;
             eachDayToDos[indexDay].todos.push(thing);
             eachDayToDos[indexDay].ifInput = false;
+            this.addToDB(thing, year, month, date, 0);
             return{
                 eachDayToDos:eachDayToDos,
                 note:""
@@ -130,6 +241,7 @@ class RenderMonthLog extends React.Component{
             let {month} = this.state;
             let {eachDayToDos} = this.state;
             if(month<11){
+                this.getDBdataInState(this.state.month+1,this.state.year,0);
                 return{
                     month: month+1,
                     daysOfMonth: new Date(year,month+1,0).getDate(),
@@ -137,6 +249,7 @@ class RenderMonthLog extends React.Component{
                 }
             }else{
                 // console.log('123')
+                this.getDBdataInState(0,this.state.year+1,0);
                 return{
                     year: year+1,
                     month: 0,
@@ -153,6 +266,7 @@ class RenderMonthLog extends React.Component{
             let {month} = this.state;
             let {eachDayToDos} = this.state;
             if(month==0){
+                this.getDBdataInState(11,this.state.year-1,0);
                 return{
                     year: year-1,
                     month: 11,
@@ -160,6 +274,7 @@ class RenderMonthLog extends React.Component{
                     eachDayToDos:[] //清空
                 }
             }else{
+                this.getDBdataInState(this.state.month-1,this.state.year,0);
                 return{
                     month: month-1,
                     daysOfMonth: new Date(year,month-1,0).getDate(),
@@ -189,7 +304,7 @@ class RenderMonthLog extends React.Component{
         this.setState({
             note:e.currentTarget.value
         });
-        console.log(e.currentTarget.value);
+        // console.log(e.currentTarget.value);
     }
     showInput(){
         return(
@@ -203,25 +318,9 @@ class RenderMonthLog extends React.Component{
                     <span onClick={this.addThisMonthToDos}>add</span>
                 </span>
             </div>
-        
         )
     }
-
-
-    addThisMonthToDos(){
-        this.setState(preState=>{
-            let thing = preState.note;
-            let thisMonthToDos = preState.thisMonthToDos;
-            let ifInput = preState.ifInput;
-            thisMonthToDos.push({"title":thing,"index":thisMonthToDos.length,"ifDone":false});
-            // console.log(list);
-            return{
-                thisMonthToDos:thisMonthToDos,
-                note:"",
-                ifInput:!ifInput
-            };
-        });
-    }
+    
 
     render(){
         // console.log(`${this.state.year}/${this.state.month}`);
@@ -234,8 +333,8 @@ class RenderMonthLog extends React.Component{
             <span><input type="checkbox" name="" id=""></input>{todo.title}</span>
             <span className="month_todo_feacture">
                 <span><i className="fas fa-angle-double-right"></i></span>
-                <span ><i className="fas fa-info-circle"></i></span>
-                <span><i className="fas fa-arrows-alt"></i></span>
+                <span ><i className="fas fa-info-circle" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                <span><i className="fas fa-arrows-alt" ></i></span>
             </span>
         </div>);
         // render 每日事項
@@ -257,7 +356,7 @@ class RenderMonthLog extends React.Component{
             </div>
             </div>);
         
-        return <div className="left_board">
+        return <div id="month" className="left_board">
         
         {/* 月-標題 */}
         <div className="month_title">
