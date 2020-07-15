@@ -447,10 +447,12 @@ main{
     padding: 0px 10px; 
     margin-right: 5px;
     margin: 2px 1px 2px 0px;
+    cursor: pointer;
 }
 
 /* 單一事件控制面板 */
 
+textarea {resize:none;}
 .bt_moreInfo_board{
     background-color: #F3D5AD;
     padding: 10px;
@@ -458,18 +460,26 @@ main{
     top: 200px;
     left: 50%;
     transform: translate(-50%);
-    width: 200px;
-    height: 200px;
+    width: 600px;
+    /* height: 200px; */
     color: #0F4C81;
-    display: none;
+    /* display: none; */
+    
+}
+.infoflex{
+    display: flex;
 }
 .info_titleInput{
     line-height: 2.5rem;
-    background-color: #F3D5AD;
-    outline: none;
-    border: 0px;
+    /* background-color: #F3D5AD; */
+    /* outline: none; */
+    /* border: 0px; */
     font-size: 2rem;
 }
+.info{
+    margin-top: 10px;
+}
+/* ------ */
 .bt_type div{
     display: inline-block;
 }

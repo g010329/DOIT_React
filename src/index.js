@@ -35,18 +35,8 @@ class App extends React.Component {
         this.handleSignUp = this.handleSignUp.bind(this);
         this.toggleSignIn = this.toggleSignIn.bind(this);
         this.onAuthStateChanged = this.onAuthStateChanged.bind(this);
-        // this.changeLoginStatus = this.changeLoginStatus.bind(this);
     }
     
-    // changeLoginStatus(mail){
-    //     this.setState(preState=>{
-    //         let isLogin = preState.isLogin;
-    //         return{
-    //             isLogin: !isLogin,
-    //             email: mail
-    //         }
-    //     })
-    // }
     toggleSignIn(email,pass) {
         if (firebase.auth().currentUser) {
             // [START signout]
@@ -184,7 +174,7 @@ ReactDOM.render(
 // 樹狀圖概念：
 // （因為“使用者登入登出狀態isLogin”，每一層都會參考使用到，所以可放在頂層)
 // 下層的Component可以讀取上層的props,使用上層的method
-// ex: 上層裡寫<Login email={this.props.email} password={this.props.password}/>
+// ex: 上層裡寫<Login email={this.state.email} password={this.state.password}/>
 // ex: <Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/>
 // 下層可以將自己那一層的state，用參數的形式傳回上層的method裡
 // ex: 下層裡寫<div className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email)}}>LOGIN</div>

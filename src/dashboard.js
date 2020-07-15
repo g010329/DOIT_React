@@ -9,12 +9,24 @@ class Dashboard extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            
+            reRender: false
         };
         this.toggleNav = this.toggleNav.bind(this);
         this.getDate = this.toggleNav.bind(this);
+        this.reRenderLog = this.reRenderLog.bind(this);
     }
     
+    reRenderLog(){
+        this.setState(preState=>{
+            let reRender = preState.reRender;
+            let newRe = !reRender;
+            // console.log('重新render',newRe);
+            return{
+                reRender: newRe
+            }
+        })
+    }
+// 
     toggleNav(){
         let sider = document.getElementById("sidebar");
         if(sider.style.display == "block"){
@@ -113,20 +125,19 @@ class Dashboard extends React.Component{
                             <div className="inner_board">
 
                                 {/* 左面版 */}
-                                <Route path="/dashboard"><RenderMonthLog uid={this.props.uid}/></Route>
-                                <Route path="/dashboard"><RenderWeekLog uid={this.props.uid}/></Route>
+                                <Route path="/dashboard"><RenderMonthLog uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+                                <Route path="/dashboard"><RenderWeekLog uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
                                 {/* <Route path="/dashboard/week_log"><RenderWeekLog/></Route> */}
                                 {/* 左面版結束 */}
 
                                 {/* 右面板 */}
-                                <Route path="/dashboard"><RenderDayLog uid={this.props.uid}/></Route>
+                                <Route path="/dashboard"><RenderDayLog uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </main>
+            
         </div>;
     }
 }
