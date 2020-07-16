@@ -6,6 +6,7 @@ class RenderDayLog extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            today:{y:new Date().getFullYear(),m:new Date().getMonth(),d:new Date().getDate()},
             year: new Date().getFullYear(), //2020
             month: new Date().getMonth(), //7
             date: new Date().getDate(), //3
@@ -20,7 +21,10 @@ class RenderDayLog extends React.Component{
                 oldTitle:'',
                 index:null,
                 newTitle:''
-            }
+            },
+            overdue:[
+                {"id":'dn1k3ednklwjebd',"title":'zzz',"ifDone":false,"year":2020,"month":5,"date":15}
+            ]
         }
         this.handleDateForward = this.handleDateForward.bind(this);
         this.handleDateBackward = this.handleDateBackward.bind(this);
@@ -39,7 +43,88 @@ class RenderDayLog extends React.Component{
         this.toggleIfShowMore = this.toggleIfShowMore.bind(this);
         this.showMoreInfo = this.showMoreInfo.bind(this);
         this.adjustTodo = this.adjustTodo.bind(this);
+        // overdue
+        this.getOverdueFromDB = this.getOverdueFromDB.bind(this);
+        // today btn
+        this.backToTodayBtn = this.backToTodayBtn.bind(this);
     }
+
+    backToTodayBtn(){
+        console.log('回到今天');
+        this.setState(preState=>{
+            return{
+                year: new Date().getFullYear(), 
+                month: new Date().getMonth(), 
+                date: new Date().getDate(),
+            }
+        })
+        this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),new Date().getDate());
+    }
+    
+    getOverdueFromDB(){
+        let overdue =[];
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        //比較年
+        ref.where("year","<",new Date().getFullYear()).where("isDone","==",false).orderBy("year","asc")
+            .get().then(querySnapshot => {
+                querySnapshot.forEach(doc=>{
+                    // this.setState(preState)
+                    console.log("1",doc.data());
+                    overdue.push({
+                        id:doc.id,
+                        title: doc.data().title,
+                        ifDone: doc.data().isDone,
+                        year: doc.data().year,
+                        month: doc.data().month,
+                        date: doc.data().date
+                    });
+                })
+                this.setState({
+                    overdue:overdue
+                })
+            })
+        // 同年、月份較小
+        ref.where("month","<",new Date().getMonth()).where("year","==",new Date().getFullYear()).where("isDone","==",false)
+            .get().then(querySnapshot => {
+                querySnapshot.forEach(doc=>{
+                    // this.setState(preState)
+                    console.log("2",doc.data());
+                    overdue.push({
+                        id:doc.id,
+                        title: doc.data().title,
+                        ifDone: doc.data().isDone,
+                        year: doc.data().year,
+                        month: doc.data().month,
+                        date: doc.data().date
+                    });
+                })
+                this.setState({
+                    overdue:overdue
+                })
+            })
+        // 同年、同月份、日期小
+        ref.where("date","<",new Date().getDate()).where("year","==",new Date().getFullYear()).where("month","==",new Date().getMonth()).where("isDone","==",false)
+        .get().then(querySnapshot => {
+            querySnapshot.forEach(doc=>{
+                // this.setState(preState)
+                console.log("3",doc.data());
+                overdue.push({
+                    id:doc.id,
+                    title: doc.data().title,
+                    ifDone: doc.data().isDone,
+                    year: doc.data().year,
+                    month: doc.data().month,
+                    date: doc.data().date
+                });
+            })
+            this.setState({
+                overdue:overdue
+            })
+        })
+        
+    }
+
     toggleIfShowMore(e){
         let oldTitle = e.currentTarget.getAttribute("data-title");
         let index = e.currentTarget.getAttribute("data-index");
@@ -136,10 +221,11 @@ class RenderDayLog extends React.Component{
 
     ifDone(e){
         console.log(this.state.year,this.state.month,this.state.date);
-        let index=e.currentTarget.getAttribute("data-index");
-        let title=e.currentTarget.getAttribute("data-title");
+        let index = e.currentTarget.getAttribute("data-index");
+        let title = e.currentTarget.getAttribute("data-title");
+        let id = e.currentTarget.getAttribute("data-id");
         let newStatus;
-        console.log(index," ",title);
+        console.log(index,title,id);
         this.setState(preState=>{
             let thisDayToDos = preState.thisDayToDos;
             newStatus = !thisDayToDos[index].ifDone;
@@ -147,10 +233,18 @@ class RenderDayLog extends React.Component{
         });
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",title)
+        // ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",title)
+        //     .get().then(querySnapshot=>{
+        //         querySnapshot.forEach(doc=>{
+        //             console.log(doc.data());
+        //             doc.ref.update({isDone:newStatus})
+        //         })
+        //     })
+        ref.where("id","==",id)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
                     console.log(doc.data());
+                    console.log("newstatus",newStatus)
                     doc.ref.update({isDone:newStatus})
                 })
             })
@@ -166,7 +260,7 @@ class RenderDayLog extends React.Component{
                 querySnapshot.forEach(doc=>{
                     // console.log(doc.data());
                     thisDayToDos.push({
-                        // id:doc.id,
+                        id:doc.id,
                         title: doc.data().title,
                         ifDone: doc.data().isDone
                     });
@@ -181,11 +275,18 @@ class RenderDayLog extends React.Component{
         // 然後因為在 componentDidupdate 裡使用 getDBdataInState，state狀態改變後又進入componentDidupdate
         // 因此程式會一直循環印出console.log("Day Update")，database會爆掉
         
-        console.log("Day Update",preProps.reRender,this.props.reRender);
+        // console.log("Day Update",preProps.reRender,this.props.reRender);
         if(preProps.reRender !== this.props.reRender){
             this.getDBdataInState(this.state.month,this.state.year,this.state.date);
         }
+        if(preProps.btToday !== this.props.btToday){
+            this.backToTodayBtn();
+        }
+        
     }
+
+    
+
     addToDB(title,year,month,date){
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
@@ -290,17 +391,30 @@ class RenderDayLog extends React.Component{
     }
     componentDidMount(){
         this.getDBdataInState(this.state.month,this.state.year,this.state.date);
+        this.getOverdueFromDB();
     }
     render(){
         let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>
         <div className="month_todo" key={index}>
-            <span><input type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
+            <span><input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
             <span className="month_todo_feacture">
-                <span><i className="fas fa-angle-double-right" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 <span ><i className="fas fa-info-circle" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                 <span><i className="fas fa-arrows-alt"></i></span>
             </span>
         </div>);
+        let overdue = this.state.overdue.map((todo,index)=>
+            <div className="month_todos" key={index}>
+                <div className="month_todo">
+                    <span><input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
+                    <span className="month_todo_feacture">
+                        <span><i className="fas fa-angle-double-right" ></i></span>
+                        <span ><i className="fas fa-info-circle" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                        <span><i className="fas fa-arrows-alt" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    </span>
+                </div>
+            </div>
+        );
         return <div className="right_board">
         <div id="today" className="today_board">
             <div className="month_title">
@@ -329,7 +443,9 @@ class RenderDayLog extends React.Component{
             <div className="month_title">
                 <span className="title_month">Overdue</span>
             </div>
-            <div className="month_todos">
+            {overdue}
+            
+            {/* <div className="month_todos">
                 <div className="month_todo">
                     <span><input type="checkbox" name="" id=""/>睡覺</span>
                     <span className="month_todo_feacture">
@@ -338,7 +454,7 @@ class RenderDayLog extends React.Component{
                         <span><i className="fas fa-arrows-alt"></i></span>
                     </span>
                 </div>
-            </div>
+            </div> */}
         </div>  
         {/* 單一事件控制面板 */}
         {this.state.ifShowMore? this.showMoreInfo(): ''} 

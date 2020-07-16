@@ -7,6 +7,45 @@
     background-color: #0F4C81 #658DC6 #B5C7D3 #84898C;
     background-color: #A58D7F #F5B895 #F3D5AD;
 }
+
+/* 小日曆 */
+*{
+    border: solid 1px rgb(114, 112, 112);
+}
+table{
+    width:100%
+}
+
+.calenMonth td{
+    width: 33.33333333%;
+    height: 56px;
+    vertical-align: middle;
+    text-align: center;
+}
+.calenTitle{
+    display: flex;
+    width: 290px;
+    padding: 4px 16px;
+    justify-content: space-between;
+}
+.calenBoard{
+    background-color: rgb(180, 174, 174);
+    width: 290px;
+    padding: 0 12px;
+    height: 242px;
+}
+.calenBoard td{
+    width: 45px;
+    text-align: center;
+}
+thead th{
+    line-height: 1.5rem;
+    padding: 8px 0;
+    font-weight: 600;
+}
+/* ------------------------ */
+
+
 body{
     margin: 0;
 }
@@ -310,6 +349,13 @@ main{
     .top_nav_btn{
         margin: 0px 7px;
     }
+}
+
+/* 月曆 */
+.monthCalendar{
+    position: relative;
+    left:145px;
+    top:25px;
 }
 
 /* 一週 */

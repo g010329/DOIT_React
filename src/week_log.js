@@ -156,7 +156,7 @@ class RenderWeekLog extends React.Component{
                 let ifShowMore = preState.ifShowMore;
                 eachDayToDos[moreInfoBoard.index].todos[moreInfoBoard.innerIndex].title = note;
                 
-                console.log(eachDayToDos);
+                // console.log(eachDayToDos);
                 return{
                     eachDayToDos:eachDayToDos,
                     ifShowMore:!ifShowMore
@@ -564,7 +564,7 @@ class RenderWeekLog extends React.Component{
         // 然後因為在 componentDidupdate 裡使用 getDBdataInState，state狀態改變後又進入componentDidupdate
         // 因此程式會一直循環印出console.log("Day Update")，database會爆掉
         // console.log(preProps);
-        console.log("Week Update");
+        // console.log("Week Update");
         if(preProps.reRender !== this.props.reRender){
             // this.updateEachDayToDosOfWeek();
             this.updateEachDayToDosOfWeek();
@@ -577,9 +577,9 @@ class RenderWeekLog extends React.Component{
             <div className="month_todo" key={index}>
                 <span><input type="checkbox" data-week={this.state.weekNum} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
                 <span className="month_todo_feacture">
-                    <span><i className="fas fa-angle-double-right" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    <span><i className="fas fa-angle-double-right" ></i></span>
                     <span ><i className="fas fa-info-circle" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-arrows-alt"></i></span>
+                    <span><i className="fas fa-arrows-alt" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
         let dayName = ["Mon","Tue","Wen","Thu","Fri","Sat","Sun"];
@@ -600,9 +600,9 @@ class RenderWeekLog extends React.Component{
                             <input type="checkbox" data-title={todo.title} data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} onChange={this.ifDone}></input>
                         {todo.title}</span>
                         <span className="month_todo_feacture">
-                            <span><i className="fas fa-angle-double-right" data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
+                            <span><i className="fas fa-angle-double-right" ></i></span>
                             <span><i className="fas fa-info-circle" data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
-                            <span><i className="fas fa-arrows-alt"></i></span>
+                            <span><i className="fas fa-arrows-alt" data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                         </span>
                     </div>)}
             </div>);

@@ -9,11 +9,14 @@ class Dashboard extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            reRender: false
+            reRender: false,
+            btToday:false
         };
         this.toggleNav = this.toggleNav.bind(this);
         this.getDate = this.toggleNav.bind(this);
         this.reRenderLog = this.reRenderLog.bind(this);
+        this.toggleBackToToday = this.toggleBackToToday.bind(this);
+        
     }
     
     reRenderLog(){
@@ -26,7 +29,16 @@ class Dashboard extends React.Component{
             }
         })
     }
-// 
+
+    toggleBackToToday(){
+        this.setState(preState=>{
+            let btToday = preState.btToday;
+            return{
+                btToday: !btToday
+            }
+        })
+    }
+
     toggleNav(){
         let sider = document.getElementById("sidebar");
         if(sider.style.display == "block"){
@@ -118,8 +130,8 @@ class Dashboard extends React.Component{
                             <div className="top_nav">
                                 <span className="top_nav_btn" data-btn={"month"} onClick={this.toggleBtn}>month</span>
                                 <span className="top_nav_btn" data-btn={"week"} onClick={this.toggleBtn}>week</span>
-                                <span className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn}>today</span>
-                                <span className="top_nav_btn" data-btn={"overdue"} onClick={this.toggleBtn}>overdue</span>
+                                <span className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>today</span>
+                                {/* <span className="top_nav_btn" data-btn={"overdue"} onClick={this.toggleBtn}>overdue</span> */}
                             </div>
                             {/* 主控制面板 */}
                             <div className="inner_board">
@@ -131,7 +143,7 @@ class Dashboard extends React.Component{
                                 {/* 左面版結束 */}
 
                                 {/* 右面板 */}
-                                <Route path="/dashboard"><RenderDayLog uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+                                <Route path="/dashboard"><RenderDayLog btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
                             </div>
                         </div>
                     </div>

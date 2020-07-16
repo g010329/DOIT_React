@@ -4,7 +4,9 @@ module.exports = {
   mode: 'development',
   entry: './src/index.js', //原始碼來源
   devServer: {
+    historyApiFallback: true,
     contentBase: './dist',
+    https: true
   },
   output: { //輸出
     filename: 'main.js',

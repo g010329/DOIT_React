@@ -15,14 +15,13 @@ class RenderMonthLog extends React.Component{
             day: new Date().getDay(), //五
             daysOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //31
             thisMonthToDos:[
-                // {"title":'add somthing todo',"index":1,"ifDone":false}
+                // {"title":'add somthing todo',"index":1,"ifDone":false,"content":''}
             ],
             eachDayToDos:[
                 // {date:1, 1號
                 // day:0, 週幾
                 // todos:[eat,sleep],
                 // ifInput: false}, 當天事項
-
                 // {date:0,
                 // day:3,
                 // todos:['eat','sleep'],
@@ -33,10 +32,11 @@ class RenderMonthLog extends React.Component{
             ifShowMore: false,
             note:"",
             moreInfoBoard:{
-                oldTitle:'123',
-                index:0,
-                innerIndex:null,
-                newTitle:''
+                oldTitle: '123',
+                index: 0,
+                innerIndex: null,
+                newTitle: '',
+                content: null
             }
         };
         this.updateEachDayToDos = this.updateEachDayToDos.bind(this);
@@ -55,15 +55,25 @@ class RenderMonthLog extends React.Component{
         this.addToDB = this.addToDB.bind(this);
         this.deleteInDB = this.deleteInDB.bind(this);
         this.getDBdataInState = this.getDBdataInState.bind(this);
-        // moreinfo
+        // moreinfo-adjust
         this.autoHeight = this.autoHeight.bind(this);
         this.showMoreInfo = this.showMoreInfo.bind(this);
         this.toggleIfShowMore = this.toggleIfShowMore.bind(this);
         this.adjustTodo = this.adjustTodo.bind(this);
+        // moreinfo-content
+        this.handleContent = this.handleContent.bind(this);
         //ifDone
         this.ifDone = this.ifDone.bind(this);
     }
 
+    handleContent(e){
+        let {moreInfoBoard} = this.state;
+        moreInfoBoard.content = e.currentTarget.value;
+        this.setState({
+            moreInfoBoard: moreInfoBoard
+        });
+        console.log(this.state.moreInfoBoard.content);
+    }
     addThisDayToDos(day){
         let indexDay = day.currentTarget.getAttribute("data-addday");
         // console.log(day.currentTarget.getAttribute("data-addday"));
@@ -122,6 +132,10 @@ class RenderMonthLog extends React.Component{
         });
     }
 
+    changeMonth(e){
+        console.log(e.currentTarget.value);
+    }
+
     addToDB(title,year,month,date,week){
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
@@ -133,6 +147,7 @@ class RenderMonthLog extends React.Component{
             date: date,
             week: week,
             type: "task",
+            content: '',
             isDone: false,
             overdue: false           
         });
@@ -328,9 +343,8 @@ class RenderMonthLog extends React.Component{
         this.updateEachDayToDos();
     }
     componentDidUpdate(preProps){
-        
         if(preProps.reRender !== this.props.reRender){
-            console.log("Month Update");
+            // console.log("Month Update");
             this.updateEachDayToDos();
         }
         // console.log(`Forward${year}/${month}`);
@@ -374,7 +388,7 @@ class RenderMonthLog extends React.Component{
                 <div className="infoflex">
                     <div>
                         <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="25" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle}></textarea>
-                        <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea>
+                        <textarea  className="info_contentInput" onChange={this.handleContent} cols="50" rows="3" placeholder="Write here"></textarea>
                     </div>
                     <div>
                         <div className="info"><i className="fas fa-check-square"></i>
@@ -394,7 +408,7 @@ class RenderMonthLog extends React.Component{
         )
     }
     adjustTodo(){
-        
+        console.log('');
         let oldTitle = this.state.moreInfoBoard.oldTitle;
         let note;
         if (this.state.moreInfoBoard.innerIndex == null){
@@ -483,9 +497,9 @@ class RenderMonthLog extends React.Component{
             <div className="month_todo" key={index}>
             <span><input type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
             <span className="month_todo_feacture">
-                <span><i className="fas fa-angle-double-right" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                <span><i className="fas fa-angle-double-right" ></i></span>
                 <span ><i className="fas fa-info-circle" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                <span><i className="fas fa-arrows-alt" ></i></span>
+                <span><i className="fas fa-arrows-alt" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
             </span>
         </div>);
         // render 每日事項
@@ -513,6 +527,7 @@ class RenderMonthLog extends React.Component{
         <div className="month_title">
             <span className="title_month">{eachMonth[this.state.month]}</span>
             <span className="title_right">
+                <input className="monthCalendar" type="month" onClick={this.changeMonth}/>
                 <span><i className="fas fa-calendar"></i></span>
                 <span><i className="fas fa-angle-left" value="-" onClick={this.handleMonthBackward}></i></span>
                 <span><i className="fas fa-angle-right" onClick={this.handleMonthForward}></i></span>

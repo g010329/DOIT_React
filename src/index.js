@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route, Link,Redirect } from "react-router-dom";
 import Login from "./login.js";
 import Dashboard from "./dashboard.js";
+import Calendar from "./calendar.js";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
@@ -148,15 +149,20 @@ class App extends React.Component {
     render() {
         if(this.state.isLogin == true){
             return <div><Redirect to ="/dashboard"/>
-            <Route path="/dashboard"><Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/></Route></div>
+            <Route path="/dashboard">
+                <Calendar/>
+                {/* <Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/> */}
+            </Route></div>
         }else{    
             return <div>
                 <Redirect to ="/"/>
                 <Route exact path="/">
-                    <Login toggleSignIn={this.toggleSignIn.bind(this)} handleSignUp={this.handleSignUp.bind(this)}/>
+                    <Calendar/>
+                    {/* <Login toggleSignIn={this.toggleSignIn.bind(this)} handleSignUp={this.handleSignUp.bind(this)}/> */}
                 </Route>  
             </div>
         }
+        
     }
 }
 
