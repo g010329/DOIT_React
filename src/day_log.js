@@ -2,6 +2,8 @@ import React from "react";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
+import Calendar from "./calendar";
+import ChangeDateCal from "./changeDateCal";
 class RenderDayLog extends React.Component{
     constructor(props){
         super(props);
@@ -20,11 +22,16 @@ class RenderDayLog extends React.Component{
             moreInfoBoard:{
                 oldTitle:'',
                 index:null,
-                newTitle:''
+                newTitle:'',
+                iYear:null,
+                iMonth:null,
+                iDate:null
             },
             overdue:[
                 {"id":'dn1k3ednklwjebd',"title":'zzz',"ifDone":false,"year":2020,"month":5,"date":15}
-            ]
+            ],
+            calenIfShow:false,
+            ifChangeDate:false
         }
         this.handleDateForward = this.handleDateForward.bind(this);
         this.handleDateBackward = this.handleDateBackward.bind(this);
@@ -47,6 +54,75 @@ class RenderDayLog extends React.Component{
         this.getOverdueFromDB = this.getOverdueFromDB.bind(this);
         // today btn
         this.backToTodayBtn = this.backToTodayBtn.bind(this);
+        // calen
+        this.calenUpdateTime = this.calenUpdateTime.bind(this);
+        this.showCalen = this.showCalen.bind(this);
+        //date calen
+        this.countWeekNum = this.countWeekNum.bind(this);
+        this.ifChangeDate = this.ifChangeDate.bind(this);
+        this.changeDate= this.changeDate.bind(this);
+        
+    }
+
+    countWeekNum(d){
+        //算出今日是第幾週 d=new Date("2020-05-02")
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        return weekNo;
+    }
+    changeDate(year,month,date){
+        this.setState(preState=>{
+            this.getDBdataInState(month,year,date);
+            return{
+                year:year,
+                month:month,
+                date:date
+            }
+        });
+    }
+    ifChangeDate(){
+        this.setState(preState=>{
+            let ifChangeDate = !preState.ifChangeDate;
+            console.log('更換日')
+            return{
+                ifChangeDate: ifChangeDate
+            }
+        })
+    }
+
+    calenUpdateTime(year,month,date){
+        console.log('calenUpdateTime',year,month,date);
+        
+        this.setState(preState=>{
+            let moreInfoBoard = preState.moreInfoBoard;
+            // if(0<date && date<=this.state.daysOfMonth){
+                moreInfoBoard.iYear = year;
+                moreInfoBoard.iMonth = month;
+                moreInfoBoard.iDate = date;
+                console.log(week,'999 表示點選的是週曆'); 
+                if(week==999){
+                    week = this.countWeekNum(new Date(`${year}-${month+1}-${date}`));
+                    console.log('換算後的週數',week)
+                    moreInfoBoard.iDate = 0;
+                }
+                moreInfoBoard.iWeek = week;
+                console.log('calenUpdateTime',moreInfoBoard);
+                return{
+                    moreInfoBoard:moreInfoBoard
+                } 
+            // }
+        })
+    }
+    showCalen(){
+        console.log('showCalen')
+        this.setState(preState=>{
+            let calenIfShow = !preState.calenIfShow;
+            return{
+                calenIfShow: calenIfShow
+            }
+        })
     }
 
     backToTodayBtn(){
@@ -70,7 +146,7 @@ class RenderDayLog extends React.Component{
             .get().then(querySnapshot => {
                 querySnapshot.forEach(doc=>{
                     // this.setState(preState)
-                    console.log("1",doc.data());
+                    // console.log("1",doc.data());
                     overdue.push({
                         id:doc.id,
                         title: doc.data().title,
@@ -89,7 +165,7 @@ class RenderDayLog extends React.Component{
             .get().then(querySnapshot => {
                 querySnapshot.forEach(doc=>{
                     // this.setState(preState)
-                    console.log("2",doc.data());
+                    // console.log("2",doc.data());
                     overdue.push({
                         id:doc.id,
                         title: doc.data().title,
@@ -104,11 +180,11 @@ class RenderDayLog extends React.Component{
                 })
             })
         // 同年、同月份、日期小
-        ref.where("date","<",new Date().getDate()).where("year","==",new Date().getFullYear()).where("month","==",new Date().getMonth()).where("isDone","==",false)
+        ref.where("date","<",new Date().getDate()).where("date",">",0).where("year","==",new Date().getFullYear()).where("month","==",new Date().getMonth()).where("isDone","==",false)
         .get().then(querySnapshot => {
             querySnapshot.forEach(doc=>{
                 // this.setState(preState)
-                console.log("3",doc.data());
+                // console.log("3",doc.data());
                 overdue.push({
                     id:doc.id,
                     title: doc.data().title,
@@ -135,6 +211,9 @@ class RenderDayLog extends React.Component{
             let moreInfoBoard = preState.moreInfoBoard;
             moreInfoBoard.oldTitle = oldTitle;
             moreInfoBoard.index = index;
+            moreInfoBoard.iYear = this.state.year;
+            moreInfoBoard.iMonth = this.state.month;
+            moreInfoBoard.iDate = this.state.date;
             // console.log(moreInfoBoard);
             return{
                 ifShowMore: !ifShowMore,
@@ -154,8 +233,8 @@ class RenderDayLog extends React.Component{
                     <div>
                         <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div>
-                        <div className="info"><i className="fas fa-calendar"></i>
-                            <span>7/2</span></div>
+                        <div className="info" onClick={this.showCalen}><i className="fas fa-calendar"></i>
+                            <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span></div>
                         <div className="info"><i className="fas fa-list-ul"></i>
                             <span>add to list</span></div>
                     </div>
@@ -177,19 +256,23 @@ class RenderDayLog extends React.Component{
             let thisDayToDos = preState.thisDayToDos;
             let ifShowMore = preState.ifShowMore;
             thisDayToDos[moreInfoBoard.index].title = note;
+            if(moreInfoBoard.iDate!=this.state.date){
+                thisDayToDos.splice(moreInfoBoard.index,1);
+            }
             // console.log(thisDayToDos);
             return{
                 thisDayToDos:thisDayToDos,
-                ifShowMore: !ifShowMore
+                ifShowMore: !ifShowMore,
+                calenIfShow:false
             }
         });
-        console.log(this.state.year,this.state.month,this.state.date,oldTitle);
+        // console.log(this.state.year,this.state.month,this.state.date,oldTitle);
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         ref.where("year","==",this.state.year).where("month","==",this.state.month).where("date","==",this.state.date).where("title","==",oldTitle)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
-                    doc.ref.update({title:this.state.note})
+                    doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
                 })
             })
         this.props.reRenderLog();
@@ -220,12 +303,12 @@ class RenderDayLog extends React.Component{
     }
 
     ifDone(e){
-        console.log(this.state.year,this.state.month,this.state.date);
+        // console.log(this.state.year,this.state.month,this.state.date);
         let index = e.currentTarget.getAttribute("data-index");
         let title = e.currentTarget.getAttribute("data-title");
         let id = e.currentTarget.getAttribute("data-id");
         let newStatus;
-        console.log(index,title,id);
+        // console.log(index,title,id);
         this.setState(preState=>{
             let thisDayToDos = preState.thisDayToDos;
             newStatus = !thisDayToDos[index].ifDone;
@@ -243,8 +326,8 @@ class RenderDayLog extends React.Component{
         ref.where("id","==",id)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
-                    console.log(doc.data());
-                    console.log("newstatus",newStatus)
+                    // console.log(doc.data());
+                    // console.log("newstatus",newStatus)
                     doc.ref.update({isDone:newStatus})
                 })
             })
@@ -309,7 +392,7 @@ class RenderDayLog extends React.Component{
     }
 
     addThisDayToDos(){
-        console.log('yo');
+        // console.log('yo');
         this.setState(preState=>{
             let thing = preState.note;
             let thisDayToDos = preState.thisDayToDos;
@@ -416,11 +499,13 @@ class RenderDayLog extends React.Component{
             </div>
         );
         return <div className="right_board">
+        {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)}/>:''}
+        {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className="today_board">
             <div className="month_title">
                 <span className="title_month">Today {this.state.month+1}/{this.state.date}</span>
                 <span className="title_right">
-                    <span><i className="fas fa-calendar"></i></span>
+                    <span><i className="fas fa-calendar" onClick={this.ifChangeDate}></i></span>
                     <span><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>
                     <span><i className="fas fa-angle-right" onClick={this.handleDateForward}></i></span>
                     <span><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>

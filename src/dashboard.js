@@ -31,6 +31,7 @@ class Dashboard extends React.Component{
     }
 
     toggleBackToToday(){
+        console.log('toggleBackToToday');
         this.setState(preState=>{
             let btToday = preState.btToday;
             return{
@@ -137,8 +138,8 @@ class Dashboard extends React.Component{
                             <div className="inner_board">
 
                                 {/* 左面版 */}
-                                <Route path="/dashboard"><RenderMonthLog uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
-                                <Route path="/dashboard"><RenderWeekLog uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+                                <Route path="/dashboard"><RenderMonthLog btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+                                <Route path="/dashboard"><RenderWeekLog btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
                                 {/* <Route path="/dashboard/week_log"><RenderWeekLog/></Route> */}
                                 {/* 左面版結束 */}
 

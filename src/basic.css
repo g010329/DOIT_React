@@ -8,14 +8,62 @@
     background-color: #A58D7F #F5B895 #F3D5AD;
 }
 
+/* 單一事件控制面板 */
+
+textarea {
+    resize:none; 
+    background-color: transparent;
+}
+.bt_moreInfo_board{
+    background-color: #F3D5AD;
+    padding: 10px;
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 600px;
+    /* height: 200px; */
+    color: #0F4C81;
+    /* display: none; */
+    
+}
+.infoflex{
+    display: flex;
+}
+.info_titleInput{
+    line-height: 2.5rem;
+    /* background-color: #F3D5AD; */
+    /* outline: none; */
+    /* border: 0px; */
+    font-size: 2rem;
+}
+.info{
+    margin-top: 10px;
+}
+/* ------ */
 /* 小日曆 */
 *{
-    border: solid 1px rgb(114, 112, 112);
+    /* border: solid 1px rgb(114, 112, 112); */
 }
 table{
     width:100%
 }
+.changeCalen{
+    display: flex;
+}
+.changeCalen div{
+    background-color: rgb(82, 80, 80);
+    border: solid 1px black;
+    width: 33.333%;
+    text-align: center;
+}
+.showCalen{
+    position: absolute;
+    /* position: relative; */
+    z-index: 3333;
+    top:400px
 
+}
 .calenMonth td{
     width: 33.33333333%;
     height: 56px;
@@ -27,6 +75,7 @@ table{
     width: 290px;
     padding: 4px 16px;
     justify-content: space-between;
+    background-color: rgb(126, 125, 125);
 }
 .calenBoard{
     background-color: rgb(180, 174, 174);
@@ -38,6 +87,7 @@ table{
     width: 45px;
     text-align: center;
 }
+
 thead th{
     line-height: 1.5rem;
     padding: 8px 0;
@@ -496,36 +546,6 @@ main{
     cursor: pointer;
 }
 
-/* 單一事件控制面板 */
-
-textarea {resize:none;}
-.bt_moreInfo_board{
-    background-color: #F3D5AD;
-    padding: 10px;
-    position: absolute;
-    top: 200px;
-    left: 50%;
-    transform: translate(-50%);
-    width: 600px;
-    /* height: 200px; */
-    color: #0F4C81;
-    /* display: none; */
-    
-}
-.infoflex{
-    display: flex;
-}
-.info_titleInput{
-    line-height: 2.5rem;
-    /* background-color: #F3D5AD; */
-    /* outline: none; */
-    /* border: 0px; */
-    font-size: 2rem;
-}
-.info{
-    margin-top: 10px;
-}
-/* ------ */
 .bt_type div{
     display: inline-block;
 }

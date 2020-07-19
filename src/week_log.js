@@ -2,6 +2,8 @@ import React from "react";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
+import Calendar from "./calendar";
+import ChangeWeekCal from "./changeWeekCal.js";
 class RenderWeekLog extends React.Component{
     constructor(props){
         super(props);
@@ -37,8 +39,14 @@ class RenderWeekLog extends React.Component{
                 index:0,
                 innerIndex:null,
                 newTitle:'',
-                id:null
-            } 
+                id:null,
+                iYear:null,
+                iMonth:null,
+                iDate:null,
+                iWeek:null
+            },
+            calenIfShow:false,
+            ifChangeMonth:false
         };
         this.updateEachDayToDosOfWeek = this.updateEachDayToDosOfWeek.bind(this);
         this.countWeekNum = this.countWeekNum.bind(this);
@@ -66,13 +74,86 @@ class RenderWeekLog extends React.Component{
         this.showMoreInfo = this.showMoreInfo.bind(this);
         this.toggleIfShowMore = this.toggleIfShowMore.bind(this);
         this.adjustTodo = this.adjustTodo.bind(this);
+        // calen
+        this.showCalen = this.showCalen.bind(this);
+        this.calenUpdateTime = this.calenUpdateTime.bind(this);
+        //date calen
+        this.ifChangeWeek = this.ifChangeWeek.bind(this);
+        this.changeWeek= this.changeWeek.bind(this);
     }
 
+    ifChangeWeek(){
+        this.setState(preState=>{
+            let ifChangeWeek = !preState.ifChangeWeek;
+            console.log('更換週')
+            return{
+                ifChangeWeek: ifChangeWeek
+            }
+        })
+    }
+    changeWeek(year,month,date,week){
+        this.setState(preState=>{
+            return{
+                year:year,
+                month:month,
+                date:date,
+                weekNum:this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),
+                
+            }
+        });
+        this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),year,0);
+        this.updateEachDayToDosOfWeek();
+    }
+    showCalen(){
+        console.log('showCalen')
+        this.setState(preState=>{
+            let calenIfShow = !preState.calenIfShow;
+            return{
+                calenIfShow: calenIfShow
+            }
+        })
+    }
+    backToTodayBtn(){
+        console.log('回到今天');
+        this.setState(preState=>{
+            return{
+                year: new Date().getFullYear(), 
+                month: new Date().getMonth(), 
+                date: new Date().getDate(),
+            }
+        })
+        this.setWeekNum();
+        this.updateEachDayToDosOfWeek();
+    }
+    calenUpdateTime(year,month,date,week){
+        console.log('calenUpdateTime',year,month,date);
+        
+        this.setState(preState=>{
+            let moreInfoBoard = preState.moreInfoBoard;
+            // if(0<date && date<=this.state.daysOfMonth){
+                moreInfoBoard.iYear = year;
+                moreInfoBoard.iMonth = month;
+                moreInfoBoard.iDate = date;
+                console.log(week,'999 表示點選的是週曆'); 
+                if(week==999){
+                    week = this.countWeekNum(new Date(`${year}-${month+1}-${date}`));
+                    console.log('換算後的週數',week)
+                    moreInfoBoard.iDate = 0;
+                }
+                moreInfoBoard.iWeek = week;
+                
+                console.log('calenUpdateTime',moreInfoBoard);
+                return{
+                    moreInfoBoard:moreInfoBoard
+                } 
+            // }
+        })
+    }
     toggleIfShowMore(e){
         // console.log(e.currentTarget.getAttribute("data-index"));
         let oldTitle = e.currentTarget.getAttribute("data-title");
         let id = e.currentTarget.getAttribute("data-id");
-        console.log(e.currentTarget.getAttribute("data-id"));
+        // console.log(e.currentTarget.getAttribute("data-id"));
         let index = e.currentTarget.getAttribute("data-index");
         let innerIndex = e.currentTarget.getAttribute("data-innerindex");
         
@@ -82,7 +163,10 @@ class RenderWeekLog extends React.Component{
             moreInfoBoard.oldTitle = oldTitle;
             moreInfoBoard.index = index;
             moreInfoBoard.innerIndex = innerIndex;
-            moreInfoBoard.id = id
+            moreInfoBoard.id = id;
+            moreInfoBoard.iYear = this.state.year;
+            moreInfoBoard.iMonth = this.state.month;
+            moreInfoBoard.iWeek = this.state.weekNum;
             // console.log(moreInfoBoard);
             return{
                 ifShowMore:!ifShowMore,
@@ -102,14 +186,14 @@ class RenderWeekLog extends React.Component{
                     <div>
                         <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div>
-                        <div className="info"><i className="fas fa-calendar"></i>
-                            <span>7/2</span></div>
+                        <div className="info" onClick={this.showCalen}><i className="fas fa-calendar"></i>
+                            <span>week {this.state.moreInfoBoard.iWeek} of {this.state.moreInfoBoard.iYear}</span></div>
                         <div className="info"><i className="fas fa-list-ul"></i>
                             <span>add to list</span></div>
                     </div>
                 </div>
                 <div>
-                    {/* <span onClick={this.toggleIfShowMore}>cancel</span> */}
+                    <span onClick={this.toggleIfShowMore}>cancel</span>
                     <span onClick={this.adjustTodo}>save</span>
                     <i className="fas fa-trash-alt"></i>
                 </div>
@@ -132,23 +216,24 @@ class RenderWeekLog extends React.Component{
                 // console.log(moreInfoBoard);
                 return{
                     thisWeekToDos:thisWeekToDos,
-                    ifShowMore:!ifShowMore
+                    ifShowMore:!ifShowMore,
+                    calenIfShow:false
                 }
             });
-            console.log('ha',this.state.year,this.state.weekNum,oldTitle,note);
+            // console.log('ha',this.state.year,this.state.weekNum,oldTitle,note);
             let db = firebase.firestore();
             let ref = db.collection("members").doc(this.props.uid).collection("todos");
             ref.where("year","==",this.state.year).where("week","==",this.state.weekNum).where("title","==",oldTitle)
                 .get().then(querySnapshot=>{
                     querySnapshot.forEach(doc=>{
-                        doc.ref.update({title:this.state.note})
+                        doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
                         // console.log(doc.data());
                     })
                 });
             alert('確認修改?');
             // this.props.reRenderLog();
         }else{
-            console.log('adjust day to do');
+            // console.log('adjust day to do');
             this.setState(preState=>{
                 note = preState.note;
                 let moreInfoBoard = preState.moreInfoBoard;
@@ -159,14 +244,15 @@ class RenderWeekLog extends React.Component{
                 // console.log(eachDayToDos);
                 return{
                     eachDayToDos:eachDayToDos,
-                    ifShowMore:!ifShowMore
+                    ifShowMore:!ifShowMore,
+                    calenIfShow:false
                 }
             });
-            console.log('ha',this.state.moreInfoBoard.id,oldTitle,note);
+            // console.log('ha',this.state.moreInfoBoard.id,oldTitle,note);
             let db = firebase.firestore();
             let ref = db.collection("members").doc(this.props.uid).collection("todos").doc(this.state.moreInfoBoard.id);
-            console.log("note:",this.state.note);
-            ref.update({title:this.state.note}).then(()=>{
+            // console.log("note:",this.state.note);
+            ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek}).then(()=>{
                 alert('成功修改');
             });
         }
@@ -569,6 +655,9 @@ class RenderWeekLog extends React.Component{
             // this.updateEachDayToDosOfWeek();
             this.updateEachDayToDosOfWeek();
         }
+        if(preProps.btToday !== this.props.btToday){
+            this.backToTodayBtn();
+        }
     }
     
     render(){
@@ -621,10 +710,12 @@ class RenderWeekLog extends React.Component{
 
         // console.log(this.state.eachDayToDos);
         return <div id="week" className="left_board">
+            {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)}/>:''}
+            {this.state.ifChangeWeek?<ChangeWeekCal changeWeek={this.changeWeek.bind(this)}/>:''}
             <div className="month_title">
                 <span className="title_month">Week {this.state.weekNum}</span>
                 <span className="title_right">
-                    <span><i className="fas fa-calendar"></i></span>
+                    <span><i className="fas fa-calendar" onClick={this.ifChangeWeek}></i></span>
                     <span><i className="fas fa-angle-left" onClick={this.handleWeekBackward}></i></span>
                     <span><i className="fas fa-angle-right" onClick={this.handleWeekForward}></i></span>
                     <span><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>

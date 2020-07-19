@@ -150,15 +150,15 @@ class App extends React.Component {
         if(this.state.isLogin == true){
             return <div><Redirect to ="/dashboard"/>
             <Route path="/dashboard">
-                <Calendar/>
-                {/* <Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/> */}
+                {/* <Calendar/> */}
+                <Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/>
             </Route></div>
         }else{    
             return <div>
                 <Redirect to ="/"/>
                 <Route exact path="/">
-                    <Calendar/>
-                    {/* <Login toggleSignIn={this.toggleSignIn.bind(this)} handleSignUp={this.handleSignUp.bind(this)}/> */}
+                    {/* <Calendar/> */}
+                    <Login toggleSignIn={this.toggleSignIn.bind(this)} handleSignUp={this.handleSignUp.bind(this)}/>
                 </Route>  
             </div>
         }

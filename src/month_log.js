@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
+import Calendar from "./calendar";
+import ChangeMonthCal from "./changeMonthCal";
 // 有使用者的uid: this.props.uid
 
 class RenderMonthLog extends React.Component{
@@ -32,12 +34,19 @@ class RenderMonthLog extends React.Component{
             ifShowMore: false,
             note:"",
             moreInfoBoard:{
-                oldTitle: '123',
+                id:'',
+                oldTitle: '',
+                newTitle: '',
                 index: 0,
                 innerIndex: null,
-                newTitle: '',
-                content: null
-            }
+                content: null,
+                iYear:null,
+                iMonth:null,
+                iDate:null
+            },
+            calenIfShow:false,
+            ifChangeMonth:false
+            
         };
         this.updateEachDayToDos = this.updateEachDayToDos.bind(this);
         this.handleMonthForward = this.handleMonthForward.bind(this);
@@ -61,19 +70,233 @@ class RenderMonthLog extends React.Component{
         this.toggleIfShowMore = this.toggleIfShowMore.bind(this);
         this.adjustTodo = this.adjustTodo.bind(this);
         // moreinfo-content
-        this.handleContent = this.handleContent.bind(this);
+        // this.handleContent = this.handleContent.bind(this);
         //ifDone
         this.ifDone = this.ifDone.bind(this);
+        //calen
+        this.showCalen = this.showCalen.bind(this);
+        //下層的calen Component取得新時間後傳回上層
+        this.calenUpdateTime = this.calenUpdateTime.bind(this);
+        this.adjustTimeInDB = this.adjustTimeInDB.bind(this);
+        this.countWeekNum = this.countWeekNum.bind(this);
+        this.ifChangeMonth = this.ifChangeMonth.bind(this);
+        //today
+        this.backToTodayBtn = this.backToTodayBtn.bind(this);
+    }
+    changeMonth(year,month){
+        this.setState(preState=>{
+            this.getDBdataInState(this.state.month+1,this.state.year,0);
+            return{
+                year:year,
+                month:month,
+                eachDayToDos:[]
+            }
+        });
+        this.updateEachDayToDos();
+    }
+    ifChangeMonth(){
+        this.setState(preState=>{
+            let ifChangeMonth = !preState.ifChangeMonth;
+            console.log('更換月')
+            return{
+                ifChangeMonth: ifChangeMonth
+            }
+        })
+    }
+    calenUpdateTime(year,month,date,week){
+        console.log('calenUpdateTime',year,month,date);
+        
+        this.setState(preState=>{
+            let moreInfoBoard = preState.moreInfoBoard;
+            // if(0<date && date<=this.state.daysOfMonth){
+                moreInfoBoard.iYear = year;
+                moreInfoBoard.iMonth = month;
+                moreInfoBoard.iDate = date;
+                console.log(week,'999 表示點選的是週曆'); 
+                if(week==999){
+                    week = this.countWeekNum(new Date(`${year}-${month+1}-${date}`));
+                    console.log('換算後的週數',week)
+                    moreInfoBoard.iDate = 0;
+                }
+                moreInfoBoard.iWeek = week;
+                console.log('calenUpdateTime',moreInfoBoard);
+                return{
+                    moreInfoBoard:moreInfoBoard
+                } 
+            // }
+        })
+    }
+    countWeekNum(d){
+        //算出今日是第幾週 d=new Date("2020-05-02")
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        return weekNo;
+    }
+    adjustTodo(){
+        console.log('');
+        let oldTitle = this.state.moreInfoBoard.oldTitle;
+        let note;
+        // 該月
+        if (this.state.moreInfoBoard.innerIndex == null){
+            
+            this.setState(preState=>{
+                note = preState.note;
+                let moreInfoBoard = preState.moreInfoBoard;
+                let thisMonthToDos = preState.thisMonthToDos;
+                let eachDayToDos = preState.eachDayToDos;
+                let ifShowMore = preState.ifShowMore;
+                thisMonthToDos[moreInfoBoard.index].title = note;
+                // 判定若改過月份，將state中的此項刪除
+                if(moreInfoBoard.iMonth==this.state.month && moreInfoBoard.iDate!=0){
+                    thisMonthToDos.splice(moreInfoBoard.index,1);
+                    console.log(moreInfoBoard.iDate);
+                    eachDayToDos[moreInfoBoard.iDate-1].todos.push({"title":note});
+                }
+                if(moreInfoBoard.iMonth!=this.state.month){
+                    thisMonthToDos.splice(moreInfoBoard.index,1);
+                }
+                // console.log(thisMonthToDos);
+                console.log('adjust month to do');
+                console.log(eachDayToDos);
+                // console.log(moreInfoBoard.iMonth,this.state.month);
+                // console.log(moreInfoBoard);
+                return{
+                    thisMonthToDos:thisMonthToDos,
+                    ifShowMore:!ifShowMore,
+                    calenIfShow:false,
+                    eachDayToDos:eachDayToDos
+                }
+            });
+            // console.log('ha',this.state.year,this.state.month,oldTitle);
+            let db = firebase.firestore();
+            let ref = db.collection("members").doc(this.props.uid).collection("todos");
+            ref.where("year","==",this.state.year).where("month","==",this.state.month).where("title","==",oldTitle)
+                .get().then(querySnapshot=>{
+                    querySnapshot.forEach(doc=>{
+                        doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
+                    })
+                });
+            alert('確認修改?');
+            // this.getDBdataInState(this.state.month,this.state.year,this.state.date);
+            this.props.reRenderLog();
+        }else{ //該月每天
+            // console.log('adjust day to do');
+            this.setState(preState=>{
+                note = preState.note;
+                let moreInfoBoard = preState.moreInfoBoard;
+                let eachDayToDos = preState.eachDayToDos;
+                let ifShowMore = preState.ifShowMore;
+                eachDayToDos[moreInfoBoard.index].todos[moreInfoBoard.innerIndex].title = note;
+                console.log('adjust month-day to do');
+                if(moreInfoBoard.iMonth!=this.state.month){
+                    eachDayToDos[moreInfoBoard.index].todos.splice(moreInfoBoard.index,1);
+                }
+                return{
+                    eachDayToDos: eachDayToDos,
+                    ifShowMore:!ifShowMore,
+                    calenIfShow:false
+                }
+            });
+            let db = firebase.firestore();
+            let ref = db.collection("members").doc(this.props.uid).collection("todos");
+            ref.where("year","==",this.state.year).where("month","==",this.state.month).where("date","==",parseInt(this.state.moreInfoBoard.index)+1).where("title","==",this.state.moreInfoBoard.oldTitle)
+                .get().then(querySnapshot=>{
+                    querySnapshot.forEach(doc=>{
+                        doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
+                    })
+                })
+            // alert('確認修改?');
+            // this.getDBdataInState(this.state.month,this.state.year,this.state.date);
+            this.props.reRenderLog();
+            // console.log('pa',this.state.year,this.state.month,parseInt(this.state.moreInfoBoard.index),this.state.moreInfoBoard.oldTitle);
+        }
+        // this.adjustTimeInDB();
+    }
+    toggleIfShowMore(e){
+        let oldTitle = e.currentTarget.getAttribute("data-title");
+        let index = e.currentTarget.getAttribute("data-index");
+        let innerIndex = e.currentTarget.getAttribute("data-innerindex");
+        let id = e.currentTarget.getAttribute("data-id");
+        // console.log(this.state.year,this.state.month,id);
+        this.setState(preState=>{
+            let ifShowMore = preState.ifShowMore;
+            let moreInfoBoard = preState.moreInfoBoard;
+            moreInfoBoard.oldTitle = oldTitle;
+            moreInfoBoard.index = index;
+            moreInfoBoard.innerIndex = innerIndex;
+            moreInfoBoard.id = id;
+            moreInfoBoard.iYear = this.state.year;
+            moreInfoBoard.iMonth = this.state.month;
+            moreInfoBoard.calenType = 'month';
+            // console.log('toggleIfShowMore',moreInfoBoard);
+            return{
+                ifShowMore: !ifShowMore,
+                note : oldTitle,
+                moreInfoBoard: moreInfoBoard
+            }
+        })
     }
 
-    handleContent(e){
-        let {moreInfoBoard} = this.state;
-        moreInfoBoard.content = e.currentTarget.value;
-        this.setState({
-            moreInfoBoard: moreInfoBoard
-        });
-        console.log(this.state.moreInfoBoard.content);
+    showCalen(){
+        console.log('showCalen')
+        this.setState(preState=>{
+            let calenIfShow = !preState.calenIfShow;
+            return{
+                calenIfShow: calenIfShow
+            }
+        })
     }
+
+    adjustTimeInDB(){
+        let id = this.state.moreInfoBoard.id;
+        console.log('adjustTimeInDB',this.state.moreInfoBoard.id,this.state.moreInfoBoard.iYear,this.state.moreInfoBoard.iMonth,this.state.moreInfoBoard.iDate);
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        ref.where("id","==",id)
+            .get().then(querySnapshot=>{
+                querySnapshot.forEach(doc=>{
+                    console.log('adjustTimeInDB');
+                    console.log(doc.data());
+                })
+            })
+    }
+
+    showMoreInfo(){
+        return(
+            
+            <div id="moreInfo" className="bt_moreInfo_board">
+                <div className="infoflex">
+                    <div>
+                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="25" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle}></textarea>
+                        <textarea  className="info_contentInput" onChange={this.handleContent} cols="50" rows="3" placeholder="Write here"></textarea>
+                    </div>
+                    <div>
+                        <div className="info"><i className="fas fa-check-square"></i>
+                            <span>task</span></div>
+                        <div className="info" onClick={this.showCalen}><i className="fas fa-calendar" ></i>
+                        <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span></div>
+                        <div className="info"><i className="fas fa-list-ul"></i>
+                            <span>add to list</span></div>
+                    </div>
+                </div>
+                <div>
+                    <span onClick={this.toggleIfShowMore}>cancel</span>
+                    <span onClick={this.adjustTodo}>save</span>
+                    <i className="fas fa-trash-alt"></i>
+                </div>
+            </div>
+        )
+    }
+    // handleContent(e){
+    //     let {moreInfoBoard} = this.state;
+    //     moreInfoBoard.content = e.currentTarget.value;
+    //     this.setState({
+    //         moreInfoBoard: moreInfoBoard
+    //     });
+    //     console.log(this.state.moreInfoBoard.content);
+    // }
     addThisDayToDos(day){
         let indexDay = day.currentTarget.getAttribute("data-addday");
         // console.log(day.currentTarget.getAttribute("data-addday"));
@@ -83,7 +306,7 @@ class RenderMonthLog extends React.Component{
             let date = parseInt(indexDay)+1;
             let thing = preState.note;
             let eachDayToDos = preState.eachDayToDos;
-            eachDayToDos[indexDay].todos.push(thing);
+            eachDayToDos[indexDay].todos.push({title:thing});
             eachDayToDos[indexDay].ifInput = false;
             this.addToDB(thing, year, month, date, 0);
             this.props.reRenderLog();
@@ -132,9 +355,7 @@ class RenderMonthLog extends React.Component{
         });
     }
 
-    changeMonth(e){
-        console.log(e.currentTarget.value);
-    }
+
 
     addToDB(title,year,month,date,week){
         let db = firebase.firestore();
@@ -166,7 +387,8 @@ class RenderMonthLog extends React.Component{
                     querySnapshot.forEach(doc=>{
                         thisMonthToDos.push({
                             title: doc.data().title,
-                            ifDone: doc.data().isDone
+                            ifDone: doc.data().isDone,
+                            id: doc.id
                         });
                         // console.log(doc.data());
                         
@@ -181,7 +403,7 @@ class RenderMonthLog extends React.Component{
                     querySnapshot.forEach(doc=>{
                         this.setState(preState=>{
                             let eachDayToDos = preState.eachDayToDos;
-                            eachDayToDos[doc.data().date-1].todos.push(doc.data().title);
+                            eachDayToDos[doc.data().date-1].todos.push({title:doc.data().title,id:doc.id});
                             return{
                                 eachDayToDos: eachDayToDos
                             }
@@ -290,7 +512,17 @@ class RenderMonthLog extends React.Component{
         )
     }
 
-    
+    backToTodayBtn(){
+        console.log('回到今天');
+        this.setState(preState=>{
+            return{
+                year: new Date().getFullYear(), 
+                month: new Date().getMonth(), 
+                date: new Date().getDate(),
+            }
+        })
+        this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),new Date().getDate());
+    }
 
     handleMonthForward(){
         this.setState(preState=>{
@@ -343,9 +575,14 @@ class RenderMonthLog extends React.Component{
         this.updateEachDayToDos();
     }
     componentDidUpdate(preProps){
+        
         if(preProps.reRender !== this.props.reRender){
             // console.log("Month Update");
             this.updateEachDayToDos();
+        }
+        // console.log(preProps.btToday,this.props.btToday);
+        if(preProps.btToday !== this.props.btToday){
+            this.backToTodayBtn();
         }
         // console.log(`Forward${year}/${month}`);
         // console.log(`${this.state.year}/${this.state.month+1}=>${this.state.daysOfMonth}`);
@@ -381,106 +618,8 @@ class RenderMonthLog extends React.Component{
             </div>
         )
     }
-
-    showMoreInfo(){
-        return(
-            <div id="moreInfo" className="bt_moreInfo_board">
-                <div className="infoflex">
-                    <div>
-                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="25" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle}></textarea>
-                        <textarea  className="info_contentInput" onChange={this.handleContent} cols="50" rows="3" placeholder="Write here"></textarea>
-                    </div>
-                    <div>
-                        <div className="info"><i className="fas fa-check-square"></i>
-                            <span>task</span></div>
-                        <div className="info"><i className="fas fa-calendar"></i>
-                            <span>7/2</span></div>
-                        <div className="info"><i className="fas fa-list-ul"></i>
-                            <span>add to list</span></div>
-                    </div>
-                </div>
-                <div>
-                    {/* <span onClick={this.toggleIfShowMore}>cancel</span> */}
-                    <span onClick={this.adjustTodo}>save</span>
-                    <i className="fas fa-trash-alt"></i>
-                </div>
-            </div>
-        )
-    }
-    adjustTodo(){
-        console.log('');
-        let oldTitle = this.state.moreInfoBoard.oldTitle;
-        let note;
-        if (this.state.moreInfoBoard.innerIndex == null){
-            console.log('adjust month to do');
-            this.setState(preState=>{
-                note = preState.note;
-                let moreInfoBoard = preState.moreInfoBoard;
-                let thisMonthToDos = preState.thisMonthToDos;
-                let ifShowMore = preState.ifShowMore;
-                thisMonthToDos[moreInfoBoard.index].title = note;
-                // console.log(thisMonthToDos);
-                // console.log(moreInfoBoard);
-                return{
-                    thisMonthToDos:thisMonthToDos,
-                    ifShowMore:!ifShowMore
-                }
-            });
-            // console.log('ha',this.state.year,this.state.month,oldTitle);
-            let db = firebase.firestore();
-            let ref = db.collection("members").doc(this.props.uid).collection("todos");
-            ref.where("year","==",this.state.year).where("month","==",this.state.month).where("title","==",oldTitle)
-                .get().then(querySnapshot=>{
-                    querySnapshot.forEach(doc=>{
-                        doc.ref.update({title:this.state.note})
-                    })
-                });
-            alert('確認修改?');
-            this.props.reRenderLog();
-        }else{
-            // console.log('adjust day to do');
-            this.setState(preState=>{
-                note = preState.note;
-                let moreInfoBoard = preState.moreInfoBoard;
-                let eachDayToDos = preState.eachDayToDos;
-                let ifShowMore = preState.ifShowMore;
-                eachDayToDos[moreInfoBoard.index].todos[moreInfoBoard.innerIndex] = note;
-                return{
-                    eachDayToDos: eachDayToDos,
-                    ifShowMore:!ifShowMore
-                }
-            });
-            let db = firebase.firestore();
-            let ref = db.collection("members").doc(this.props.uid).collection("todos");
-            ref.where("year","==",this.state.year).where("month","==",this.state.month).where("date","==",parseInt(this.state.moreInfoBoard.index)+1).where("title","==",this.state.moreInfoBoard.oldTitle)
-                .get().then(querySnapshot=>{
-                    querySnapshot.forEach(doc=>{
-                        doc.ref.update({title:this.state.note})
-                    })
-                })
-            alert('確認修改?');
-            this.props.reRenderLog();
-            // console.log('pa',this.state.year,this.state.month,parseInt(this.state.moreInfoBoard.index),this.state.moreInfoBoard.oldTitle);
-        }
-    }
-    toggleIfShowMore(e){
-        let oldTitle = e.currentTarget.getAttribute("data-title");
-        let index = e.currentTarget.getAttribute("data-index");
-        let innerIndex = e.currentTarget.getAttribute("data-innerindex")
-        this.setState(preState=>{
-            let ifShowMore = preState.ifShowMore;
-            let moreInfoBoard = preState.moreInfoBoard;
-            moreInfoBoard.oldTitle = oldTitle,
-            moreInfoBoard.index = index
-            moreInfoBoard.innerIndex = innerIndex;
-            // console.log(moreInfoBoard);
-            return{
-                ifShowMore: !ifShowMore,
-                note : oldTitle,
-                moreInfoBoard: moreInfoBoard
-            }
-        })
-    }
+    
+    
 
     autoHeight(){
         let x = document.getElementById("testHeight");
@@ -498,7 +637,7 @@ class RenderMonthLog extends React.Component{
             <span><input type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
             <span className="month_todo_feacture">
                 <span><i className="fas fa-angle-double-right" ></i></span>
-                <span ><i className="fas fa-info-circle" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                <span ><i className="fas fa-info-circle" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                 <span><i className="fas fa-arrows-alt" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
             </span>
         </div>);
@@ -516,20 +655,20 @@ class RenderMonthLog extends React.Component{
                     <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
                 </div>
                 <div className="month_day_b">
-                    {eachday.todos.map((todo,innerIndex)=><span data-title={todo} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo}</span>)}
+                    {eachday.todos.map((todo,innerIndex)=><span data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
                 </div>
             </div>
             </div>);
         
         return <div id="month" className="left_board">
-        
+        {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)}/>:''}
+        {this.state.ifChangeMonth?<ChangeMonthCal changeMonth={this.changeMonth.bind(this)}/>:''}
         {/* 月-標題 */}
         <div className="month_title">
             <span className="title_month">{eachMonth[this.state.month]}</span>
             <span className="title_right">
-                <input className="monthCalendar" type="month" onClick={this.changeMonth}/>
-                <span><i className="fas fa-calendar"></i></span>
-                <span><i className="fas fa-angle-left" value="-" onClick={this.handleMonthBackward}></i></span>
+                <span><i className="fas fa-calendar" onClick={this.ifChangeMonth}></i></span>
+                <span><i className="fas fa-angle-left"  value="-" onClick={this.handleMonthBackward}></i></span>
                 <span><i className="fas fa-angle-right" onClick={this.handleMonthForward}></i></span>
                 <span><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
             </span>
