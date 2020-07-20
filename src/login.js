@@ -32,12 +32,12 @@ class Login extends React.Component{
             <header>
                 <div>
                     <span className="top_nav_logo"><i className="fas fa-bars"></i></span>
-                    <span>Bullet</span>
+                    <span className="bulletword">Bullet</span>
                     <span><i className="fas fa-bolt"></i></span>
                     
                 </div>
                 <span className="header_member">
-                    <div className="login">LOGIN</div>
+                    {/* <div className="login">LOGIN</div> */}
                 </span>   
             </header>
             <main>
@@ -46,7 +46,7 @@ class Login extends React.Component{
                         <div className="login_title">Login</div>
                         <div>
                             <div className="login_account"><input  type="text" placeholder="Email Address" onChange={this.handleMailKeyInValue}></input></div>
-                            <div className="login_account"><input type="text" placeholder="Password" onChange={this.handlePasswordKeyInValue}></input></div>
+                            <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue}></input></div>
                             <div className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email,this.state.password)}}>LOGIN</div>
                             
 

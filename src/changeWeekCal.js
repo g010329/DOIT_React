@@ -68,7 +68,7 @@ class ChangeWeekCal extends React.Component{
         let day = this.state.calFirstDateDay-1;
         let calDatesOfMonth = this.state.calDatesOfMonth;
         let eachMonth = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        let wCalen = <div className="calentype">
+        let wCalen = <div className="wcalentype">
                 <div className="calenTitle">
                 <div onClick={this.calMonthBackward}><i className="fas fa-angle-left"></i></div>
                 <div>{eachMonth[this.state.calMonth]} {this.state.calYear}</div>
@@ -91,52 +91,52 @@ class ChangeWeekCal extends React.Component{
                         {/* <tr>{this.week}</tr> */}
                         <tr>
                             <td onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,1-day,999)}>{(1-day)>0? 1-day : ''}</td>
-                            <td>{(2-day)>0? 2-day : ''}</td>
-                            <td>{(3-day)>0? 3-day : ''}</td>
-                            <td>{(4-day)>0? 4-day : ''}</td>
-                            <td>{(5-day)>0? 5-day : ''}</td>
-                            <td>{(6-day)>0? 6-day : ''}</td>
-                            <td>{7-day}</td>
+                            <td className="darktd">{(2-day)>0? 2-day : ''}</td>
+                            <td className="darktd">{(3-day)>0? 3-day : ''}</td>
+                            <td className="darktd">{(4-day)>0? 4-day : ''}</td>
+                            <td className="darktd">{(5-day)>0? 5-day : ''}</td>
+                            <td className="darktd">{(6-day)>0? 6-day : ''}</td>
+                            <td className="darktd">{7-day}</td>
                         </tr>
                         <tr>
-                            <td data-value={8-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,8-day,999)}>{8-day}</td>
-                            <td>{9-day}</td>
-                            <td>{10-day}</td>
-                            <td>{11-day}</td>
-                            <td>{12-day}</td>
-                            <td>{13-day}</td>
-                            <td>{14-day}</td>
+                            <td className="weektd" data-value={8-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,8-day,999)}>{8-day}</td>
+                            <td className="darktd">{9-day}</td>
+                            <td className="darktd">{10-day}</td>
+                            <td className="darktd">{11-day}</td>
+                            <td className="darktd">{12-day}</td>
+                            <td className="darktd">{13-day}</td>
+                            <td className="darktd">{14-day}</td>
                         </tr>
                         <tr>
-                            <td data-value={15-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,15-day,999)}>{15-day}</td>
-                            <td>{16-day}</td>
-                            <td>{17-day}</td>
-                            <td>{18-day}</td>
-                            <td>{19-day}</td>
-                            <td>{20-day}</td>
-                            <td>{21-day}</td>
+                            <td className="weektd" data-value={15-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,15-day,999)}>{15-day}</td>
+                            <td className="darktd">{16-day}</td>
+                            <td className="darktd">{17-day}</td>
+                            <td className="darktd">{18-day}</td>
+                            <td className="darktd">{19-day}</td>
+                            <td className="darktd">{20-day}</td>
+                            <td className="darktd">{21-day}</td>
                         </tr>
                         <tr>
-                            <td data-value={22-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,22-day,999)}>{22-day}</td>
-                            <td>{23-day}</td>
-                            <td>{24-day}</td>
-                            <td>{25-day}</td>
-                            <td>{26-day}</td>
-                            <td>{27-day}</td>
-                            <td>{28-day}</td>
+                            <td className="weektd" data-value={22-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,22-day,999)}>{22-day}</td>
+                            <td className="darktd">{23-day}</td>
+                            <td className="darktd">{24-day}</td>
+                            <td className="darktd">{25-day}</td>
+                            <td className="darktd">{26-day}</td>
+                            <td className="darktd">{27-day}</td>
+                            <td className="darktd">{28-day}</td>
                         </tr>
                         <tr>
-                            <td data-value={29-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,29-day,999)}>{(29-day)<=calDatesOfMonth? 29-day : ''}</td>
-                            <td>{(30-day)<=calDatesOfMonth? 30-day : ''}</td>
-                            <td>{(31-day)<=calDatesOfMonth? 31-day : ''}</td>
-                            <td>{(32-day)<=calDatesOfMonth? 32-day : ''}</td>
-                            <td>{(33-day)<=calDatesOfMonth? 33-day : ''}</td>
-                            <td>{(34-day)<=calDatesOfMonth? 34-day : ''}</td>
-                            <td>{(35-day)<=calDatesOfMonth? 35-day : ''}</td>
+                            <td className="weektd" data-value={29-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,29-day,999)}>{(29-day)<=calDatesOfMonth? 29-day : ''}</td>
+                            <td className="darktd">{(30-day)<=calDatesOfMonth? 30-day : ''}</td>
+                            <td className="darktd">{(31-day)<=calDatesOfMonth? 31-day : ''}</td>
+                            <td className="darktd">{(32-day)<=calDatesOfMonth? 32-day : ''}</td>
+                            <td className="darktd">{(33-day)<=calDatesOfMonth? 33-day : ''}</td>
+                            <td className="darktd">{(34-day)<=calDatesOfMonth? 34-day : ''}</td>
+                            <td className="darktd">{(35-day)<=calDatesOfMonth? 35-day : ''}</td>
                         </tr>
                         <tr>
-                            <td data-value={36-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,36-day,999)}>{(36-day)<=calDatesOfMonth? 36-day : ''}</td>
-                            <td>{(37-day)<=calDatesOfMonth? 37-day : ''}</td>
+                            <td className="weektd" data-value={36-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,36-day,999)}>{(36-day)<=calDatesOfMonth? 36-day : ''}</td>
+                            <td className="darktd">{(37-day)<=calDatesOfMonth? 37-day : ''}</td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -147,8 +147,7 @@ class ChangeWeekCal extends React.Component{
                 </table>
             </div>
             </div>
-
-        return <div className="showCalen">
+        return <div className="showCalenW">
             {wCalen}
         </div>
         

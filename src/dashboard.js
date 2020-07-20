@@ -77,13 +77,13 @@ class Dashboard extends React.Component{
             <header>
                 <div>
                     <span onClick={this.toggleNav} className="top_nav_logo"><i className="fas fa-bars"></i></span>
-                    <span>Bullet</span>
+                    <span className="bulletword">Bullet</span>
                     <span><i className="fas fa-bolt"></i></span>
                     
                 </div>
                 <span className="header_member">
-                    <div className="login" onClick={this.props.toggleSignIn}>LOGOUT</div>
-                    <span className="top_nav_logo"><i className="fas fa-user"></i></span>
+                    <div className="logout" onClick={this.props.toggleSignIn}>LOG OUT</div>
+                    {/* <span className="top_nav_logo"><i className="fas fa-user"></i></span> */}
                 </span>   
             </header>
 
@@ -129,9 +129,9 @@ class Dashboard extends React.Component{
                         <div className="inner2_board">
                         {/* top nav */}
                             <div className="top_nav">
-                                <span className="top_nav_btn" data-btn={"month"} onClick={this.toggleBtn}>month</span>
-                                <span className="top_nav_btn" data-btn={"week"} onClick={this.toggleBtn}>week</span>
-                                <span className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>today</span>
+                                <span className="top_nav_btn" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
+                                <span className="top_nav_btn" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
+                                <span className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
                                 {/* <span className="top_nav_btn" data-btn={"overdue"} onClick={this.toggleBtn}>overdue</span> */}
                             </div>
                             {/* 主控制面板 */}

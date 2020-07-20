@@ -6,16 +6,20 @@
     /* 網站使用色號 */
     background-color: #0F4C81 #658DC6 #B5C7D3 #84898C;
     background-color: #A58D7F #F5B895 #F3D5AD;
+    font-family: Roboto,sans-serif;
 }
 
 /* 單一事件控制面板 */
 
 textarea {
+    color:#e8e8e8;
     resize:none; 
     background-color: transparent;
 }
 .bt_moreInfo_board{
-    background-color: #F3D5AD;
+    background-color: #1F1F1F;
+    box-shadow: 0px 10px 35px #131313da;
+    border-radius: 5px;
     padding: 10px;
     position: absolute;
     top: 200px;
@@ -23,12 +27,13 @@ textarea {
     transform: translate(-50%);
     width: 600px;
     /* height: 200px; */
-    color: #0F4C81;
+    color: #e8e8e8;
     /* display: none; */
     
 }
 .infoflex{
     display: flex;
+    justify-content: space-between;
 }
 .info_titleInput{
     line-height: 2.5rem;
@@ -45,6 +50,55 @@ textarea {
 *{
     /* border: solid 1px rgb(114, 112, 112); */
 }
+/* 改變月 */
+.calenBoard button{
+    border: 0;
+    background-color: #424242;
+    color: #ffffff;
+    height: 36px;
+    width: 86px;
+    padding: 0 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all .5s ease;
+    letter-spacing: 1px;
+}
+.calenBoard button:hover{
+    background-color: rgba(104, 102, 102, 0.815);
+    /* opacity: .2; */
+    color: #ffffff;
+}
+.showCalenM{
+    position: absolute;
+    z-index: 999;
+    top:170px;
+    left: 40%;
+    box-shadow: 0px 0px 10px #181818;
+}
+@media(max-width:500px){
+    .showCalenM{
+        position: absolute;
+        z-index: 999;
+        top:150px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+/* ----- */
+.calentype{
+    border-radius: 10px;
+    overflow: hidden;
+
+}
+.data-calentype{
+    height: 40px;
+    line-height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.data-calentype:hover{
+    background-color: rgb(54, 53, 53)
+}
 table{
     width:100%
 }
@@ -57,13 +111,7 @@ table{
     width: 33.333%;
     text-align: center;
 }
-.showCalen{
-    position: absolute;
-    /* position: relative; */
-    z-index: 3333;
-    top:400px
 
-}
 .calenMonth td{
     width: 33.33333333%;
     height: 56px;
@@ -71,14 +119,17 @@ table{
     text-align: center;
 }
 .calenTitle{
+    letter-spacing: 1px;
     display: flex;
     width: 290px;
     padding: 4px 16px;
     justify-content: space-between;
-    background-color: rgb(126, 125, 125);
+    background-color: #1F1F1F;
+    line-height: 50px;
 }
 .calenBoard{
-    background-color: rgb(180, 174, 174);
+    
+    background-color: #424242;
     width: 290px;
     padding: 0 12px;
     height: 242px;
@@ -102,14 +153,14 @@ body{
 /* 上方 header */
 header{
     position: relative;
-    background-color: #0c3c66;
+    background-color: #272727;
     height: 48px;
     line-height: 48px;
     font-size: 25px;
-    color: #F3D5AD;
+    color: #e8e8e8;
     display: flex;
     justify-content: space-between;
-    box-shadow: 0px 3px 3px #0b365c;
+    box-shadow: 0px 3px 5px #181818;
 }
 
 /* log btn */
@@ -124,17 +175,20 @@ header{
 }
 
 .top_nav_btn{
+    letter-spacing: 1px;
     /* margin: 0px 7px; */
     display: inline-block;
     width: 70px;
     border-radius: 5px;
     color:  #0F4C81;
-    background-color: #658DC6;
-    font-size: 15px;
-    width:70px;
+    font-weight: 900;
+    background-color: #e8e8e8;
+    font-size: 0.75rem;
+    min-width:50px;
     text-align: center;
     line-height: 25px;
     cursor: pointer;
+    box-shadow: 0px 0px 3px #111111;
 }
 .login{
     /* display: inline; */
@@ -149,9 +203,25 @@ header{
     border-radius: 3px;
     margin-right: 10px;
 }
+.logout{
+    background-color: #e8e8e8;
+    color: #0F4C81;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 10px;
+    width: 70px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 3px;
+    margin-right: 10px;
+    cursor: pointer;
+}
 .header_member{
     display: inline-flex;
     align-items: center;
+}
+.bulletword{
+    margin-right: 12px;
 }
 /* 左側side(可收) */
 main{
@@ -169,39 +239,50 @@ main{
 }
 /* 登入頁 */
 .visual{
-    
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    bottom: 0px;
+    z-index: -1;
     width: 100%;
-    background-color:#0F4C81;
+    background-color:#2C2C2C;
     display: flex;
     justify-content: center;
 }
 .login_board{
-    background-color: #F3D5AD;
-    margin-top: 50px;
-    width: 250px;
+    position: absolute;
+    background-color: #1F1F1F;
+    top: 100px;
+    width: 320px;
     border-radius: 3px;
+    height: 400px;
     /* padding: 10px; */
 }
 .login_title{
-    color:#0F4C81 ;
+    color: #e8e8e8;
     letter-spacing: 1px;
     padding: 15px;
     font-weight: 700;
-    border-bottom: solid 1px white;
+    border-bottom: solid 1px rgb(119, 116, 116);;
 }
 .login_account{
-    margin: 15px;
+    margin: 25px;
     border-radius: 8px;
     border: solid 1px rgb(119, 116, 116);
     height: 50px;
     display: flex;
     align-items: center;
 }
+.login_account:hover{
+    border: solid 2px rgb(160, 158, 158);
+}
 .login_board input{
-    background-color: #F3D5AD;
+    background-color: transparent;
     border: 0px;
     width: 100%;
     margin-left: 5px;
+    color: #e8e8e8;
 }
 .login_board input:focus{
     outline: none;
@@ -209,15 +290,20 @@ main{
 
 .login_btn{
     letter-spacing: 1px;
-    margin: 0px 15px;
+    margin: 20px 25px;
     height: 30px;
     text-align: center;
     line-height: 30px;
     border-radius: 5px;
-    
-    background-color: #F5B895;
-    
-    color: #ffffff;
+    cursor: pointer;
+    background-color: #FFFFFF;
+    opacity: .8;
+    color: #868585;
+}
+.login_btn:hover{
+    background-color: #FFFFFF;
+    opacity: 1;
+    color: #202020;
 }
 .forget{
     color:#0F4C81;
@@ -226,25 +312,33 @@ main{
     text-align: center;
     font-size: 12px;
     padding-bottom: 10px;
-    border-bottom: solid 1px #ffffff;
+    border-bottom: solid 1px rgb(119, 116, 116);
 }
 .signUp{
-    color:#0F4C81;
+    color:#4185c0;
     margin: 10px 0px 5px 0px;
     text-align: center;
     font-size: 12px;
+    
 }
 .signUp_btn{
     letter-spacing: 1px;
-    margin: 0px 15px;
+    margin: 0px 25px;
     height: 30px;
     text-align: center;
     line-height: 30px;
     border-radius: 5px;
+    cursor: pointer;
     /* background-color: rgb(240, 232, 232); */
-    background-color: #B5C7D3;
-    color: #ffffff;
+    background-color: #FFFFFF;
+    opacity: .8;
+    color: #868585;
     margin-bottom: 15px;
+}
+.signUp_btn:hover{
+    background-color: #FFFFFF;
+    opacity: 1;
+    color: #202020;
 }
 
 /* 主操控頁(月計畫) */
@@ -298,7 +392,7 @@ main{
 
 /* 主操控畫面(月) */
 .dashboard{
-    background-color: #133452;
+    background-color: #2C2C2C;
     flex: 1;
     display: flex;
     flex-wrap: wrap;
@@ -309,11 +403,14 @@ main{
     display: inline-block;
     margin-right: 5px;
 }
-.month_todo_feacture{
-    color: #0F4C81;
+.month_todo_feacture span{
+    color: #e8e8e8;
+    opacity: .1;
+    cursor: pointer;
 }
-.month_todo_feacture:hover{
-    color: #d3d0d0;
+.month_todo_feacture span:hover{
+    color: #e8e8e8;
+    opacity: .9;
 }
 .inner2_board{
     /* border: solid 1px rgb(202, 98, 115); */
@@ -428,14 +525,14 @@ main{
 .week_day{
     line-height: 2rem;
     border-radius: 5px;
-    background-color:  #0F4C81;
+    background-color:  #1F1F1F;
     margin: 3px 0px 10px 0px;
     padding: 5px 5px 5px 7px;
 }
 .w_add_bt{
     /* display: inline-block; */
     margin-left: -3px;
-    color: #0F4C81;
+    color: #1F1F1F;
     flex: 1;
     
 }
@@ -465,7 +562,7 @@ main{
 .month_title{
     display: flex;
     justify-content: space-between;
-    border-bottom: solid 1px #a4bbcf;
+    border-bottom: solid 1px #7a8188;
     padding-bottom: 15px;
 }
 .title_month{
@@ -483,7 +580,10 @@ main{
 }
 .title_right span{
     display: inline-block;
-    margin-right: 3px;
+    margin-right: 5px;
+}
+.title_right i{
+    cursor: pointer;
 }
 .month_todos{
     margin: 15px 0px;
@@ -513,6 +613,7 @@ main{
     /* justify-content: space-between; */
     padding: 0px 0px 8px 0px;
 }
+
 .month_day_a{
     min-width: 100px;
 }
@@ -532,6 +633,7 @@ main{
     width: 30px;
     text-align: center;
     color: #cdd2d6;
+    cursor: pointer;
 }
 /* .m_add_bt:hover{
     color: #455f79;
@@ -576,4 +678,62 @@ main{
 }
 *{
     /* border: solid 1px rgb(57, 58, 71); */
+}
+
+/* input */
+.noScheInput{
+    background-color: transparent;
+    border: 0px;
+    color: #e8e8e8;
+}
+.checkbox{
+    margin-right:10px
+}
+.addmd{
+    margin: 5px 0px;
+}
+.addmd_input{
+    margin-right: 10px;
+    background-color: transparent;
+    border: 0px;
+    color: #e8e8e8;
+}
+
+.wbgc{
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: #2C2C2C;
+}
+.info2{
+    width:120px
+}
+
+.darktd{
+    color:rgb(92, 91, 91)
+}
+.weektd{
+    cursor: pointer;
+}
+.weektd:hover{
+    background-color: rgb(105, 103, 103);
+}
+.showCalen{
+    position: absolute;
+    top: 280px;
+    left: 55%;
+    z-index: 999;
+}
+.showCalenW{
+    position: absolute;
+    top: 170px;
+    left: 40%;
+}
+.showCalenD{
+    position: absolute;
+    top: 170px;
+    left: 70%;
 }

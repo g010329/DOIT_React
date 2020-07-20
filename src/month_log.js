@@ -84,15 +84,29 @@ class RenderMonthLog extends React.Component{
         this.backToTodayBtn = this.backToTodayBtn.bind(this);
     }
     changeMonth(year,month){
+        // console.log(year,month);
         this.setState(preState=>{
-            this.getDBdataInState(this.state.month+1,this.state.year,0);
+            let daysOfMonth = preState.daysOfMonth;
+            let eachDayToDos = preState.eachDayToDos;
+            console.log(year,month);
+            eachDayToDos=[];
+            for (let i=0; i<new Date(year,month+1,0).getDate(); i++){
+                eachDayToDos.push({
+                    date:i,
+                    day:new Date(`${year}-${month+1}-${i+1}`).getDay(),
+                    todos:[],
+                    ifInput: false
+                });
+                this.getDBdataInState(month,year,0);
+            }
             return{
                 year:year,
                 month:month,
-                eachDayToDos:[]
+                daysOfMonth:new Date(year,month+1,0).getDate(),
+                eachDayToDos:eachDayToDos
             }
         });
-        this.updateEachDayToDos();
+        
     }
     ifChangeMonth(){
         this.setState(preState=>{
@@ -140,7 +154,7 @@ class RenderMonthLog extends React.Component{
         let note;
         // 該月
         if (this.state.moreInfoBoard.innerIndex == null){
-            
+            console.log('修改月未安排',this.state.moreInfoBoard);
             this.setState(preState=>{
                 note = preState.note;
                 let moreInfoBoard = preState.moreInfoBoard;
@@ -151,8 +165,8 @@ class RenderMonthLog extends React.Component{
                 // 判定若改過月份，將state中的此項刪除
                 if(moreInfoBoard.iMonth==this.state.month && moreInfoBoard.iDate!=0){
                     thisMonthToDos.splice(moreInfoBoard.index,1);
-                    console.log(moreInfoBoard.iDate);
-                    eachDayToDos[moreInfoBoard.iDate-1].todos.push({"title":note});
+                    // console.log(moreInfoBoard.iDate);
+                    // eachDayToDos[moreInfoBoard.iDate-1].todos.push({"title":note});
                 }
                 if(moreInfoBoard.iMonth!=this.state.month){
                     thisMonthToDos.splice(moreInfoBoard.index,1);
@@ -169,7 +183,7 @@ class RenderMonthLog extends React.Component{
                     eachDayToDos:eachDayToDos
                 }
             });
-            // console.log('ha',this.state.year,this.state.month,oldTitle);
+            console.log('ha',this.state.year,this.state.month,oldTitle);
             let db = firebase.firestore();
             let ref = db.collection("members").doc(this.props.uid).collection("todos");
             ref.where("year","==",this.state.year).where("month","==",this.state.month).where("title","==",oldTitle)
@@ -178,6 +192,12 @@ class RenderMonthLog extends React.Component{
                         doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
                     })
                 });
+            // ref.where("id","==",this.state.moreInfoBoard.id)
+            //     .get().then(querySnapshot=>{
+            //         querySnapshot.forEach(doc=>{
+            //             doc.ref.update({title:'this.state.note',month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
+            //         })
+            //     });
             alert('確認修改?');
             // this.getDBdataInState(this.state.month,this.state.year,this.state.date);
             this.props.reRenderLog();
@@ -230,7 +250,7 @@ class RenderMonthLog extends React.Component{
             moreInfoBoard.iYear = this.state.year;
             moreInfoBoard.iMonth = this.state.month;
             moreInfoBoard.calenType = 'month';
-            // console.log('toggleIfShowMore',moreInfoBoard);
+            console.log('toggleIfShowMore',moreInfoBoard);
             return{
                 ifShowMore: !ifShowMore,
                 note : oldTitle,
@@ -268,11 +288,11 @@ class RenderMonthLog extends React.Component{
             
             <div id="moreInfo" className="bt_moreInfo_board">
                 <div className="infoflex">
-                    <div>
+                    <div className="info1">
                         <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="25" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle}></textarea>
-                        <textarea  className="info_contentInput" onChange={this.handleContent} cols="50" rows="3" placeholder="Write here"></textarea>
+                        {/* <textarea  className="info_contentInput" onChange={this.handleContent} cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
-                    <div>
+                    <div className="info2">
                         <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div>
                         <div className="info" onClick={this.showCalen}><i className="fas fa-calendar" ></i>
@@ -382,7 +402,7 @@ class RenderMonthLog extends React.Component{
         let thisMonthToDos = [];
         
         if(date == 0){
-            ref.where('month','==',month).where('year','==',year).where('date','==',date)
+            ref.where('month','==',month).where('year','==',year).where('date','==',date).where('isDone','==',false)
                 .get().then(querySnapshot => {
                     querySnapshot.forEach(doc=>{
                         thisMonthToDos.push({
@@ -500,9 +520,9 @@ class RenderMonthLog extends React.Component{
     }
     showEachDateInput(i){
         return(
-        <div className="month_todo" >
+        <div className="month_todo addmd" >
                 <span>
-                    <input type="text" onChange={this.handleNoteChange}/>
+                    <input className="addmd_input" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange}/>
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.turnOffEachDayIfInput}>cancel</span>
@@ -602,14 +622,14 @@ class RenderMonthLog extends React.Component{
         this.setState({
             note:e.currentTarget.value
         });
-        // console.log('note: '+e.currentTarget.value);
+        console.log('note: '+e.currentTarget.value);
     }
     showInput(){
         return(
         <div className="month_todo" >
                 <span>
-                    <input type="checkbox" name="" id=""/>
-                    <input type="text" onChange={this.handleNoteChange}/>
+                    <input className="checkbox" type="checkbox"/>
+                    <input className="noScheInput" type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange}/>
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.toggleIfInput}>cancel</span>
@@ -634,7 +654,7 @@ class RenderMonthLog extends React.Component{
         // render 該月事項
         let renderThisMonthTodos = this.state.thisMonthToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
-            <span><input type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
+            <span><input className="checkbox" type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
             <span className="month_todo_feacture">
                 <span><i className="fas fa-angle-double-right" ></i></span>
                 <span ><i className="fas fa-info-circle" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
@@ -645,8 +665,7 @@ class RenderMonthLog extends React.Component{
         let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>
             <div key={index}>
             {/* 每日事項input */}
-            <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
-            <div className="month_day" >
+                <div className="month_day" >
                 {/* 每日新增事件 */}
                 
                 <div className="month_day_a">
@@ -656,6 +675,7 @@ class RenderMonthLog extends React.Component{
                 </div>
                 <div className="month_day_b">
                     {eachday.todos.map((todo,innerIndex)=><span data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
+                    <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
                 </div>
             </div>
             </div>);
