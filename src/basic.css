@@ -173,16 +173,19 @@ header{
     text-align: center;
     width: 48px;
 }
-
+.top_nav_btn:first-child{
+    color:  #222222;
+    background-color: #e8e8e8;
+}
 .top_nav_btn{
     letter-spacing: 1px;
     /* margin: 0px 7px; */
     display: inline-block;
     width: 70px;
     border-radius: 5px;
-    color:  #0F4C81;
     font-weight: 900;
-    background-color: #e8e8e8;
+    color:  #c4c1c1;
+    background-color: #222222;
     font-size: 0.75rem;
     min-width:50px;
     text-align: center;
@@ -251,13 +254,11 @@ main{
     justify-content: center;
 }
 .login_board{
-    position: absolute;
     background-color: #1F1F1F;
-    top: 100px;
     width: 320px;
     border-radius: 3px;
     height: 400px;
-    /* padding: 10px; */
+    box-shadow: 0px 10px 15px #131313da;
 }
 .login_title{
     color: #e8e8e8;
@@ -297,13 +298,11 @@ main{
     border-radius: 5px;
     cursor: pointer;
     background-color: #FFFFFF;
-    opacity: .8;
-    color: #868585;
-}
-.login_btn:hover{
-    background-color: #FFFFFF;
     opacity: 1;
     color: #202020;
+}
+.login_btn:hover{
+    font-weight: 900;
 }
 .forget{
     color:#0F4C81;
@@ -315,11 +314,14 @@ main{
     border-bottom: solid 1px rgb(119, 116, 116);
 }
 .signUp{
-    color:#4185c0;
-    margin: 10px 0px 5px 0px;
+    color:#bebdbd;
+    margin: 15px 0px 15px 0px;
     text-align: center;
     font-size: 12px;
     
+}
+#signup{
+    display: none;
 }
 .signUp_btn{
     letter-spacing: 1px;
@@ -329,16 +331,17 @@ main{
     line-height: 30px;
     border-radius: 5px;
     cursor: pointer;
-    /* background-color: rgb(240, 232, 232); */
-    background-color: #FFFFFF;
-    opacity: .8;
-    color: #868585;
+    background-color: #525050;
+    opacity: 1;
+    color: #dad6d6;
     margin-bottom: 15px;
+    /* transition: linear .2s; */
 }
 .signUp_btn:hover{
-    background-color: #FFFFFF;
-    opacity: 1;
-    color: #202020;
+    font-weight: 900;
+    /* font-size: 17px; */
+    /* color: #202020; */
+    /* background-color:#e8e8e8 ; */
 }
 
 /* 主操控頁(月計畫) */
@@ -397,7 +400,7 @@ main{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding-bottom: 100px ;
+    /* padding-bottom: 100px ; */
 }
 .month_todo_feacture span{
     display: inline-block;
@@ -572,6 +575,10 @@ main{
     font-size: 2rem;
     line-height: 40px;
 }
+.title_monthyear{
+    font-size: 14px;
+    color: #858383;
+}
 .title_right{
     display: inline-block;
     height: 40px;
@@ -721,6 +728,12 @@ main{
 .weektd:hover{
     background-color: rgb(105, 103, 103);
 }
+.datetd{
+    cursor: pointer;
+}
+.datetd:hover{
+    background-color:  rgb(105, 103, 103);
+}
 .showCalen{
     position: absolute;
     top: 280px;
@@ -736,4 +749,94 @@ main{
     position: absolute;
     top: 170px;
     left: 70%;
+}
+
+/* 首頁 */
+.homepage{
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.aPart{
+    height: 650px;
+    display: flex;
+    scroll-behavior: smooth;
+}
+
+@media(max-width:850px){
+    .aPart{
+        display: block;
+    }
+}
+@media(min-width:500px){
+    .hpIntro{
+        width: 470px;
+    }
+    .hpIntroTitle{
+        font-size: 40px;
+        font-weight: bolder;
+        color: #686767;
+    }
+}
+@media(max-width:500px){
+    .hpIntro{
+        width: 100%;
+        padding: 0px 40px;
+
+    }
+    .hpIntroTitle{
+        font-size: 30px;
+        font-weight: bolder;
+        color: #686767;
+    }
+}
+*{
+    /* border: solid 1px rgb(231, 187, 187); */
+}
+.hpIntro{
+    
+    /* width: 400px; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.hpIntroContent{
+    margin: 10px 0px 20px 0px;
+
+    color: #727170;
+}
+.hpImg{
+    padding: 0px 30px;
+    width: 400px;
+    display: flex;
+    align-items: center;
+    /* margin: 0px 20px; */
+}
+.hpImg img{
+    width: 100%;
+}
+.bPart{
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width:100%;
+    height: 900px;
+    background-color: #2C2C2C;
+}
+.bpartTitle{
+    letter-spacing: 2px;
+    margin: 25px 0px 95px 0px;
+    width: 100%;
+    text-align: center;
+    color: #e8e8e8;
+    font-size: 25px;
+    font-weight: 400;
+    cursor: pointer;
 }

@@ -46,7 +46,7 @@ class RenderWeekLog extends React.Component{
                 iWeek:null
             },
             calenIfShow:false,
-            ifChangeMonth:false
+            ifChangeWeek:false
         };
         this.updateEachDayToDosOfWeek = this.updateEachDayToDosOfWeek.bind(this);
         this.countWeekNum = this.countWeekNum.bind(this);
@@ -98,7 +98,7 @@ class RenderWeekLog extends React.Component{
                 month:month,
                 date:date,
                 weekNum:this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),
-                
+                ifChangeWeek:false
             }
         });
         this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),year,0);
@@ -171,7 +171,8 @@ class RenderWeekLog extends React.Component{
             return{
                 ifShowMore:!ifShowMore,
                 note : oldTitle,
-                moreInfoBoard: moreInfoBoard
+                moreInfoBoard: moreInfoBoard,
+                calenIfShow:false
             }
         })
     }
@@ -561,14 +562,14 @@ class RenderWeekLog extends React.Component{
 
     showInput(){
         return(
-            <div className="month_todo">
+            <div className="month_todo" data-enter={'week'} onKeyDown={this.enterClick}>
                 <span>
                     <input type="checkbox" />
-                    <input type="text" onChange={this.handleNoteChange}/>
+                    <input type="text" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.toggleIfInput}>cancel</span>
-                    <span onClick={this.addThisWeekToDos}>add</span>
+                    <span id="inputWeek" onClick={this.addThisWeekToDos}>add</span>
                 </span>
             </div>
         )
@@ -576,14 +577,14 @@ class RenderWeekLog extends React.Component{
 
     showEachDayInput(i){
         return(
-            <div className="month_todo">
+            <div className="month_todo" data-enter={'week-day'} onKeyDown={this.enterClick}>
                 <span>
                     <input type="checkbox" />
-                    <input className="noScheInput" className="noScheInput" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange}/>
+                    <input className="noScheInput" className="noScheInput" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.turnOffEachDayIfInput}>cancel</span>
-                    <span data-addday={i} onClick={this.addThisDayToDos}>add</span>
+                    <span id="inputWeekDay" data-addday={i} onClick={this.addThisDayToDos}>add</span>
                 </span>
             </div>
         )
@@ -662,28 +663,39 @@ class RenderWeekLog extends React.Component{
         // 然後因為在 componentDidupdate 裡使用 getDBdataInState，state狀態改變後又進入componentDidupdate
         // 因此程式會一直循環印出console.log("Day Update")，database會爆掉
         // console.log(preProps);
-        // console.log("Week Update");
+        
         if(preProps.reRender !== this.props.reRender){
             // this.updateEachDayToDosOfWeek();
+            console.log("Week Update1");
             this.updateEachDayToDosOfWeek();
         }
         if(preProps.btToday !== this.props.btToday){
+            console.log("Week Update2");
             this.backToTodayBtn();
         }
     }
     
+    enterClick(e){
+        let btntype = e.currentTarget.getAttribute("data-enter");
+        if (event.keyCode==13 && btntype=='week-day'){
+            document.getElementById("inputWeekDay").click(); //觸動按鈕的點擊
+        } 
+        if (event.keyCode==13 && btntype=='week'){
+            document.getElementById("inputWeek").click(); //觸動按鈕的點擊
+        } 
+    }
     render(){
         // 此週待辦
         let renderThisWeekTodos = this.state.thisWeekToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
                 <span><input className="checkbox" type="checkbox" data-week={this.state.weekNum} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
                 <span className="month_todo_feacture">
-                    <span><i className="fas fa-angle-double-right" ></i></span>
-                    <span ><i className="fas fa-info-circle" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-arrows-alt" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
+                    <span ><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span><i className="fas fa-trash" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
-        let dayName = ["Mon","Tue","Wen","Thu","Fri","Sat","Sun"];
+        let dayName = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
         // 每日待辦
         let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>
             <div className="week_day" key={index}>
@@ -701,9 +713,9 @@ class RenderWeekLog extends React.Component{
                             <input className="checkbox" type="checkbox" data-title={todo.title} data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} onChange={this.ifDone}></input>
                         {todo.title}</span>
                         <span className="month_todo_feacture">
-                            <span><i className="fas fa-angle-double-right" ></i></span>
-                            <span><i className="fas fa-info-circle" data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
-                            <span><i className="fas fa-arrows-alt" data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
+                            {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
+                            <span><i className="fas fa-pen" data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
+                            <span><i className="fas fa-trash" data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                         </span>
                     </div>)}
             </div>);

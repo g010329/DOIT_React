@@ -86,53 +86,53 @@ class ChangeDateCal extends React.Component{
                         <tbody>
                             {/* <tr>{this.week}</tr> */}
                             <tr>
-                                <td data-value={1-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,1-day)}>{(1-day)>0? 1-day : ''}</td>
-                                <td data-value={2-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,2-day)}>{(2-day)>0? 2-day : ''}</td>
-                                <td data-value={3-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,3-day)}>{(3-day)>0? 3-day : ''}</td>
-                                <td data-value={4-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,4-day)}>{(4-day)>0? 4-day : ''}</td>
-                                <td data-value={5-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,5-day)}>{(5-day)>0? 5-day : ''}</td>
-                                <td data-value={6-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,6-day)}>{(6-day)>0? 6-day : ''}</td>
-                                <td data-value={7-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,7-day)}>{7-day}</td>
+                                <td className="datetd" data-value={1-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,1-day)}>{(1-day)>0? 1-day : ''}</td>
+                                <td className="datetd" data-value={2-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,2-day)}>{(2-day)>0? 2-day : ''}</td>
+                                <td className="datetd" data-value={3-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,3-day)}>{(3-day)>0? 3-day : ''}</td>
+                                <td className="datetd" data-value={4-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,4-day)}>{(4-day)>0? 4-day : ''}</td>
+                                <td className="datetd" data-value={5-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,5-day)}>{(5-day)>0? 5-day : ''}</td>
+                                <td className="datetd" data-value={6-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,6-day)}>{(6-day)>0? 6-day : ''}</td>
+                                <td className="datetd" data-value={7-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,7-day)}>{7-day}</td>
                             </tr>
                             <tr>
-                                <td data-value={8-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,8-day)}>{8-day}</td>
-                                <td data-value={9-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,9-day)}>{9-day}</td>
-                                <td data-value={10-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,10-day)}>{10-day}</td>
-                                <td data-value={11-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,11-day)}>{11-day}</td>
-                                <td data-value={12-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,12-day)}>{12-day}</td>
-                                <td data-value={13-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,13-day)}>{13-day}</td>
-                                <td data-value={14-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,14-day)}>{14-day}</td>
+                                <td className="datetd" data-value={8-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,8-day)}>{8-day}</td>
+                                <td className="datetd" data-value={9-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,9-day)}>{9-day}</td>
+                                <td className="datetd" data-value={10-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,10-day)}>{10-day}</td>
+                                <td className="datetd" data-value={11-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,11-day)}>{11-day}</td>
+                                <td className="datetd" data-value={12-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,12-day)}>{12-day}</td>
+                                <td className="datetd" data-value={13-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,13-day)}>{13-day}</td>
+                                <td className="datetd" data-value={14-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,14-day)}>{14-day}</td>
                             </tr>
                             <tr>
-                                <td data-value={15-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,15-day)}>{15-day}</td>
-                                <td data-value={16-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,16-day)}>{16-day}</td>
-                                <td data-value={17-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,17-day)}>{17-day}</td>
-                                <td data-value={18-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,18-day)}>{18-day}</td>
-                                <td data-value={19-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,19-day)}>{19-day}</td>
-                                <td data-value={20-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,20-day)}>{20-day}</td>
-                                <td data-value={21-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,21-day)}>{21-day}</td>
+                                <td className="datetd" data-value={15-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,15-day)}>{15-day}</td>
+                                <td className="datetd" data-value={16-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,16-day)}>{16-day}</td>
+                                <td className="datetd" data-value={17-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,17-day)}>{17-day}</td>
+                                <td className="datetd" data-value={18-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,18-day)}>{18-day}</td>
+                                <td className="datetd" data-value={19-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,19-day)}>{19-day}</td>
+                                <td className="datetd" data-value={20-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,20-day)}>{20-day}</td>
+                                <td className="datetd" data-value={21-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,21-day)}>{21-day}</td>
                             </tr>
                             <tr>
-                                <td data-value={22-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,22-day)}>{22-day}</td>
-                                <td data-value={23-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,23-day)}>{23-day}</td>
-                                <td data-value={24-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,24-day)}>{24-day}</td>
-                                <td data-value={25-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,25-day)}>{25-day}</td>
-                                <td data-value={26-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,26-day)}>{26-day}</td>
-                                <td data-value={27-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,27-day)}>{27-day}</td>
-                                <td data-value={28-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,28-day)}>{28-day}</td>
+                                <td className="datetd" data-value={22-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,22-day)}>{22-day}</td>
+                                <td className="datetd" data-value={23-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,23-day)}>{23-day}</td>
+                                <td className="datetd" data-value={24-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,24-day)}>{24-day}</td>
+                                <td className="datetd" data-value={25-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,25-day)}>{25-day}</td>
+                                <td className="datetd" data-value={26-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,26-day)}>{26-day}</td>
+                                <td className="datetd" data-value={27-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,27-day)}>{27-day}</td>
+                                <td className="datetd" data-value={28-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,28-day)}>{28-day}</td>
                             </tr>
                             <tr>
-                                <td data-value={29-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,29-day)}>{(29-day)<=calDatesOfMonth? 29-day : ''}</td>
-                                <td data-value={30-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,30-day)}>{(30-day)<=calDatesOfMonth? 30-day : ''}</td>
-                                <td data-value={31-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,31-day)}>{(31-day)<=calDatesOfMonth? 31-day : ''}</td>
-                                <td data-value={32-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,32-day)}>{(32-day)<=calDatesOfMonth? 32-day : ''}</td>
-                                <td data-value={33-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,33-day)}>{(33-day)<=calDatesOfMonth? 33-day : ''}</td>
-                                <td data-value={34-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,34-day)}>{(34-day)<=calDatesOfMonth? 34-day : ''}</td>
-                                <td data-value={35-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,35-day)}>{(35-day)<=calDatesOfMonth? 35-day : ''}</td>
+                                <td className="datetd" data-value={29-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,29-day)}>{(29-day)<=calDatesOfMonth? 29-day : ''}</td>
+                                <td className="datetd" data-value={30-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,30-day)}>{(30-day)<=calDatesOfMonth? 30-day : ''}</td>
+                                <td className="datetd" data-value={31-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,31-day)}>{(31-day)<=calDatesOfMonth? 31-day : ''}</td>
+                                <td className="datetd" data-value={32-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,32-day)}>{(32-day)<=calDatesOfMonth? 32-day : ''}</td>
+                                <td className="datetd" data-value={33-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,33-day)}>{(33-day)<=calDatesOfMonth? 33-day : ''}</td>
+                                <td className="datetd" data-value={34-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,34-day)}>{(34-day)<=calDatesOfMonth? 34-day : ''}</td>
+                                <td className="datetd" data-value={35-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,35-day)}>{(35-day)<=calDatesOfMonth? 35-day : ''}</td>
                             </tr>
                             <tr>
-                                <td data-value={36-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,36-day)}>{(36-day)<=calDatesOfMonth? 36-day : ''}</td>
-                                <td data-value={37-day} onClick={this.changeDate} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,37-day)}>{(37-day)<=calDatesOfMonth? 37-day : ''}</td>
+                                <td className="datetd" data-value={36-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,36-day)}>{(36-day)<=calDatesOfMonth? 36-day : ''}</td>
+                                <td className="datetd" data-value={37-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,37-day)}>{(37-day)<=calDatesOfMonth? 37-day : ''}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

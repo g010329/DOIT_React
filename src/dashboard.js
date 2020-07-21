@@ -52,21 +52,19 @@ class Dashboard extends React.Component{
         let logBtn = e.currentTarget.getAttribute("data-btn");
         let toggleLog = document.getElementById(`${logBtn}`);
         if (logBtn == "month"){
-            if(toggleLog.style.display == "block"){
-                toggleLog.style.display = "none";
-                document.getElementById("week").style.display = "block";
-            }else{
-                toggleLog.style.display = "block";
-                document.getElementById("week").style.display = "none";
-            }
+            toggleLog.style.display = "block";
+            document.getElementById("mbtn").style.backgroundColor='#e8e8e8';
+            document.getElementById("mbtn").style.color='#222222';
+            document.getElementById("week").style.display = "none";
+            document.getElementById("wbtn").style.backgroundColor='#222222';
+            document.getElementById("wbtn").style.color='#c4c1c1';
         }else if (logBtn == "week"){
-            if(toggleLog.style.display == "block"){
-                toggleLog.style.display = "none";
-                document.getElementById("month").style.display = "block";
-            }else{
-                toggleLog.style.display = "block";
-                document.getElementById("month").style.display = "none";
-            }
+            toggleLog.style.display = "block";
+            document.getElementById("month").style.display = "none";
+            document.getElementById("wbtn").style.backgroundColor='#e8e8e8';
+            document.getElementById("wbtn").style.color='#222222';
+            document.getElementById("mbtn").style.backgroundColor='#222222';
+            document.getElementById("mbtn").style.color='#c4c1c1';
         }
         
         console.log(logBtn);
@@ -129,9 +127,9 @@ class Dashboard extends React.Component{
                         <div className="inner2_board">
                         {/* top nav */}
                             <div className="top_nav">
-                                <span className="top_nav_btn" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
-                                <span className="top_nav_btn" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
-                                <span className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
+                                <span id="mbtn" className="top_nav_btn" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
+                                <span id="wbtn" className="top_nav_btn" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
+                                <span id="dbtn" className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
                                 {/* <span className="top_nav_btn" data-btn={"overdue"} onClick={this.toggleBtn}>overdue</span> */}
                             </div>
                             {/* 主控制面板 */}

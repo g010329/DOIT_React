@@ -80,7 +80,8 @@ class RenderDayLog extends React.Component{
             return{
                 year:year,
                 month:month,
-                date:date
+                date:date,
+                ifChangeDate:false
             }
         });
     }
@@ -283,6 +284,7 @@ class RenderDayLog extends React.Component{
 
 
     deleteInDB(bt){
+        console.log('delete');
         let deleteTitle = bt.currentTarget.getAttribute("data-title");
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
         let db = firebase.firestore();
@@ -291,6 +293,7 @@ class RenderDayLog extends React.Component{
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
                     doc.ref.delete().then(()=>{
+                        onsole.log('delete successfully');
                         // 要在db刪除後再setState，否則會抓到db更新前的資料去setState
                         this.setState(preState=>{
                             let thisDayToDos = preState.thisDayToDos;
@@ -300,9 +303,11 @@ class RenderDayLog extends React.Component{
                             }
                         });
                         this.props.reRenderLog();
+                        this.getOverdueFromDB();
                     });
                 })
             });
+        
     }
 
     ifDone(e){
@@ -390,6 +395,7 @@ class RenderDayLog extends React.Component{
         // console.log("Day Update",preProps.reRender,this.props.reRender);
         if(preProps.reRender !== this.props.reRender){
             this.getDBdataInState(this.state.month,this.state.year,this.state.date);
+            this.getOverdueFromDB();
         }
         if(preProps.btToday !== this.props.btToday){
             this.backToTodayBtn();
@@ -439,6 +445,7 @@ class RenderDayLog extends React.Component{
                 ifInput:!ifInput
             };
         });
+        this.getOverdueFromDB();
         
     }
 
@@ -454,16 +461,22 @@ class RenderDayLog extends React.Component{
         });
     }
 
+    enterClick(e){
+        let btntype = e.currentTarget.getAttribute("data-enter");
+        if (event.keyCode==13 && btntype=='day'){
+            document.getElementById("inputDay").click(); //觸動按鈕的點擊
+        } 
+    }
     showInput(){
         return(
-            <div className="month_todo">
+            <div className="month_todo" data-enter={'day'} onKeyDown={this.enterClick}>
                 <span>
                     <input type="checkbox" />
-                    <input type="text" onChange={this.handleNoteChange}/>
+                    <input type="text" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.toggleIfInput}>cancel</span>
-                    <span onClick={this.addThisDayToDos}>add</span>
+                    <span id="inputDay" onClick={this.addThisDayToDos}>add</span>
                 </span>
             </div>
         )
@@ -507,21 +520,21 @@ class RenderDayLog extends React.Component{
     }
     render(){
         let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>
-        <div className="month_todo" key={index}>
-            <span><input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
-            <span className="month_todo_feacture">
-                <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
-                <span ><i className="fas fa-info-circle" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                <span><i className="fas fa-arrows-alt"></i></span>
-            </span>
-        </div>);
+            <div className="month_todo" key={index}>
+                <span><input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
+                <span className="month_todo_feacture">
+                    {/* <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span> */}
+                    <span ><i className="fas fa-pen" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span><i className="fas fa-trash" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                </span>
+            </div>);
         let overdue = this.state.overdue.map((todo,index)=>
             <div className="month_todo"  key={index}>
                 <span><input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.overdueIfDone}></input>{todo.title}</span>
                 <span className="month_todo_feacture">
-                    <span><i className="fas fa-angle-double-right" ></i></span>
-                    <span ><i className="fas fa-info-circle" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-arrows-alt" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
+                    <span ><i className="fas fa-pen" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span><i className="fas fa-trash" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>
         );
@@ -530,7 +543,7 @@ class RenderDayLog extends React.Component{
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className="today_board">
             <div className="month_title">
-                <span className="title_month">Today {this.state.month+1}/{this.state.date}</span>
+                <span className="title_month">{this.state.month+1}/{this.state.date}</span>
                 <span className="title_right">
                     <span><i className="fas fa-calendar" onClick={this.ifChangeDate}></i></span>
                     <span><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>

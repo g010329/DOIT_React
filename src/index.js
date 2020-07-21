@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route, Link,Redirect } from "react-router-dom";
 import Login from "./login.js";
 import Dashboard from "./dashboard.js";
-import Calendar from "./calendar.js";
+// import Homepage from "./homepage.js";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
@@ -156,10 +156,12 @@ class App extends React.Component {
         }else{    
             return <div>
                 <Redirect to ="/"/>
-                <Route exact path="/">
-                    {/* <Calendar/> */}
+                {/* <Route exact path="/">
+                    <Homepage/>
+                </Route>   */}
+                <Route path="/">
                     <Login toggleSignIn={this.toggleSignIn.bind(this)} handleSignUp={this.handleSignUp.bind(this)}/>
-                </Route>  
+                </Route>
             </div>
         }
         

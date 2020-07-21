@@ -242,6 +242,7 @@ class RenderMonthLog extends React.Component{
         // console.log(this.state.year,this.state.month,id);
         this.setState(preState=>{
             let ifShowMore = preState.ifShowMore;
+            let calenIfShow = preState.calenIfShow;
             let moreInfoBoard = preState.moreInfoBoard;
             moreInfoBoard.oldTitle = oldTitle;
             moreInfoBoard.index = index;
@@ -254,7 +255,8 @@ class RenderMonthLog extends React.Component{
             return{
                 ifShowMore: !ifShowMore,
                 note : oldTitle,
-                moreInfoBoard: moreInfoBoard
+                moreInfoBoard: moreInfoBoard,
+                calenIfShow: false
             }
         })
     }
@@ -449,12 +451,13 @@ class RenderMonthLog extends React.Component{
             // 將該月未安排日期事項存入DB
             this.addToDB(thing, year, month, 0, 0);
             // console.log(list);
-            
+            this.props.reRenderLog();
             return{
                 thisMonthToDos:thisMonthToDos,
                 note:"",
                 ifInput:!ifInput
             };
+            
         });
     }
     deleteInDB(bt){
@@ -520,15 +523,15 @@ class RenderMonthLog extends React.Component{
     }
     showEachDateInput(i){
         return(
-        <div className="month_todo addmd" >
-                <span>
-                    <input className="addmd_input" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange}/>
-                </span>
-                <span className="month_todo_feacture">
-                    <span onClick={this.turnOffEachDayIfInput}>cancel</span>
-                    <span data-addday={i} onClick={this.addThisDayToDos} >add</span>
-                </span>
-            </div>
+        <div className="month_todo addmd" data-enter={'month-date'} onKeyDown={this.enterClick}>
+            <span>
+                <input  className="addmd_input" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
+            </span>
+            <span className="month_todo_feacture">
+                <span onClick={this.turnOffEachDayIfInput}>cancel</span>
+                <span id="inputMonthDate" data-addday={i} onClick={this.addThisDayToDos} >add</span>
+            </span>
+        </div>
         )
     }
 
@@ -541,6 +544,8 @@ class RenderMonthLog extends React.Component{
                 date: new Date().getDate(),
             }
         })
+        this.updateEachDayToDos();
+        this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),0);
         this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),new Date().getDate());
     }
 
@@ -597,12 +602,14 @@ class RenderMonthLog extends React.Component{
     componentDidUpdate(preProps){
         
         if(preProps.reRender !== this.props.reRender){
-            // console.log("Month Update");
+            console.log("Month Update");
             this.updateEachDayToDos();
         }
         // console.log(preProps.btToday,this.props.btToday);
         if(preProps.btToday !== this.props.btToday){
             this.backToTodayBtn();
+            console.log("Month Update2");
+            // this.updateEachDayToDos();
         }
         // console.log(`Forward${year}/${month}`);
         // console.log(`${this.state.year}/${this.state.month+1}=>${this.state.daysOfMonth}`);
@@ -626,16 +633,15 @@ class RenderMonthLog extends React.Component{
     }
     showInput(){
         return(
-        <div className="month_todo" >
-                <span>
-                    <input className="checkbox" type="checkbox"/>
-                    <input className="noScheInput" type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange}/>
-                </span>
-                <span className="month_todo_feacture">
-                    <span onClick={this.toggleIfInput}>cancel</span>
-                    <span onClick={this.addThisMonthToDos}>add</span>
-                </span>
-            </div>
+        <div className="month_todo" data-enter={'month'} onKeyDown={this.enterClick}>
+            <span>
+                <input className="noScheInput"  type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange} autoFocus/>
+            </span>
+            <span className="month_todo_feacture">
+                <span onClick={this.toggleIfInput}>cancel</span>
+                <span id="inputMonthDate" onClick={this.addThisMonthToDos}>add</span>
+            </span>
+        </div>
         )
     }
     
@@ -645,6 +651,15 @@ class RenderMonthLog extends React.Component{
         let x = document.getElementById("testHeight");
         x.style.height = 'auto';
         x.style.height = x.scrollHeight + "px";
+    }
+    enterClick(e){
+        let btntype = e.currentTarget.getAttribute("data-enter");
+        if (event.keyCode==13 && btntype=='month-date'){
+            document.getElementById("inputMonthDate").click(); //觸動按鈕的點擊
+        } 
+        if (event.keyCode==13 && btntype=='month'){
+            document.getElementById("inputMonth").click(); //觸動按鈕的點擊
+        } 
     }
     render(){
         // console.log(`${this.state.year}/${this.state.month}`);
@@ -656,9 +671,9 @@ class RenderMonthLog extends React.Component{
             <div className="month_todo" key={index}>
             <span><input className="checkbox" type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
             <span className="month_todo_feacture">
-                <span><i className="fas fa-angle-double-right" ></i></span>
-                <span ><i className="fas fa-info-circle" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                <span><i className="fas fa-arrows-alt" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
+                <span ><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                <span><i className="fas fa-trash" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
             </span>
         </div>);
         // render 每日事項
@@ -685,7 +700,10 @@ class RenderMonthLog extends React.Component{
         {this.state.ifChangeMonth?<ChangeMonthCal changeMonth={this.changeMonth.bind(this)}/>:''}
         {/* 月-標題 */}
         <div className="month_title">
-            <span className="title_month">{eachMonth[this.state.month]}</span>
+            <span>
+                <span className="title_month">{eachMonth[this.state.month] }</span>
+                <span className="title_monthyear"> &nbsp; of {this.state.year}</span>
+            </span>
             <span className="title_right">
                 <span><i className="fas fa-calendar" onClick={this.ifChangeMonth}></i></span>
                 <span><i className="fas fa-angle-left"  value="-" onClick={this.handleMonthBackward}></i></span>
@@ -693,6 +711,7 @@ class RenderMonthLog extends React.Component{
                 <span><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
             </span>
         </div>
+        
         {/* 月-未安排事項 */}
         <div className="month_todos">
             {this.state.ifInput? this.showInput() : ''}
