@@ -92,17 +92,24 @@ class RenderWeekLog extends React.Component{
         })
     }
     changeWeek(year,month,date,week){
-        this.setState(preState=>{
-            return{
-                year:year,
-                month:month,
-                date:date,
-                weekNum:this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),
-                ifChangeWeek:false
-            }
-        });
-        this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),year,0);
-        this.updateEachDayToDosOfWeek();
+        console.log(year,month,date,week);
+        if(date<1){
+            
+            return;
+        }else{
+            this.setState(preState=>{
+                return{
+                    year:year,
+                    month:month,
+                    date:date,
+                    weekNum:this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),
+                    ifChangeWeek:false
+                }
+            });
+            this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),year,0);
+            this.updateEachDayToDosOfWeek();
+        }
+        
     }
     showCalen(){
         console.log('showCalen')
@@ -127,10 +134,14 @@ class RenderWeekLog extends React.Component{
     }
     calenUpdateTime(year,month,date,week){
         console.log('calenUpdateTime',year,month,date);
-        
-        this.setState(preState=>{
-            let moreInfoBoard = preState.moreInfoBoard;
-            // if(0<date && date<=this.state.daysOfMonth){
+        if(date<1){
+            //bug
+            // return;
+        }if(date>new Date(year,month+1,0).getDate()){
+            return;
+        }else{
+            this.setState(preState=>{
+                let moreInfoBoard = preState.moreInfoBoard;
                 moreInfoBoard.iYear = year;
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
@@ -144,19 +155,22 @@ class RenderWeekLog extends React.Component{
                 
                 console.log('calenUpdateTime',moreInfoBoard);
                 return{
-                    moreInfoBoard:moreInfoBoard
+                    moreInfoBoard:moreInfoBoard,
+                    calenIfShow:false
                 } 
-            // }
-        })
+            })
+        }
+        
     }
     toggleIfShowMore(e){
         // console.log(e.currentTarget.getAttribute("data-index"));
         let oldTitle = e.currentTarget.getAttribute("data-title");
         let id = e.currentTarget.getAttribute("data-id");
-        console.log(e.currentTarget.getAttribute("data-id"));
         let index = e.currentTarget.getAttribute("data-index");
         let innerIndex = e.currentTarget.getAttribute("data-innerindex");
-        
+        let month = e.currentTarget.getAttribute("data-month");
+        let date = e.currentTarget.getAttribute("data-date");
+        console.log(month,date);
         this.setState(preState=>{
             let ifShowMore = preState.ifShowMore;
             let moreInfoBoard = preState.moreInfoBoard;
@@ -165,9 +179,21 @@ class RenderWeekLog extends React.Component{
             moreInfoBoard.innerIndex = innerIndex;
             moreInfoBoard.id = id;
             moreInfoBoard.iYear = this.state.year;
-            moreInfoBoard.iMonth = this.state.month;
-            moreInfoBoard.iWeek = this.state.weekNum;
-            // console.log(moreInfoBoard);
+            
+            if (month!=null){
+                moreInfoBoard.iMonth = parseInt(month);
+                moreInfoBoard.iWeek = 0;
+            }
+            if(date != null){
+                moreInfoBoard.iDate = parseInt(date);
+                moreInfoBoard.iWeek = 0;
+            }
+            else{
+                moreInfoBoard.iWeek = this.state.weekNum;
+            }
+            // moreInfoBoard.iMonth = this.state.month;
+            
+            console.log(moreInfoBoard);
             return{
                 ifShowMore:!ifShowMore,
                 note : oldTitle,
@@ -177,6 +203,11 @@ class RenderWeekLog extends React.Component{
         })
     }
     showMoreInfo(){
+        console.log(this.state.moreInfoBoard);
+        let showScheTime1 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
+        let showScheTime2 = <span>{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
+        let showScheTime3 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
+        
         return(
             <div id="moreInfo" className="bt_moreInfo_board">
                 <div className="infoflex">
@@ -185,18 +216,21 @@ class RenderWeekLog extends React.Component{
                         {/* <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
                     <div>
-                        <div className="info"><i className="fas fa-check-square"></i>
-                            <span>task</span></div>
+                        {/* <div className="info"><i className="fas fa-check-square"></i>
+                            <span>task</span></div> */}
                         <div className="info" onClick={this.showCalen}><i className="fas fa-calendar"></i>
-                            <span>week {this.state.moreInfoBoard.iWeek} of {this.state.moreInfoBoard.iYear}</span></div>
-                        <div className="info"><i className="fas fa-list-ul"></i>
-                            <span>add to list</span></div>
+                            {((this.state.moreInfoBoard.iDate==null || this.state.moreInfoBoard.iDate==0) && this.state.moreInfoBoard.iWeek==0)? showScheTime1:''}
+                            {this.state.moreInfoBoard.iWeek!=0 && (this.state.moreInfoBoard.iDate==0 || this.state.moreInfoBoard.iDate==null)? showScheTime2:''}
+                            {((this.state.moreInfoBoard.iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
+                        </div>
+                        {/* <div className="info"><i className="fas fa-list-ul"></i>
+                            <span>add to list</span></div> */}
                     </div>
                 </div>
                 <div>
                     <span onClick={this.toggleIfShowMore}>cancel</span>
                     <span onClick={this.adjustTodo}>save</span>
-                    <i className="fas fa-trash-alt"></i>
+                    {/* <i className="fas fa-trash-alt"></i> */}
                 </div>
             </div>
         )
@@ -279,7 +313,9 @@ class RenderWeekLog extends React.Component{
         ref.where("week","==",this.state.weekNum).where("year","==",this.state.year).where("title","==",deleteTitle)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
-                    doc.ref.delete();
+                    doc.ref.delete().then(()=>{
+                        this.props.reRenderLog();
+                    })
                 })
             });
         this.setState(preState=>{
@@ -289,7 +325,6 @@ class RenderWeekLog extends React.Component{
                 thisWeekToDos:thisWeekToDos
             }
         });
-        this.props.reRenderLog();
     }
 
     ifDone(e){
@@ -357,7 +392,9 @@ class RenderWeekLog extends React.Component{
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
                     // console.log(doc.data());
-                    doc.ref.delete();
+                    doc.ref.delete().then(()=>{
+                        this.props.reRenderLog();
+                    });
                 })
             });
         // console.log(deleteIndex);
@@ -369,6 +406,7 @@ class RenderWeekLog extends React.Component{
                 eachDayToDos:eachDayToDos
             }
         });
+        
     }
     
     handleNoteChange(e){
@@ -410,6 +448,8 @@ class RenderWeekLog extends React.Component{
             type: "task",
             isDone: false,
             overdue: false           
+        }).then(()=>{
+            this.props.reRenderLog();
         });
         // console.log('add');
     }
@@ -487,7 +527,6 @@ class RenderWeekLog extends React.Component{
             
             // 因為已經將月份日期存入eachDayToDos[]陣列裡，可以透過點擊index取出月份日期，再存入DB
             this.addToDB(thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
-            this.props.reRenderLog();
             return{
                 eachDayToDos:eachDayToDos,
                 note:""
@@ -667,6 +706,7 @@ class RenderWeekLog extends React.Component{
         if(preProps.reRender !== this.props.reRender){
             // this.updateEachDayToDosOfWeek();
             console.log("Week Update1");
+            this.setWeekNum();
             this.updateEachDayToDosOfWeek();
         }
         if(preProps.btToday !== this.props.btToday){
@@ -702,7 +742,7 @@ class RenderWeekLog extends React.Component{
                 <div className="week_day_a">
                     <span className="week_day_title">{eachday.month+1}月{eachday.date}日</span>
                     <span className="week_day_title">{dayName[index]}</span>
-                    <span className="w_add_bt" data-addindex={index} onClick={this.toggleEachDayIfInput}>+</span>
+                    <span className="w_add_bt" data-addindex={index} data-month={eachday.month} data-date={eachday.date} onClick={this.toggleEachDayIfInput}>+</span>
                 </div>
                 {/* 每日新增todo */}
                 {eachday.ifInput? this.showEachDayInput(index) : ''}
@@ -714,8 +754,8 @@ class RenderWeekLog extends React.Component{
                         {todo.title}</span>
                         <span className="month_todo_feacture">
                             {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
-                            <span><i className="fas fa-pen" data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
-                            <span><i className="fas fa-trash" data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
+                            <span><i className="fas fa-pen" data-id={todo.id} data-title={todo.title} data-index={index} data-month={eachday.month} data-date={eachday.date} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
+                            <span><i className="fas fa-trash" data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                         </span>
                     </div>)}
             </div>);
@@ -734,15 +774,15 @@ class RenderWeekLog extends React.Component{
 
         // console.log(this.state.eachDayToDos);
         return <div id="week" className="left_board">
-            {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)}/>:''}
-            {this.state.ifChangeWeek?<ChangeWeekCal changeWeek={this.changeWeek.bind(this)}/>:''}
+            {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
+            {this.state.ifChangeWeek?<ChangeWeekCal changeWeek={this.changeWeek.bind(this)} weekNum={this.state.weekNum}/>:''}
             <div className="month_title">
                 <span className="title_month">Week {this.state.weekNum}</span>
                 <span className="title_right">
-                    <span><i className="fas fa-calendar" onClick={this.ifChangeWeek}></i></span>
-                    <span><i className="fas fa-angle-left" onClick={this.handleWeekBackward}></i></span>
-                    <span><i className="fas fa-angle-right" onClick={this.handleWeekForward}></i></span>
-                    <span><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-calendar" onClick={this.ifChangeWeek}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-angle-left" onClick={this.handleWeekBackward}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-angle-right" onClick={this.handleWeekForward}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
                 </span>
             </div>
             <div className="month_todos">

@@ -28,7 +28,7 @@ class RenderDayLog extends React.Component{
                 iDate:null
             },
             overdue:[
-                {"id":'dn1k3ednklwjebd',"title":'zzz',"ifDone":false,"year":2020,"month":5,"date":15}
+                // {"id":'dn1k3ednklwjebd',"title":'zzz',"ifDone":false,"year":2020,"month":5,"date":15}
             ],
             calenIfShow:false,
             ifChangeDate:false
@@ -75,15 +75,23 @@ class RenderDayLog extends React.Component{
         return weekNo;
     }
     changeDate(year,month,date){
-        this.setState(preState=>{
-            this.getDBdataInState(month,year,date);
-            return{
-                year:year,
-                month:month,
-                date:date,
-                ifChangeDate:false
-            }
-        });
+        console.log(year,month,date);
+        if(date<1){
+            return;
+        }
+        if(date>new Date(year,month+1,0).getDate()){
+            return;
+        }else{
+            this.setState(preState=>{
+                this.getDBdataInState(month,year,date);
+                return{
+                    year:year,
+                    month:month,
+                    date:date,
+                    ifChangeDate:false
+                }
+            });
+        }
     }
     ifChangeDate(){
         this.setState(preState=>{
@@ -97,10 +105,14 @@ class RenderDayLog extends React.Component{
 
     calenUpdateTime(year,month,date,week){
         console.log('calenUpdateTime',year,month,date);
-        
-        this.setState(preState=>{
-            let moreInfoBoard = preState.moreInfoBoard;
-            // if(0<date && date<=this.state.daysOfMonth){
+        if(date<0){
+            //bug
+            return;
+        }if(date>new Date(year,month+1,0).getDate()){
+            return;
+        }else{
+            this.setState(preState=>{
+                let moreInfoBoard = preState.moreInfoBoard;
                 moreInfoBoard.iYear = year;
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
@@ -113,10 +125,11 @@ class RenderDayLog extends React.Component{
                 moreInfoBoard.iWeek = week;
                 console.log('calenUpdateTime',moreInfoBoard);
                 return{
-                    moreInfoBoard:moreInfoBoard
+                    moreInfoBoard:moreInfoBoard,
+                    calenIfShow:false
                 } 
-            // }
-        })
+            })
+        }
     }
     showCalen(){
         console.log('showCalen')
@@ -156,7 +169,8 @@ class RenderDayLog extends React.Component{
                         ifDone: doc.data().isDone,
                         year: doc.data().year,
                         month: doc.data().month,
-                        date: doc.data().date
+                        date: doc.data().date,
+                        week: null
                     });
                 })
                 this.setState({
@@ -175,7 +189,8 @@ class RenderDayLog extends React.Component{
                         ifDone: doc.data().isDone,
                         year: doc.data().year,
                         month: doc.data().month,
-                        date: doc.data().date
+                        date: doc.data().date,
+                        week: null
                     });
                 })
                 this.setState({
@@ -194,7 +209,8 @@ class RenderDayLog extends React.Component{
                     ifDone: doc.data().isDone,
                     year: doc.data().year,
                     month: doc.data().month,
-                    date: doc.data().date
+                    date: doc.data().date,
+                    week: null
                 });
             })
             this.setState({
@@ -205,27 +221,57 @@ class RenderDayLog extends React.Component{
     }
 
     toggleIfShowMore(e){
+        let type = e.currentTarget.getAttribute("data-type");
         let oldTitle = e.currentTarget.getAttribute("data-title");
         let index = e.currentTarget.getAttribute("data-index");
-        // console.log(oldTitle,index);
-        this.setState(preState=>{
-            let ifShowMore = preState.ifShowMore;
-            let thisDayToDos = preState.thisDayToDos;
-            let moreInfoBoard = preState.moreInfoBoard;
-            moreInfoBoard.oldTitle = oldTitle;
-            moreInfoBoard.index = index;
-            moreInfoBoard.iYear = this.state.year;
-            moreInfoBoard.iMonth = this.state.month;
-            moreInfoBoard.iDate = this.state.date;
-            console.log(moreInfoBoard);
-            return{
-                ifShowMore: !ifShowMore,
-                note:oldTitle,
-                moreInfoBoard:moreInfoBoard
-            }
-        })
+        let year = e.currentTarget.getAttribute("data-year");
+        let month = e.currentTarget.getAttribute("data-month");
+        let date = e.currentTarget.getAttribute("data-date");
+        let week = e.currentTarget.getAttribute("data-week");
+        console.log(year,month,date);
+        console.log(type);
+        if(type=='overdue'){
+            this.setState(preState=>{
+                let ifShowMore = preState.ifShowMore;
+                let moreInfoBoard = preState.moreInfoBoard;
+                moreInfoBoard.oldTitle = oldTitle;
+                moreInfoBoard.index = index;
+                moreInfoBoard.iYear = parseInt(year);
+                moreInfoBoard.iMonth = parseInt(month);
+                moreInfoBoard.iDate = parseInt(date);
+                moreInfoBoard.iWeek = week;
+                console.log(moreInfoBoard);
+                return{
+                    ifShowMore: !ifShowMore,
+                    note:oldTitle,
+                    moreInfoBoard:moreInfoBoard,
+                    calenIfShow:false
+                }
+            })
+        }else{
+            this.setState(preState=>{
+                let ifShowMore = preState.ifShowMore;
+                let moreInfoBoard = preState.moreInfoBoard;
+                moreInfoBoard.oldTitle = oldTitle;
+                moreInfoBoard.index = index;
+                moreInfoBoard.iYear = this.state.year;
+                moreInfoBoard.iMonth = this.state.month;
+                moreInfoBoard.iDate = this.state.date;
+                console.log(moreInfoBoard);
+                return{
+                    ifShowMore: !ifShowMore,
+                    note:oldTitle,
+                    moreInfoBoard:moreInfoBoard,
+                    calenIfShow:false
+                }
+            })
+        }
     }
     showMoreInfo(){
+        console.log('showMoreInfo',this.state.moreInfoBoard);
+        let showScheTime1 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
+        let showScheTime2 = <span>{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
+        let showScheTime3 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
         return(
             <div id="moreInfo" className="bt_moreInfo_board">
                 <div className="infoflex">
@@ -234,18 +280,21 @@ class RenderDayLog extends React.Component{
                         {/* <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
                     <div>
-                        <div className="info"><i className="fas fa-check-square"></i>
-                            <span>task</span></div>
+                        {/* <div className="info"><i className="fas fa-check-square"></i>
+                            <span>task</span></div> */}
                         <div className="info" onClick={this.showCalen}><i className="fas fa-calendar"></i>
-                            <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span></div>
-                        <div className="info"><i className="fas fa-list-ul"></i>
-                            <span>add to list</span></div>
+                            {this.state.moreInfoBoard.iDate==null || this.state.moreInfoBoard.iDate==0 && (this.state.moreInfoBoard.iWeek==0 || this.state.moreInfoBoard.iWeek==null)? showScheTime1:''}
+                            {((this.state.moreInfoBoard.iWeek!=0 || this.state.moreInfoBoard.iWeek!=null) && this.state.moreInfoBoard.iDate==0)? showScheTime2:''}
+                            {((this.state.moreInfoBoard.iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
+                        </div>
+                        {/* <div className="info"><i className="fas fa-list-ul"></i>
+                            <span>add to list</span></div> */}
                     </div>
                 </div>
                 <div>
                     <span onClick={this.toggleIfShowMore}>cancel</span>
                     <span onClick={this.adjustTodo}>save</span>
-                    <i className="fas fa-trash-alt"></i>
+                    {/* <i className="fas fa-trash-alt"></i> */}
                 </div>
             </div>
         )
@@ -287,13 +336,35 @@ class RenderDayLog extends React.Component{
         console.log('delete');
         let deleteTitle = bt.currentTarget.getAttribute("data-title");
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
+        let dataId = bt.currentTarget.getAttribute("data-id");
+        let dataType = bt.currentTarget.getAttribute("data-type");
+        // console.log(deleteTitle,deleteIndex,this.state.month ,this.state.year,this.state.date);
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",deleteTitle)
+        if(dataType == 'overdue'){
+            // console.log('overdue')
+            ref.doc(dataId).delete().then(()=>{
+                console.log('overdue刪除成功');
+                this.props.reRenderLog();
+                this.getDBdataInState(this.state.month,this.state.year,this.state.date);
+                this.setState(preState=>{
+                    let overdue = preState.overdue;
+                    overdue.splice(deleteIndex,1);
+                    return{
+                        overdue:overdue
+                    }
+                });
+                
+            })
+        }else{
+            // console.log('day');
+            ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",deleteTitle)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
                     doc.ref.delete().then(()=>{
-                        onsole.log('delete successfully');
+                        console.log('日刪除成功');
+                        this.props.reRenderLog();
+                        this.getOverdueFromDB();
                         // 要在db刪除後再setState，否則會抓到db更新前的資料去setState
                         this.setState(preState=>{
                             let thisDayToDos = preState.thisDayToDos;
@@ -302,11 +373,13 @@ class RenderDayLog extends React.Component{
                                 thisDayToDos:thisDayToDos
                             }
                         });
-                        this.props.reRenderLog();
-                        this.getOverdueFromDB();
+                        
                     });
                 })
             });
+        }
+        
+        
         
     }
 
@@ -524,8 +597,8 @@ class RenderDayLog extends React.Component{
                 <span><input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
                 <span className="month_todo_feacture">
                     {/* <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span> */}
-                    <span ><i className="fas fa-pen" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-trash" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    <span ><i className="fas fa-pen" data-type={'date'} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span><i className="fas fa-trash" data-type={'day'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
         let overdue = this.state.overdue.map((todo,index)=>
@@ -533,22 +606,22 @@ class RenderDayLog extends React.Component{
                 <span><input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.overdueIfDone}></input>{todo.title}</span>
                 <span className="month_todo_feacture">
                     {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
-                    <span ><i className="fas fa-pen" data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-trash" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    <span ><i className="fas fa-pen" data-type={'overdue'} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span><i className="fas fa-trash" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>
         );
         return <div className="right_board">
-        {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)}/>:''}
+        {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className="today_board">
             <div className="month_title">
                 <span className="title_month">{this.state.month+1}/{this.state.date}</span>
                 <span className="title_right">
-                    <span><i className="fas fa-calendar" onClick={this.ifChangeDate}></i></span>
-                    <span><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>
-                    <span><i className="fas fa-angle-right" onClick={this.handleDateForward}></i></span>
-                    <span><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-calendar" onClick={this.ifChangeDate}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-angle-right" onClick={this.handleDateForward}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
                 </span>
             </div>
             {this.state.ifInput? this.showInput() : ''}

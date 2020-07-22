@@ -6,19 +6,19 @@ class Calendar extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            calenType: 'week', // 種類month week day 
+            calenType: 'day', // 種類month week day 
             //年曆
             yCalYear: 2020, 
             //日曆
             calYear: new Date().getFullYear(),
             calMonth: new Date().getMonth(),
             calFirstDateDay: new Date(`${new Date().getFullYear()}-${new Date().getMonth()+1}-1`).getDay(), //1~7
-            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth(),0).getDate(), //28~31
+            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //28~31
             //週曆
             wCalYear: new Date().getFullYear(),
             wCalMonth: new Date().getMonth(),
-            wCalDate:15,
-            wCalWeek:28,
+            // wCalDate:15,
+            // wCalWeek:28,
         };
         // ----
         this.calMonthForward = this.calMonthForward.bind(this);
@@ -31,6 +31,8 @@ class Calendar extends React.Component{
         //
         this.setCalenType = this.setCalenType.bind(this);
         this.getWeekNumber= this.getWeekNumber.bind(this);
+        //
+        this.countWeekNum = this.countWeekNum.bind(this);
     }
     yCalYearForward(){
         this.setState(preState=>{
@@ -70,6 +72,14 @@ class Calendar extends React.Component{
                 }
             }
         })
+    }
+    countWeekNum(d){
+        //算出今日是第幾週 d=new Date("2020-05-02")
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        return weekNo;
     }
     calMonthBackward(){
         this.setState(preState=>{
@@ -244,7 +254,7 @@ class Calendar extends React.Component{
         let wCalen = <div className="calentype">
                 <div className="calenTitle">
                     <div onClick={this.calMonthBackward}><i className="fas fa-angle-left"></i></div>
-                    <div>{eachMonth[this.state.calMonth]} {this.state.calYear}</div>
+                    <div>{eachMonth[this.state.calMonth]} {this.state.calYear} week{this.countWeekNum(new Date(`${this.props.year}-${this.props.month+1}-${this.props.date}`))}</div>
                     <div onClick={this.calMonthForward}><i className="fas fa-angle-right"></i></div>
                 </div>
                 <div className="calenBoard">

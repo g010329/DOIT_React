@@ -9,11 +9,10 @@ class ChangeWeekCal extends React.Component{
             calYear: new Date().getFullYear(),
             calMonth: new Date().getMonth(),
             calFirstDateDay: new Date(`${new Date().getFullYear()}-${new Date().getMonth()+1}-1`).getDay(), //1~7
-            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth(),0).getDate(), //28~31
+            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //28~31
             wCalYear: new Date().getFullYear(),
-            wCalMonth: new Date().getMonth(),
-            wCalDate:15,
-            wCalWeek:28,
+            wCalMonth: new Date().getMonth()
+            
         };
         this.calMonthForward = this.calMonthForward.bind(this);
         this.calMonthBackward = this.calMonthBackward.bind(this);
@@ -66,12 +65,15 @@ class ChangeWeekCal extends React.Component{
 
     render(){
         let day = this.state.calFirstDateDay-1;
+        if(day==-1){
+            day=6;
+        }
         let calDatesOfMonth = this.state.calDatesOfMonth;
         let eachMonth = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        let wCalen = <div className="wcalentype">
+        let wCalen = <div className="calentype">
                 <div className="calenTitle">
                 <div onClick={this.calMonthBackward}><i className="fas fa-angle-left"></i></div>
-                <div>{eachMonth[this.state.calMonth]} {this.state.calYear}</div>
+                <div>{eachMonth[this.state.calMonth]} {this.state.calYear} week{this.props.weekNum}</div>
                 <div onClick={this.calMonthForward}><i className="fas fa-angle-right"></i></div>
             </div>
                 <div className="calenBoard">
@@ -90,13 +92,13 @@ class ChangeWeekCal extends React.Component{
                     <tbody>
                         {/* <tr>{this.week}</tr> */}
                         <tr>
-                            <td onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,1-day,999)}>{(1-day)>0? 1-day : ''}</td>
+                            <td className="weektd" data-value={1-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,1-day,999)}>{(1-day)>0? 1-day : ''}</td>
                             <td className="darktd">{(2-day)>0? 2-day : ''}</td>
                             <td className="darktd">{(3-day)>0? 3-day : ''}</td>
                             <td className="darktd">{(4-day)>0? 4-day : ''}</td>
                             <td className="darktd">{(5-day)>0? 5-day : ''}</td>
                             <td className="darktd">{(6-day)>0? 6-day : ''}</td>
-                            <td className="darktd">{7-day}</td>
+                            <td className="darktd">{(7-day)>0? 7-day : ''}</td>
                         </tr>
                         <tr>
                             <td className="weektd" data-value={8-day} onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,8-day,999)}>{8-day}</td>

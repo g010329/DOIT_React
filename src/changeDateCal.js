@@ -9,7 +9,7 @@ class ChangeDateCal extends React.Component{
             calYear: new Date().getFullYear(),
             calMonth: new Date().getMonth(),
             calFirstDateDay: new Date(`${new Date().getFullYear()}-${new Date().getMonth()+1}-1`).getDay(), //1~7
-            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth(),0).getDate(), //28~31
+            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //28~31
         };
         this.calMonthForward = this.calMonthForward.bind(this);
         this.calMonthBackward = this.calMonthBackward.bind(this);
@@ -46,8 +46,8 @@ class ChangeDateCal extends React.Component{
                 return{
                     calYear: calYear-1,
                     calMonth: 11,
-                    calDatesOfMonth: new Date(calYear-1,1,0).getDate(),
-                    calFirstDateDay: new Date(`${calYear-1}-1-1`).getDay()
+                    calDatesOfMonth: new Date(calYear-1,12,0).getDate(),
+                    calFirstDateDay: new Date(`${calYear-1}-12-1`).getDay()
                 }
             }else{
                 // console.log(calYear,calMonth-1,new Date(calYear,calMonth-1,0).getDate());
@@ -62,6 +62,10 @@ class ChangeDateCal extends React.Component{
 
     render(){
         let day = this.state.calFirstDateDay-1;
+        if(day==-1){
+            day=6;
+        }
+        console.log(day,this.state.calFirstDateDay);
         let calDatesOfMonth = this.state.calDatesOfMonth;
         let eachMonth = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         let mCalen = <div className="calentype">
@@ -92,7 +96,7 @@ class ChangeDateCal extends React.Component{
                                 <td className="datetd" data-value={4-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,4-day)}>{(4-day)>0? 4-day : ''}</td>
                                 <td className="datetd" data-value={5-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,5-day)}>{(5-day)>0? 5-day : ''}</td>
                                 <td className="datetd" data-value={6-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,6-day)}>{(6-day)>0? 6-day : ''}</td>
-                                <td className="datetd" data-value={7-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,7-day)}>{7-day}</td>
+                                <td className="datetd" data-value={7-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,7-day)}>{(7-day)>0? 7-day : ''}</td>
                             </tr>
                             <tr>
                                 <td className="datetd" data-value={8-day} onClick={()=>this.props.changeDate(this.state.calYear,this.state.calMonth,8-day)}>{8-day}</td>

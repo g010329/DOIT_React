@@ -75,7 +75,7 @@ class Dashboard extends React.Component{
             <header>
                 <div>
                     <span onClick={this.toggleNav} className="top_nav_logo"><i className="fas fa-bars"></i></span>
-                    <span className="bulletword">Bullet</span>
+                    <span className="bulletword">DOIT</span>
                     <span><i className="fas fa-bolt"></i></span>
                     
                 </div>
