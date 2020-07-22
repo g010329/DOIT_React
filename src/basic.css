@@ -9,6 +9,10 @@
     font-family: Roboto,sans-serif;
 }
 
+.hint{
+    color: #a7a8a8;
+    font-size: 12px;
+}
 /* 單一事件控制面板 */
 .info i{
     cursor: pointer;

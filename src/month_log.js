@@ -121,13 +121,14 @@ class RenderMonthLog extends React.Component{
         })
     }
     calenUpdateTime(year,month,date,week){
-        console.log('calenUpdateTime',year,month,date);
+        console.log('calenUpdateTime',year,month,date,week);
         if(date<1){
-            //bug
-            // return;
-        }if(date>new Date(year,month+1,0).getDate()){
+            return;
+        }
+        if(date>new Date(year,month+1,0).getDate() && date!==999){
             return;
         }else{
+            console.log('123');
             this.setState(preState=>{
                 let moreInfoBoard = preState.moreInfoBoard;
                 moreInfoBoard.iYear = year;
@@ -138,8 +139,14 @@ class RenderMonthLog extends React.Component{
                     week = this.countWeekNum(new Date(`${year}-${month+1}-${date}`));
                     console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
+                    moreInfoBoard.iWeek = week;
                 }
-                moreInfoBoard.iWeek = week;
+                if(date==999){
+                    console.log('表示在選擇月份')
+                    moreInfoBoard.iDate = 0;
+                    moreInfoBoard.iWeek = null
+                }
+                // moreInfoBoard.iWeek = week;
                 console.log('calenUpdateTime',moreInfoBoard);
                 return{
                     moreInfoBoard:moreInfoBoard,
@@ -190,16 +197,7 @@ class RenderMonthLog extends React.Component{
             //沒改過時間的
             if (this.state.moreInfoBoard.iDate==null){
                 console.log('沒改時間');
-                // ref.where("year","==",this.state.year).where("month","==",this.state.month).where("title","==",oldTitle)
-                // .get().then(querySnapshot=>{
-                //     querySnapshot.forEach(doc=>{
-                //         doc.ref.update({title:this.state.note})
-                //             .then(()=>{
-                //                 this.getDBdataInState(this.state.month,this.state.year,0);
-                //                 this.props.reRenderLog();
-                //             });
-                //     })
-                // });
+                
                 ref.doc(this.state.moreInfoBoard.id).update({title:this.state.note})
                     .then(()=>{
                         this.getDBdataInState(this.state.month,this.state.year,0);
@@ -225,7 +223,6 @@ class RenderMonthLog extends React.Component{
             //         })
             //     });
             alert('確認修改?');
-            // this.getDBdataInState(this.state.month,this.state.year,this.state.date);
             this.props.reRenderLog();
         }else{ //該月每天
             // console.log('adjust day to do');
@@ -263,7 +260,7 @@ class RenderMonthLog extends React.Component{
         let index = e.currentTarget.getAttribute("data-index");
         let innerIndex = e.currentTarget.getAttribute("data-innerindex");
         let id = e.currentTarget.getAttribute("data-id");
-        // console.log(innerIndex);
+        
         this.setState(preState=>{
             let ifShowMore = preState.ifShowMore;
             let moreInfoBoard = preState.moreInfoBoard;
@@ -273,13 +270,21 @@ class RenderMonthLog extends React.Component{
             moreInfoBoard.id = id;
             moreInfoBoard.iYear = this.state.year;
             moreInfoBoard.iMonth = this.state.month;
+            console.log('toggleIfShowMore','index:',index,'inner:',innerIndex,moreInfoBoard);
+            if(innerIndex==null){
+                //月
+                moreInfoBoard.iDate = 0;
+                moreInfoBoard.iWeek = null;
+            }
             if (innerIndex!=null){
+                //月-日
                 console.log('m')
                 moreInfoBoard.iDate = parseInt(index)+1;
+                moreInfoBoard.iWeek = null;
             }
             
             moreInfoBoard.calenType = 'month';
-            console.log('toggleIfShowMore',index,innerIndex,moreInfoBoard);
+            
             return{
                 ifShowMore: !ifShowMore,
                 note : oldTitle,
@@ -314,10 +319,14 @@ class RenderMonthLog extends React.Component{
     }
 
     showMoreInfo(){
-        console.log('showMoreInfo',this.state.moreInfoBoard);
+        // console.log('showMoreInfo',this.state.moreInfoBoard);
         let showScheTime1 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span>{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
         let showScheTime3 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
+        let iWeek = this.state.moreInfoBoard.iWeek;
+        let iDate = this.state.moreInfoBoard.iDate;
+        let iMonth = this.state.moreInfoBoard.iMonth;
+        
         return(
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
@@ -329,9 +338,9 @@ class RenderMonthLog extends React.Component{
                         {/* <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div> */}
                         <div className="info" onClick={this.showCalen}><i className="fas fa-calendar" ></i>
-                            {this.state.moreInfoBoard.iDate==null || this.state.moreInfoBoard.iDate==0 && this.state.moreInfoBoard.iWeek==0? showScheTime1:''}
-                            {this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
-                            {((this.state.moreInfoBoard.iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
+                            {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
+                            {iWeek!=null && this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
+                            {((iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
                         </div>
                         {/* <div className="info"><i className="fas fa-list-ul"></i>
                             <span>add to list</span></div> */}
@@ -436,6 +445,7 @@ class RenderMonthLog extends React.Component{
         if(date == 0){
             ref.where('month','==',month).where('year','==',year).where('date','==',date).where('isDone','==',false)
                 .get().then(querySnapshot => {
+                // .onSnapshot(querySnapshot => {
                     querySnapshot.forEach(doc=>{
                         thisMonthToDos.push({
                             title: doc.data().title,
@@ -517,12 +527,7 @@ class RenderMonthLog extends React.Component{
     
     
     updateEachDayToDos(){
-        let db = firebase.firestore();
-        let ref = db.collection("members").doc(this.props.uid).collection("todos");
-
         this.setState(preState=>{
-            // let {daysOfMonth} = this.state;
-            // console.log("month", preState.month);
             let {year} = preState;
             let {month} = preState;
             let daysOfMonth = preState.daysOfMonth;
@@ -539,7 +544,6 @@ class RenderMonthLog extends React.Component{
                 });
                 this.getDBdataInState(month,year,i+1);
             }
-            // console.log(eachDayToDos);
             return{eachDayToDos:eachDayToDos}
         });
     }
@@ -640,20 +644,15 @@ class RenderMonthLog extends React.Component{
         this.updateEachDayToDos();
     }
     componentDidUpdate(preProps){
-        
         if(preProps.reRender !== this.props.reRender){
             console.log("Month Update");
             this.updateEachDayToDos();
             this.getDBdataInState(this.state.month,this.state.year,0);
         }
-        // console.log(preProps.btToday,this.props.btToday);
         if(preProps.btToday !== this.props.btToday){
             this.backToTodayBtn();
             console.log("Month Update2");
-            // this.updateEachDayToDos();
         }
-        // console.log(`Forward${year}/${month}`);
-        // console.log(`${this.state.year}/${this.state.month+1}=>${this.state.daysOfMonth}`);
     }
     toggleIfInput(){
         this.setState(preState=>{
@@ -738,7 +737,8 @@ class RenderMonthLog extends React.Component{
                 </div>
             </div>
             </div>);
-        
+        let hint = <div className="hint">hint: 試試點擊右上+按鈕，新增此月待辦事項！</div>
+                
         return <div id="month" className="left_board">
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeMonth?<ChangeMonthCal changeMonth={this.changeMonth.bind(this)}/>:''}
@@ -759,7 +759,7 @@ class RenderMonthLog extends React.Component{
         {/* 月-未安排事項 */}
         <div className="month_todos">
             {this.state.ifInput? this.showInput() : ''}
-            
+            {renderThisMonthTodos==''?hint:''}
             {renderThisMonthTodos}
             {/* <div className="month_todo">
                 <span><input type="checkbox" name="" id=""></input>睡覺</span>
