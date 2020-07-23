@@ -278,7 +278,7 @@ class RenderMonthLog extends React.Component{
             }
             if (innerIndex!=null){
                 //月-日
-                console.log('m')
+
                 moreInfoBoard.iDate = parseInt(index)+1;
                 moreInfoBoard.iWeek = null;
             }
@@ -320,9 +320,9 @@ class RenderMonthLog extends React.Component{
 
     showMoreInfo(){
         // console.log('showMoreInfo',this.state.moreInfoBoard);
-        let showScheTime1 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
-        let showScheTime2 = <span>{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
-        let showScheTime3 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
+        let showScheTime1 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
+        let showScheTime2 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
+        let showScheTime3 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
         let iWeek = this.state.moreInfoBoard.iWeek;
         let iDate = this.state.moreInfoBoard.iDate;
         let iMonth = this.state.moreInfoBoard.iMonth;
@@ -331,25 +331,24 @@ class RenderMonthLog extends React.Component{
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
                     <div className="info1">
-                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="25" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
-                        {/* <textarea  className="info_contentInput" onChange={this.handleContent} cols="50" rows="3" placeholder="Write here"></textarea> */}
+                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
                     </div>
-                    <div className="info2">
+                    <div onClick={this.showCalen}>
                         {/* <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div> */}
-                        <div className="info" onClick={this.showCalen}><i className="fas fa-calendar" ></i>
+                        <div className="info" >
+                            <i className="fas fa-calendar" ></i>
                             {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
-                            {iWeek!=null && this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
-                            {((iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
+                            {iWeek!=null && iWeek!=0 && iDate==0? showScheTime2:''}
+                            {((iWeek==0 || iWeek==undefined) && iDate>0)? showScheTime3:''}
                         </div>
                         {/* <div className="info"><i className="fas fa-list-ul"></i>
                             <span>add to list</span></div> */}
                     </div>
                 </div>
-                <div>
-                    <span onClick={this.toggleIfShowMore}>cancel</span>
-                    <span id="saveMoreInfo" onClick={this.adjustTodo}>save</span>
-                    <i className="fas fa-trash-alt"></i>
+                <div className="infoBtns">
+                    <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>cancel</span>
+                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>save</span>
                 </div>
             </div>
         )
@@ -460,7 +459,7 @@ class RenderMonthLog extends React.Component{
                     })
                 });
         }else{
-            ref.where('month','==',month).where('year','==',year).where('date','==',date)
+            ref.where('month','==',month).where('year','==',year).where('date','==',date).where('week','<',1)
                 .get().then(querySnapshot => {
                     querySnapshot.forEach(doc=>{
                         this.setState(preState=>{
@@ -511,17 +510,18 @@ class RenderMonthLog extends React.Component{
                 querySnapshot.forEach(doc=>{
                     doc.ref.delete().then(()=>{
                         this.props.reRenderLog();
+                        this.getDBdataInState(this.state.month,this.state.year,0);
                     });
                 })
             });
 
-        this.setState(preState=>{
-            let thisMonthToDos = preState.thisMonthToDos;
-            thisMonthToDos.splice(deleteIndex,1);
-            return{
-                thisMonthToDos:thisMonthToDos
-            }
-        });
+        // this.setState(preState=>{
+        //     let thisMonthToDos = preState.thisMonthToDos;
+        //     thisMonthToDos.splice(deleteIndex,1);
+        //     return{
+        //         thisMonthToDos:thisMonthToDos
+        //     }
+        // });
         
     }
     
@@ -712,11 +712,14 @@ class RenderMonthLog extends React.Component{
         // render 該月事項
         let renderThisMonthTodos = this.state.thisMonthToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
-            <span><input className="checkbox" type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
+            <span>
+                {/* <input className="checkbox" type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input> */}
+                {todo.title}
+            </span>
             <span className="month_todo_feacture">
                 {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                 <span ><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                <span><i className="fas fa-trash" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                <span><i className="fas fa-check" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
             </span>
         </div>);
         // render 每日事項
@@ -737,7 +740,7 @@ class RenderMonthLog extends React.Component{
                 </div>
             </div>
             </div>);
-        let hint = <div className="hint">hint: 試試點擊右上+按鈕，新增此月待辦事項！</div>
+        let hint = <div className="hint">hint：點擊右上+按鈕，新增此月待辦事項！</div>
                 
         return <div id="month" className="left_board">
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}

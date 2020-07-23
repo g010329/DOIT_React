@@ -74,12 +74,14 @@ class RenderWeekLog extends React.Component{
         this.showMoreInfo = this.showMoreInfo.bind(this);
         this.toggleIfShowMore = this.toggleIfShowMore.bind(this);
         this.adjustTodo = this.adjustTodo.bind(this);
+        this.autoHeight = this.autoHeight.bind(this);
         // calen
         this.showCalen = this.showCalen.bind(this);
         this.calenUpdateTime = this.calenUpdateTime.bind(this);
         //date calen
         this.ifChangeWeek = this.ifChangeWeek.bind(this);
         this.changeWeek= this.changeWeek.bind(this);
+        
     }
 
     ifChangeWeek(){
@@ -135,9 +137,8 @@ class RenderWeekLog extends React.Component{
     calenUpdateTime(year,month,date,week){
         console.log('calenUpdateTime',year,month,date);
         if(date<1){
-            //bug
-            // return;
-        }if(date>new Date(year,month+1,0).getDate()){
+            return;
+        }if(date>new Date(year,month+1,0).getDate() && date!==999){
             return;
         }else{
             this.setState(preState=>{
@@ -145,13 +146,19 @@ class RenderWeekLog extends React.Component{
                 moreInfoBoard.iYear = year;
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
+                moreInfoBoard.iWeek = null;
                 console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
                     week = this.countWeekNum(new Date(`${year}-${month+1}-${date}`));
                     console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
+                    moreInfoBoard.iWeek = week;
                 }
-                moreInfoBoard.iWeek = week;
+                if(date==999){
+                    console.log('表示在選擇月份')
+                    moreInfoBoard.iDate = 0;
+                    moreInfoBoard.iWeek = null
+                }
                 
                 console.log('calenUpdateTime',moreInfoBoard);
                 return{
@@ -170,8 +177,10 @@ class RenderWeekLog extends React.Component{
         let innerIndex = e.currentTarget.getAttribute("data-innerindex");
         let month = e.currentTarget.getAttribute("data-month");
         let date = e.currentTarget.getAttribute("data-date");
+        
         console.log(month,date);
         this.setState(preState=>{
+            
             let ifShowMore = preState.ifShowMore;
             let moreInfoBoard = preState.moreInfoBoard;
             moreInfoBoard.oldTitle = oldTitle;
@@ -181,15 +190,19 @@ class RenderWeekLog extends React.Component{
             moreInfoBoard.iYear = this.state.year;
             
             if (month!=null){
+                //選擇月
                 moreInfoBoard.iMonth = parseInt(month);
-                moreInfoBoard.iWeek = 0;
+                moreInfoBoard.iWeek = null;
             }
             if(date != null){
+                //選擇日
                 moreInfoBoard.iDate = parseInt(date);
-                moreInfoBoard.iWeek = 0;
+                moreInfoBoard.iWeek = null;
             }
             else{
+                // moreInfoBoard.iMonth = parseInt(month);
                 moreInfoBoard.iWeek = this.state.weekNum;
+                moreInfoBoard.iDate = 0;
             }
             // moreInfoBoard.iMonth = this.state.month;
             
@@ -202,34 +215,42 @@ class RenderWeekLog extends React.Component{
             }
         })
     }
+    autoHeight(){
+        let x = document.getElementById("testHeight");
+        x.style.height = 'auto';
+        x.style.height = x.scrollHeight + "px";
+    }
     showMoreInfo(){
         console.log(this.state.moreInfoBoard);
-        let showScheTime1 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
-        let showScheTime2 = <span>{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
-        let showScheTime3 = <span>{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
-        
+        let showScheTime1 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
+        let showScheTime2 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
+        let showScheTime3 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
+        let iWeek = this.state.moreInfoBoard.iWeek;
+        let iDate = this.state.moreInfoBoard.iDate;
+        let iMonth = this.state.moreInfoBoard.iMonth;
         return(
-            <div id="moreInfo" className="bt_moreInfo_board">
+            <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
-                    <div>
-                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="25" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle}></textarea>
+                    <div className="info1">
+                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
                         {/* <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
-                    <div>
+                    <div onClick={this.showCalen}>
                         {/* <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div> */}
-                        <div className="info" onClick={this.showCalen}><i className="fas fa-calendar"></i>
-                            {((this.state.moreInfoBoard.iDate==null || this.state.moreInfoBoard.iDate==0) && this.state.moreInfoBoard.iWeek==0)? showScheTime1:''}
-                            {this.state.moreInfoBoard.iWeek!=0 && (this.state.moreInfoBoard.iDate==0 || this.state.moreInfoBoard.iDate==null)? showScheTime2:''}
-                            {((this.state.moreInfoBoard.iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
+                        <div className="info" >
+                            <i className="fas fa-calendar"></i>
+                            {iDate==0 && iWeek==null && iMonth>=0? showScheTime1:''}
+                            {iWeek!=null && iWeek!=0 && iDate==0? showScheTime2:''}
+                            {((iWeek==0 || iWeek==undefined) && iDate>0)? showScheTime3:''}
                         </div>
                         {/* <div className="info"><i className="fas fa-list-ul"></i>
                             <span>add to list</span></div> */}
                     </div>
                 </div>
-                <div>
-                    <span onClick={this.toggleIfShowMore}>cancel</span>
-                    <span onClick={this.adjustTodo}>save</span>
+                <div className="infoBtns">
+                    <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>cancel</span>
+                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>save</span>
                     {/* <i className="fas fa-trash-alt"></i> */}
                 </div>
             </div>
@@ -250,7 +271,7 @@ class RenderWeekLog extends React.Component{
                 // console.log(thisWeekToDos);
                 // console.log(moreInfoBoard);
                 return{
-                    thisWeekToDos:thisWeekToDos,
+                    // thisWeekToDos:thisWeekToDos,
                     ifShowMore:!ifShowMore,
                     calenIfShow:false
                 }
@@ -262,8 +283,18 @@ class RenderWeekLog extends React.Component{
                 .get().then(querySnapshot=>{
                     querySnapshot.forEach(doc=>{
                         if(this.state.moreInfoBoard.iDate!=null){
-                            doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
+                            console.log('111');
+                            doc.ref.update({
+                                title:this.state.note,
+                                month:this.state.moreInfoBoard.iMonth,
+                                year:this.state.moreInfoBoard.iYear,
+                                date:this.state.moreInfoBoard.iDate,
+                                week:this.state.moreInfoBoard.iWeek
+                            }).then(()=>{
+                                this.props.reRenderLog();
+                            })
                         }else{
+                            console.log('222');
                             doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,week:this.state.moreInfoBoard.iWeek})
                         }
                         
@@ -272,7 +303,7 @@ class RenderWeekLog extends React.Component{
             alert('確認修改?');
             // this.props.reRenderLog();
         }else{
-            // console.log('adjust day to do');
+            console.log('adjust day to do');
             this.setState(preState=>{
                 note = preState.note;
                 let moreInfoBoard = preState.moreInfoBoard;
@@ -282,7 +313,7 @@ class RenderWeekLog extends React.Component{
                 
                 // console.log(eachDayToDos);
                 return{
-                    eachDayToDos:eachDayToDos,
+                    // eachDayToDos:eachDayToDos,
                     ifShowMore:!ifShowMore,
                     calenIfShow:false
                 }
@@ -291,25 +322,50 @@ class RenderWeekLog extends React.Component{
             let db = firebase.firestore();
             let ref = db.collection("members").doc(this.props.uid).collection("todos").doc(this.state.moreInfoBoard.id);
             if(this.state.moreInfoBoard.iDate!=null){
-                ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek}).then(()=>{
-                    alert('成功修改');
+                console.log('1');
+                ref.update({
+                    title:this.state.note,
+                    month:this.state.moreInfoBoard.iMonth,
+                    year:this.state.moreInfoBoard.iYear,
+                    date:this.state.moreInfoBoard.iDate,
+                    week:this.state.moreInfoBoard.iWeek
+                }).then(()=>{
+                    this.props.reRenderLog();
+                    this.setWeekNum();
+                    this.updateEachDayToDosOfWeek();
                 });
             }else{
-                ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,week:this.state.moreInfoBoard.iWeek}).then(()=>{
-                    alert('成功修改');
+                console.log('2');
+                ref.update({
+                    title:this.state.note,
+                    month:this.state.moreInfoBoard.iMonth,
+                    year:this.state.moreInfoBoard.iYear,
+                    week:this.state.moreInfoBoard.iWeek
+                }).then(()=>{
+                    this.props.reRenderLog();
+                    this.setWeekNum();
+                    this.updateEachDayToDosOfWeek();
                 });
             }
             console.log("note:",this.state.note);
             
         }
-        this.props.reRenderLog();
+        
     }
 
     deleteInDB(bt){
         let deleteTitle = bt.currentTarget.getAttribute("data-title");
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
+        let id = bt.currentTarget.getAttribute("data-id");
+        console.log('id',id);
         let db = firebase.firestore();
+        
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        // ref.doc(id).delete().then(()=>{
+        //     this.props.reRenderLog();
+        //     this.setWeekNum();
+        //     this.updateEachDayToDosOfWeek();
+        // })
         ref.where("week","==",this.state.weekNum).where("year","==",this.state.year).where("title","==",deleteTitle)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
@@ -385,27 +441,25 @@ class RenderWeekLog extends React.Component{
         let targetDate = bt.currentTarget.getAttribute("data-date");
         let outerIndex = bt.currentTarget.getAttribute("data-outer-index");
         let innerIndex = bt.currentTarget.getAttribute("data-inner-index");
+        let id = bt.currentTarget.getAttribute("data-id");
+        console.log('刪除週日0',id);
         // console.log(outerIndex,innerIndex);
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        ref.where("month","==",parseInt(targetMonth)).where("date","==",parseInt(targetDate)).where("year","==",this.state.year).where("title","==",deleteTitle)
-            .get().then(querySnapshot=>{
-                querySnapshot.forEach(doc=>{
-                    // console.log(doc.data());
-                    doc.ref.delete().then(()=>{
-                        this.props.reRenderLog();
-                    });
-                })
+        
+        ref.doc(id).delete().then(()=>{
+            this.props.reRenderLog();
+            this.setState(preState=>{
+                let eachDayToDos = preState.eachDayToDos;
+                // 刪除state array內某天某件事
+                eachDayToDos[outerIndex].todos.splice(innerIndex,1);
+                return{
+                    eachDayToDos:eachDayToDos
+                }
             });
+        })
         // console.log(deleteIndex);
-        this.setState(preState=>{
-            let eachDayToDos = preState.eachDayToDos;
-            // 刪除state array內某天某件事
-            eachDayToDos[outerIndex].todos.splice(innerIndex,1);
-            return{
-                eachDayToDos:eachDayToDos
-            }
-        });
+        
         
     }
     
@@ -425,8 +479,8 @@ class RenderWeekLog extends React.Component{
             let thisWeekToDos = preState.thisWeekToDos;
             let ifInput = preState.ifInput;
             thisWeekToDos.push({"title":thing,"index":thisWeekToDos.length,"iDone":false});
-            // console.log(list);
-            this.addToDB(thing, year, month, 0, weekNum);
+            console.log('addThisWeekToDos');
+            this.addToDB(thing, year, 0, 0, weekNum);
             return{
                 thisWeekToDos:thisWeekToDos,
                 note:"",
@@ -449,9 +503,10 @@ class RenderWeekLog extends React.Component{
             isDone: false,
             overdue: false           
         }).then(()=>{
+            console.log('addToDB');
             this.props.reRenderLog();
         });
-        // console.log('add');
+        
     }
 
     getDBdataInState(week,year,date,day,month){
@@ -463,13 +518,11 @@ class RenderWeekLog extends React.Component{
             ref.where('week','==',week).where('year','==',year).where('date','==',date).where('isDone','==',false)
                 .get().then(querySnapshot => {
                     querySnapshot.forEach(doc=>{
-                        
                         thisWeekToDos.push({
                             title: doc.data().title,
                             ifDone: doc.data().isDone,
                             id: doc.id
                         });
-                        // console.log(doc.data());
                     });
                     this.setState({
                         thisWeekToDos:thisWeekToDos
@@ -488,7 +541,6 @@ class RenderWeekLog extends React.Component{
                                 eachDayToDos: eachDayToDos
                             }
                         });
-                        // console.log(doc.data());
                     });
                 })
         }
@@ -519,12 +571,13 @@ class RenderWeekLog extends React.Component{
             let {year} = preState;
             let {month} = preState;
             let date = preState.date;
-            let weekNum = preState.weekNum;
+            // let weekNum = preState.weekNum;
+            let weekNum = 0;
             let todayDay = new Date(`${year}-${month+1}-${date}`).getDay();
             eachDayToDos[indexDay].todos.push({title:thing,ifDone:false});
             eachDayToDos[indexDay].ifInput = false;
             // console.log(eachDayToDos[indexDay].month+1+' / '+eachDayToDos[indexDay].date);
-            
+            console.log('addThisDayToDos',thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
             // 因為已經將月份日期存入eachDayToDos[]陣列裡，可以透過點擊index取出月份日期，再存入DB
             this.addToDB(thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
             return{
@@ -546,6 +599,7 @@ class RenderWeekLog extends React.Component{
             let date = preState.date;
             let eachDayToDos = preState.eachDayToDos;
             eachDayToDos = [];
+            console.log('updateEachDayToDosOfWeek');
             for (let i=0; i<7; i++){
                 let curr = new Date(`${year}-${month+1}-${date}`);
                 let first = curr.getDate() - curr.getDay()+1;
@@ -603,8 +657,7 @@ class RenderWeekLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'week'} onKeyDown={this.enterClick}>
                 <span>
-                    <input type="checkbox" />
-                    <input type="text" onChange={this.handleNoteChange} autoFocus/>
+                    <input className="noScheInput" type="text" placeholder="+ ADD WEEK TASK" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture">
                     <span onClick={this.toggleIfInput}>cancel</span>
@@ -618,7 +671,6 @@ class RenderWeekLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'week-day'} onKeyDown={this.enterClick}>
                 <span>
-                    <input type="checkbox" />
                     <input className="noScheInput" className="noScheInput" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture">
@@ -722,17 +774,23 @@ class RenderWeekLog extends React.Component{
         } 
         if (event.keyCode==13 && btntype=='week'){
             document.getElementById("inputWeek").click(); //觸動按鈕的點擊
-        } 
+        }
+        if (event.keyCode==13 && btntype=='info'){
+            document.getElementById("saveMoreInfo").click(); //觸動按鈕的點擊
+        }  
     }
     render(){
         // 此週待辦
         let renderThisWeekTodos = this.state.thisWeekToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
-                <span><input className="checkbox" type="checkbox" data-week={this.state.weekNum} data-index={index} data-title={todo.title} onChange={this.ifDone}></input>{todo.title}</span>
+                <span>
+                    {/* <input className="checkbox" type="checkbox" data-week={this.state.weekNum} data-index={index} data-title={todo.title} onChange={this.ifDone}></input> */}
+                    {todo.title}
+                </span>
                 <span className="month_todo_feacture">
                     {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                     <span ><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-trash" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    <span><i className="fas fa-trash" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
         let dayName = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
@@ -750,16 +808,16 @@ class RenderWeekLog extends React.Component{
                 {eachday.todos.map((todo,innerindex)=>
                     <div className="month_todo" key={innerindex}>
                         <span key={innerindex}>
-                            <input className="checkbox" type="checkbox" data-title={todo.title} data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} onChange={this.ifDone}></input>
+                            {/* <input className="checkbox" type="checkbox" data-title={todo.title} data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} onChange={this.ifDone}></input> */}
                         {todo.title}</span>
                         <span className="month_todo_feacture">
                             {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                             <span><i className="fas fa-pen" data-id={todo.id} data-title={todo.title} data-index={index} data-month={eachday.month} data-date={eachday.date} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
-                            <span><i className="fas fa-trash" data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
+                            <span><i className="fas fa-trash" data-id={todo.id} data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                         </span>
                     </div>)}
             </div>);
-        
+                let hint = <div className="hint">hint：點擊右上+按鈕，新增此週待辦事項！</div>
         // let renderAddThing = this.state.note.map((thing,index)=>
         // <div className="month_todo" key={index}>
         //     <span><input type="checkbox" name="" id=""></input>{this.state.note}</span>
@@ -801,7 +859,7 @@ class RenderWeekLog extends React.Component{
                     <input type="submit" value="add"/>
                 </div> */}
                 {this.state.ifInput? this.showInput() : ''}
-
+                {renderThisWeekTodos==''?hint:''}
                 {/* <div>{renderAddThing}</div> */}
                 {renderThisWeekTodos}
             </div>

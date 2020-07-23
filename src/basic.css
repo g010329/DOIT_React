@@ -8,10 +8,23 @@
     background-color: #A58D7F #F5B895 #F3D5AD;
     font-family: Roboto,sans-serif;
 }
-
+input:focus{
+    outline:none
+}
+textarea:focus{
+    outline:none
+}
+.m_add_bt{
+    border-radius: 5px;
+    transition: all .5s ease;
+}
+.m_add_bt:hover{
+    background-color: rgba(104, 102, 102, 0.815)
+}
 .hint{
     color: #a7a8a8;
     font-size: 12px;
+    cursor:default;
 }
 /* 單一事件控制面板 */
 .info i{
@@ -26,26 +39,51 @@ textarea {
     background-color: #1F1F1F;
     box-shadow: 0px 10px 35px #131313da;
     border-radius: 5px;
-    padding: 10px;
+    padding: 20px;
     position: absolute;
     top: 200px;
     left: 50%;
     transform: translate(-50%);
-    width: 600px;
+    width: 300px;
     /* height: 200px; */
     color: #e8e8e8;
     /* display: none; */
     
 }
-.infoflex{
-    display: flex;
-    justify-content: space-between;
+.littleCal{
+    margin-left: 10px;
 }
+.infoBtns{
+
+}
+.infoCancelBtn{
+    display: inline-block;
+    text-align: center;
+    line-height: 30px;
+    background-color: rgb(138, 135, 135);
+    width: 65px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.infoSaveBtn{
+    display: inline-block;
+    text-align: center;
+    line-height: 30px;
+    background-color: #e8e8e8;
+    color: #2C2C2C;
+    width: 65px;
+    height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 .info_titleInput{
     line-height: 2.5rem;
     /* background-color: #F3D5AD; */
     /* outline: none; */
     /* border: 0px; */
+    /* width: 260px; */
     font-size: 2rem;
 }
 .info{
@@ -176,15 +214,19 @@ header{
     display: inline-block;
     margin-right: 5px;
     color: #858383;
+    width: 20px;
 }
-.icon_hover_span i:hover{
-    color: #D3D0D0;
-    background-color: #504f4f;
-    border-radius: 50%;
+.icon_hover_span i{
+    transition: all .5s ease;
+}
+.icon_hover_span :hover{
+    color: #f1f0f0;
+    /* background-color: #504f4f; */
+    /* border-radius: 50%; */
 }
 
 /* log btn */
-#week{
+#month{
     display: none;
 }
 
@@ -193,9 +235,14 @@ header{
     text-align: center;
     width: 48px;
 }
-.top_nav_btn:first-child{
+.top_nav_btn:nth-child(2){
     color:  #222222;
     background-color: #e8e8e8;
+}
+#dbtn{
+    /* 內框線 */
+    /* border: red 1px solid; */
+    box-shadow: 0 0 0 .5px #e8e8e8;
 }
 .top_nav_btn{
     letter-spacing: 1px;
@@ -245,6 +292,7 @@ header{
 }
 .bulletword{
     margin-right: 12px;
+    letter-spacing: 2px;
 }
 /* 左側side(可收) */
 main{
@@ -536,11 +584,12 @@ main{
 }
 .w_add_bt{
     border-radius: 5px;
-    color:#0F4C81;
+    /* color:#0F4C81; */
+    transition: all .5s ease;
 }
 .w_add_bt:hover{
-    background-color: #B5C7D3;
-    opacity: 0.7;
+    background-color: #858383;
+    opacity: 0.5;
     cursor: pointer;
     
     text-align: center;
@@ -699,7 +748,7 @@ main{
     margin-left: 5px;
 }
 .info{
-    margin-top: 10px;
+    margin: 10px 0px;
 }
 *{
     /* border: solid 1px rgb(57, 58, 71); */
@@ -733,9 +782,7 @@ main{
     left: 0;
     background-color: #2C2C2C;
 }
-.info2{
-    width:120px
-}
+
 
 .darktd{
     color:rgb(92, 91, 91)
@@ -802,9 +849,14 @@ main{
         width: 470px;
     }
     .hpIntroTitle{
-        font-size: 40px;
+        font-size: 35px;
         font-weight: bolder;
         color: #686767;
+    }
+    .hpIntroTitle1{
+        font-size: 50px;
+        font-weight: bolder;
+        color: #3f3e3e;
     }
 }
 @media(max-width:500px){
