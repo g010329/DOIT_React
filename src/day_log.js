@@ -73,7 +73,7 @@ class RenderDayLog extends React.Component{
             let month = preState.month;
             let date = preState.date;
             // 將該週未安排事件放入state
-            this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),this.state.year,0);
+            // this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),this.state.year,0);
             
             // console.log(`${year}-${month+1}-${date}`);
             // console.log(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)));
@@ -343,8 +343,8 @@ class RenderDayLog extends React.Component{
                     </div>
                 </div>
                 <div className="infoBtns">
-                    <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>cancel</span>
-                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>save</span>
+                    <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>Cancel</span>
+                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>Save</span>
                     {/* <i className="fas fa-trash-alt"></i> */}
                 </div>
             </div>
@@ -616,9 +616,9 @@ class RenderDayLog extends React.Component{
                     {/* <input type="checkbox" /> */}
                     <input className="noScheInput" type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus/>
                 </span>
-                <span className="month_todo_feacture">
-                    <span onClick={this.toggleIfInput}>cancel</span>
-                    <span id="inputDay" onClick={this.addThisDayToDos}>add</span>
+                <span className="month_todo_feacture2">
+                    <span onClick={this.toggleIfInput}>Cancel</span>
+                    <span id="inputDay" onClick={this.addThisDayToDos}>Add</span>
                 </span>
             </div>
         )
@@ -668,7 +668,7 @@ class RenderDayLog extends React.Component{
                     {/* <input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.ifDone}></input> */}
                     {todo.title}
                 </span>
-                <span className="month_todo_feacture">
+                <span className="month_todo_feacture mf4">
                     {/* <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span> */}
                     <span ><i className="fas fa-pen" data-id={todo.id} data-type={'date'} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                     <span><i className="fas fa-trash" data-type={'day'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
@@ -680,7 +680,7 @@ class RenderDayLog extends React.Component{
                     {/* <input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.overdueIfDone}></input> */}
                     {todo.title}
                 </span>
-                <span className="month_todo_feacture">
+                <span className="month_todo_feacture mf2">
                     {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                     <span ><i className="fas fa-pen" data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                     <span><i className="fas fa-trash" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
@@ -696,12 +696,19 @@ class RenderDayLog extends React.Component{
                     {overdue}
                 </div>
             </div>  
+        let todayHint = <span className="onlyShowToday">Today </span>
         return <div className="right_board">
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className="today_board">
             <div className="month_title">
-                <span className="title_month">{this.state.month+1}/{this.state.date}</span>
+                <div>
+                    {this.state.date==new Date().getDate()&&this.state.month==new Date().getMonth()?todayHint:''}
+                    <span className="title_month">
+                    
+                        {this.state.month+1}/{this.state.date}
+                    </span>
+                </div>
                 <span className="title_right">
                     <span className="icon_hover_span"><i className="fas fa-calendar" onClick={this.ifChangeDate}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>

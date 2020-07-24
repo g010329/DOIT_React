@@ -127,9 +127,11 @@ class Dashboard extends React.Component{
                         <div className="inner2_board">
                         {/* top nav */}
                             <div className="top_nav">
-                                <span id="mbtn" className="top_nav_btn" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
-                                <span id="wbtn" className="top_nav_btn" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
-                                <span id="dbtn" className="top_nav_btn" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
+                                <div>
+                                    <span id="mbtn" className="top_nav_btn tnb1" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
+                                    <span id="wbtn" className="top_nav_btn tnb1 tbtb" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
+                                </div>
+                                <span id="dbtn" className="top_nav_btn tnb2" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
                                 {/* <span className="top_nav_btn" data-btn={"overdue"} onClick={this.toggleBtn}>overdue</span> */}
                             </div>
                             {/* 主控制面板 */}

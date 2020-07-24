@@ -249,8 +249,8 @@ class RenderWeekLog extends React.Component{
                     </div>
                 </div>
                 <div className="infoBtns">
-                    <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>cancel</span>
-                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>save</span>
+                    <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>Cancel</span>
+                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>Save</span>
                     {/* <i className="fas fa-trash-alt"></i> */}
                 </div>
             </div>
@@ -659,9 +659,9 @@ class RenderWeekLog extends React.Component{
                 <span>
                     <input className="noScheInput" type="text" placeholder="+ ADD WEEK TASK" onChange={this.handleNoteChange} autoFocus/>
                 </span>
-                <span className="month_todo_feacture">
-                    <span onClick={this.toggleIfInput}>cancel</span>
-                    <span id="inputWeek" onClick={this.addThisWeekToDos}>add</span>
+                <span className="month_todo_feacture2">
+                    <span onClick={this.toggleIfInput}>Cancel</span>
+                    <span id="inputWeek" onClick={this.addThisWeekToDos}>Add</span>
                 </span>
             </div>
         )
@@ -673,9 +673,9 @@ class RenderWeekLog extends React.Component{
                 <span>
                     <input className="noScheInput" className="noScheInput" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
                 </span>
-                <span className="month_todo_feacture">
-                    <span onClick={this.turnOffEachDayIfInput}>cancel</span>
-                    <span id="inputWeekDay" data-addday={i} onClick={this.addThisDayToDos}>add</span>
+                <span className="month_todo_feacture2">
+                    <span onClick={this.turnOffEachDayIfInput}>Cancel</span>
+                    <span id="inputWeekDay" data-addday={i} onClick={this.addThisDayToDos}>Add</span>
                 </span>
             </div>
         )
@@ -787,9 +787,9 @@ class RenderWeekLog extends React.Component{
                     {/* <input className="checkbox" type="checkbox" data-week={this.state.weekNum} data-index={index} data-title={todo.title} onChange={this.ifDone}></input> */}
                     {todo.title}
                 </span>
-                <span className="month_todo_feacture">
+                <span className="month_todo_feacture mf2 ">
                     {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
-                    <span ><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                     <span><i className="fas fa-trash" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
@@ -810,14 +810,14 @@ class RenderWeekLog extends React.Component{
                         <span key={innerindex}>
                             {/* <input className="checkbox" type="checkbox" data-title={todo.title} data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} onChange={this.ifDone}></input> */}
                         {todo.title}</span>
-                        <span className="month_todo_feacture">
+                        <span className="month_todo_feacture mf3">
                             {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                             <span><i className="fas fa-pen" data-id={todo.id} data-title={todo.title} data-index={index} data-month={eachday.month} data-date={eachday.date} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
                             <span><i className="fas fa-trash" data-id={todo.id} data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                         </span>
                     </div>)}
             </div>);
-                let hint = <div className="hint">hint：點擊右上+按鈕，新增此週待辦事項！</div>
+        let hint = <div className="hint">hint：點擊右上+按鈕，新增此週待辦事項！</div>
         // let renderAddThing = this.state.note.map((thing,index)=>
         // <div className="month_todo" key={index}>
         //     <span><input type="checkbox" name="" id=""></input>{this.state.note}</span>

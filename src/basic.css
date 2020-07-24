@@ -8,6 +8,21 @@
     background-color: #A58D7F #F5B895 #F3D5AD;
     font-family: Roboto,sans-serif;
 }
+.today_board{
+    background-color: #383838;
+    /* border: solid 1px #d3d0d0; */
+    box-shadow: 0px 0px 12px #181818;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 40px;
+}
+.overdue_board{
+    /* border: #464545 solid 3px; */
+    box-shadow: 0px 0px 12px #181818;
+    /* box-shadow: 0px 0px 10px #525151; */
+    padding: 20px;
+    border-radius: 10px;
+}
 input:focus{
     outline:none
 }
@@ -15,11 +30,16 @@ textarea:focus{
     outline:none
 }
 .m_add_bt{
+    width: 30px;
+    text-align: center;
+    color: #858383;
+    cursor: pointer;
     border-radius: 5px;
     transition: all .5s ease;
 }
 .m_add_bt:hover{
-    background-color: rgba(104, 102, 102, 0.815)
+    background-color: rgba(104, 102, 102, 0.815);
+    color: #e8e8e8;
 }
 .hint{
     color: #a7a8a8;
@@ -61,7 +81,7 @@ textarea {
     text-align: center;
     line-height: 30px;
     background-color: rgb(138, 135, 135);
-    width: 65px;
+    width: 85px;
     height: 30px;
     border-radius: 5px;
     cursor: pointer;
@@ -129,7 +149,30 @@ textarea {
         left: 50%;
         transform: translateX(-50%);
     }
+    
 }
+@media(min-width:500px){
+    .onlyShowToday{
+        font-size: 2rem;
+    }
+}
+
+@media(min-width:800px){
+    .onlyShowToday{
+        font-size: 1rem;
+    }
+}
+@media(min-width:1000px){
+    .onlyShowToday{
+        font-size: 2rem;
+    }
+}
+@media(max-width:500px){
+    .onlyShowToday{
+        font-size: 1rem;
+    }
+}
+
 /* ----- */
 .calentype{
     border-radius: 10px;
@@ -209,14 +252,16 @@ header{
     box-shadow: 0px 3px 5px #181818;
 }
 .icon_hover_span{
+    /* border: solid 1px black; */
     text-align: center;
-    /* height: 1.5rem; */
+    height: 30px;
     display: inline-block;
-    margin-right: 5px;
+    /* margin-right: 5px; */
     color: #858383;
-    width: 20px;
+    width: 30px;
 }
 .icon_hover_span i{
+    padding-bottom: -5px;
     transition: all .5s ease;
 }
 .icon_hover_span :hover{
@@ -229,7 +274,10 @@ header{
 #month{
     display: none;
 }
-
+.top_nav{
+    display: flex;
+    justify-content: space-between;
+}
 .top_nav_logo{
     display: inline-block;
     text-align: center;
@@ -240,15 +288,26 @@ header{
     background-color: #e8e8e8;
 }
 #dbtn{
-    /* 內框線 */
-    /* border: red 1px solid; */
+    color:  #bebcbc;
+    /* background-color: #575555; */
     box-shadow: 0 0 0 .5px #e8e8e8;
+    background-color: #222222;
+}
+.tnb1{
+    width: 70px;
+}
+.tnb2{
+    width: 70px;
+}
+.tnb2{
+        
+    margin: 0px 55px;
 }
 .top_nav_btn{
     letter-spacing: 1px;
     /* margin: 0px 7px; */
     display: inline-block;
-    width: 70px;
+    
     border-radius: 5px;
     font-weight: 900;
     color:  #c4c1c1;
@@ -260,8 +319,7 @@ header{
     cursor: pointer;
     box-shadow: 0px 0px 3px #111111;
 }
-.login{
-    /* display: inline; */
+/* .login{
     background-color: #F3D5AD;
     color: #0F4C81;
     font-weight: 700;
@@ -272,10 +330,11 @@ header{
     text-align: center;
     border-radius: 3px;
     margin-right: 10px;
-}
+} */
 .logout{
     background-color: #e8e8e8;
-    color: #0F4C81;
+    box-shadow: 0px 0px 15px #0e0d0d;
+    color: #272727;
     font-weight: 700;
     letter-spacing: 1px;
     font-size: 10px;
@@ -471,17 +530,57 @@ main{
     /* padding-bottom: 100px ; */
 }
 .month_todo_feacture span{
+    width: 30px;
+    text-align: center;
+    border-radius: 5px;
+    /* margin-left: 5px; */
     display: inline-block;
-    margin-right: 5px;
-}
-.month_todo_feacture span{
-    color: #e8e8e8;
-    opacity: .1;
+    /* margin-right: 5px; */
+    transition: all .5s ease;
     cursor: pointer;
 }
-.month_todo_feacture span:hover{
+.mf2{
+    color: #2C2C2C;
+}
+.mf3{
+    color: #202020;
+}
+.mf4{
+    color: #383838;
+}
+.month_todo_feacture{
+
+    display: flex;
+    justify-content: flex-end;
+    flex:1;
+}
+.month_todo_feacture2{
+    display: flex;
+    justify-content: flex-end;
+    flex:1;
+}
+#inputMonth{
+    /* box-shadow: 0px 0px 5px #58a9af; */
+}
+.month_todo_feacture2 span{
+    width: 60px;
+    text-align: center;
+    /* background-color: rgb(99, 98, 98); */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .5s ease;
+}
+.month_todo_feacture2 span:hover{
+    box-shadow: 0px 0px 5px #58a9af;
+}
+.month_todo_feacture:hover{
     color: #e8e8e8;
-    opacity: .9;
+
+}
+.month_todo_feacture span:hover{
+    color: rgb(207, 149, 149);
+    box-shadow: 0px 0px 5px #af5858;
+    
 }
 .inner2_board{
     /* border: solid 1px rgb(202, 98, 115); */
@@ -496,8 +595,10 @@ main{
     width: 50%;
     color: #d3d0d0;
     padding: 30px 55px;
+    
 }
 .right_board{
+    
     width: 50%;
     color: #d3d0d0;
     padding: 30px 55px;
@@ -542,8 +643,14 @@ main{
     .top_nav{
         padding: 15px 0px 0px 25px;
     }
-    .top_nav_btn{
+    .tbn1{
         margin: 0px 3px;
+    }
+    
+}
+@media(max-width:500px){
+    .right_board {
+        padding: 20px 25px;
     }
 }
 @media(max-width: 400px){
@@ -553,9 +660,7 @@ main{
     .left_board {
         padding: 20px 25px;
     }
-    .right_board {
-        padding: 20px 25px;
-    }
+    
     .top_nav{
         padding: 15px 0px 0px 25px;
     }
@@ -564,11 +669,14 @@ main{
     .top_nav{
         padding: 25px 0px 0px 55px;
     }
-    .top_nav_btn{
+    .tbn1{
         margin: 0px 7px;
     }
+    
 }
-
+*{
+    /* border: solid 1px rgb(63, 62, 62); */
+}
 /* 月曆 */
 .monthCalendar{
     position: relative;
@@ -577,11 +685,7 @@ main{
 }
 
 /* 一週 */
-.week_log span{
-    display: inline-block;
-    /* text-align: center; */
-    
-}
+
 .w_add_bt{
     border-radius: 5px;
     /* color:#0F4C81; */
@@ -628,13 +732,16 @@ main{
 .m_day_of_week{
     width: 30px;
     text-align: center;
+    color: #858383;
 }
 
 /* 30天格子寬高 */
 .month_title{
+    
     display: flex;
     justify-content: space-between;
-    border-bottom: solid 1px #7a8188;
+    align-items: center;
+    border-bottom: solid 1px #59595a;
     padding-bottom: 15px;
 }
 .title_month{
@@ -651,7 +758,7 @@ main{
 .title_right{
     display: inline-flex;
     /* align-items: center; */
-    height: 40px;
+    height: 30px;
     font-size: 1.5rem;
     line-height: 40px;
 }
@@ -666,6 +773,7 @@ main{
 .month_todo{
     display: flex;
     justify-content: space-between;
+    margin: 0px 0px 0px 3px;
 }
 .month_week{
     /* text-align: center; */
@@ -701,19 +809,11 @@ main{
     width: 70px;
     margin-left: 3px;
     margin-right: 10px;
+    color: #858383;
 }
 
-.m_add_bt{
-    width: 30px;
-    text-align: center;
-    color: #cdd2d6;
-    cursor: pointer;
-}
-/* .m_add_bt:hover{
-    color: #455f79;
-    cursor: pointer;
-} */
 .m_bt{
+    color: #84898C;
     background-color: #32485c;
     border-radius: 3px;
     padding: 0px 10px; 
@@ -764,7 +864,7 @@ main{
     margin-right:10px
 }
 .addmd{
-    margin: 5px 0px;
+    /* margin: 5px 0px; */
 }
 .addmd_input{
     margin-right: 10px;
