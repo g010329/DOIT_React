@@ -148,11 +148,13 @@ class App extends React.Component {
 
     render() {
         if(this.state.isLogin == true){
+            
             return <div><Redirect to ="/dashboard"/>
             <Route path="/dashboard">
                 {/* <Calendar/> */}
                 <Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/>
             </Route></div>
+            
         }else{    
             return <div>
                 <Redirect to ="/"/>

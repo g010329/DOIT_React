@@ -760,7 +760,7 @@ class RenderDayLog extends React.Component{
         this.setWeekNum();
         this.getDBdataInState(this.state.month,this.state.year,this.state.date);
         this.getOverdueFromDB();
-        console.log('listitems',this.props.listItems);
+        // console.log('listitems',this.props.listItems);
     }
     render(){
         let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>

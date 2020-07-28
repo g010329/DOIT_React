@@ -623,7 +623,7 @@ class RenderWeekLog extends React.Component{
                     ifInput:false
                 });
                 this.getDBdataInState(weekNum,year,firstday.getDate(),i,firstday.getMonth());
-                console.log('updateEachDayToDosOfWeek',weekNum,year,firstday.getDate(),i,firstday.getMonth());
+                // console.log('updateEachDayToDosOfWeek',weekNum,year,firstday.getDate(),i,firstday.getMonth());
                 
                 
             }

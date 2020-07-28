@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import RenderMonthLog from "./month_log";
 import RenderWeekLog from "./week_log";
 import RenderDayLog from "./day_log";
+import List from "./list";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
@@ -16,7 +17,7 @@ class Dashboard extends React.Component{
             btToday: false,
             //List
             ifInput: false,
-            listOpen: false,
+            showWhichList:'',
             listItems: [
                 // {title:'個人專案'},
                 // {title:'英文學習'},
@@ -37,6 +38,7 @@ class Dashboard extends React.Component{
         this.ListFromDb = this.getListFromDB.bind(this);
         this.getListFromDB = this.getListFromDB.bind(this);
         this.listenLists = this.listenLists.bind(this);
+        this.showList = this.showList.bind(this);
     }
     handleNoteChange(e){
         this.setState({
@@ -63,7 +65,7 @@ class Dashboard extends React.Component{
                 listItems.push({
                     title: doc.data().title
                 });
-                console.log(doc.data());
+                // console.log(doc.data());
             });
             this.setState({listItems:listItems});
         })
@@ -78,7 +80,7 @@ class Dashboard extends React.Component{
         })
     }
     toggleBackToToday(){
-        console.log('toggleBackToToday');
+        // console.log('toggleBackToToday');
         this.setState(preState=>{
             let btToday = preState.btToday;
             return{
@@ -117,7 +119,7 @@ class Dashboard extends React.Component{
             document.getElementById("mbtn").style.color='#c4c1c1';
         }
         
-        console.log(logBtn);
+        // console.log(logBtn);
     }
     addListToDB(){
         this.setState(preState=>{
@@ -128,7 +130,7 @@ class Dashboard extends React.Component{
                 ifInput: false,
             }
         })
-        console.log(this.state.note);
+        // console.log(this.state.note);
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("lists").doc();
         ref.set({
@@ -141,30 +143,37 @@ class Dashboard extends React.Component{
         this.setState({
             ifInput: true
         });
-        console.log(this.state.ifInput);
+        // console.log(this.state.ifInput);
     }
     enterClick(){
         if (event.keyCode==13){
             document.getElementById("inputList").click(); //觸動按鈕的點擊
         } 
     }
+    showList(e){
+        this.setState({
+            showWhichList: e.currentTarget.getAttribute("data-listtitle"),
+
+        })
+        this.toggleNav();
+        // console.log(e.currentTarget.getAttribute("data-listtitle"));
+    }
     render(){
-        
         let renderListItem = this.state.listItems.map((item,index)=>
-            <div className="sidebar_li" key={index}>
-                <span className="sidebar_icon">
-                    <i className="fas fa-ellipsis-v"></i>
-                </span> 
-                <span>{item.title}</span>
-            </div>
+            <Link to='/dashboard/list' data-listtitle={item.title} key={index} onClick={this.showList}>
+                <div className="sidebar_li" >
+                    <span className="sidebar_icon">
+                        <i className="fas fa-ellipsis-v"></i>
+                    </span> 
+                    <span>{item.title}</span>
+                </div>
+            </Link>
         );
         let showListInput = <div className="sidebar_input" onKeyDown={this.enterClick}>
                 <span>
                     <input className="inputList" type="text"  onChange={this.handleNoteChange} placeholder="Add New List" autoFocus/>
                 </span>
                 <div className="inputCancelAdd" >
-                    {/* <span className="cancel" >Cancel</span>
-                    <span className="add" >Add</span> */}
                     <span className="add" onClick={()=>{this.setState({ifInput:false})}}><i className="fas fa-times"></i></span>
                     <span id="inputList" className="cancel" onClick={this.addListToDB}><i className="fas fa-check" ></i></span>
                 </div>
@@ -179,79 +188,76 @@ class Dashboard extends React.Component{
                 <span id="dbtn" className="top_nav_btn tnb2" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
             </div>
             <div className="inner_board">
-                <Route path="/dashboard"><RenderMonthLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
-                <Route path="/dashboard"><RenderWeekLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
-                <Route path="/dashboard"><RenderDayLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+                <RenderMonthLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <RenderWeekLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <RenderDayLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
             </div>
         </div>
-        
-        let listBoard = <div className="listBoard">
-                <div className="listTitle">個人專案</div>
-                <div className="list">
-                    <div>1.取得當下時間每天換頁面日期(月、週)</div>
-                    <div>2.月、週曆時間可任意往前往後</div>
-                    <div>3.得當下時間每天換頁面日期(Today)+可以切換天+新增todo</div>
-                    <div>4.todo刪除</div>
-                    <div>5.主頁面右半部React(Today,Overdue)</div>
-                </div>
-                <div>Total Hours: 40hrs</div>
-                <div className="bgc"></div>
-            </div>
-        console.log(this.props.uid);
+        // console.log(this.props.uid);
         return <div>
-            <header>
-                <div>
-                    <span onClick={this.toggleNav} className="top_nav_logo"><i className="fas fa-bars"></i></span>
-                    <span className="bulletword">DOIT</span>
-                    <span><i className="fas fa-bolt"></i></span>
-                    
-                </div>
-                <span className="header_member">
-                    <div className="logout" onClick={this.props.toggleSignIn}>LOG OUT</div>
-                    {/* <span className="top_nav_logo"><i className="fas fa-user"></i></span> */}
-                </span>   
-            </header>
+            <div>
+                <header>
+                    <div>
+                        <span onClick={this.toggleNav} className="top_nav_logo"><i className="fas fa-bars"></i></span>
+                        <span className="bulletword">DOIT</span>
+                        <span><i className="fas fa-bolt"></i></span>
+                        
+                    </div>
+                    <span className="header_member">
+                        <div className="logout" onClick={this.props.toggleSignIn}>LOG OUT</div>
+                        {/* <span className="top_nav_logo"><i className="fas fa-user"></i></span> */}
+                    </span>   
+                </header>
 
-            <main>
-                <div className="dashboard_visual">
-                    {/* sidebar */}
-                    <div id="sidebar" className="sidebar">
-                        <div className="sidebar_ul">
-                            <div className="sidebar_li">
+                <main>
+                    <div className="dashboard_visual">
+                        {/* sidebar */}
+                        <div id="sidebar" className="sidebar">
+                            <div className="sidebar_ul">
+                                <div className="sidebar_li">
+                                    <span className="sidebar_icon">
+                                        <i className="fas fa-clipboard-list"></i>
+                                    </span> 
+                                    <span>Future Log</span>
+                                </div>
+                            </div>
+                            <div className="sidebar_line">Lists</div>
+                            {renderListItem}
+                            {this.state.ifInput?showListInput:''}
+                            {/* <div className="sidebar_li">
                                 <span className="sidebar_icon">
-                                    <i className="fas fa-clipboard-list"></i>
+                                    <i className="fas fa-ellipsis-v"></i>
                                 </span> 
-                                <span>Future Log</span>
+                                <span>個人專案</span>
+                            </div> */}
+                            
+                            <div className="sidebar_li"  onClick={this.toggleIfInput}>
+                                <span className="sidebar_icon">
+                                    <i className="fas fa-plus"></i>
+                                </span> 
+                                <span>New List</span>
                             </div>
                         </div>
-                        <div className="sidebar_line">Lists</div>
-                        {renderListItem}
-                        {this.state.ifInput?showListInput:''}
-                        {/* <div className="sidebar_li">
-                            <span className="sidebar_icon">
-                                <i className="fas fa-ellipsis-v"></i>
-                            </span> 
-                            <span>個人專案</span>
-                        </div> */}
-                        
-                        <div className="sidebar_li"  onClick={this.toggleIfInput}>
-                            <span className="sidebar_icon">
-                                <i className="fas fa-plus"></i>
-                            </span> 
-                            <span>New List</span>
+                        {/* sidebar end */}
+
+                        {/* dashboard top_nav start */}
+                        <div className="dashboard">
+                            <div className="inner2_board">
+                                {/* <Route path="/dashboard" exact>{showLogs}</Route> */}
+                                
+                                <div className="listNoDeco">
+                                    <Route path="/dashboard">
+                                    {/* <Route path="/dashboard/list"> */}
+                                        <List showWhichList={this.state.showWhichList} uid={this.props.uid}/>
+                                    </Route>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    {/* sidebar end */}
-
-                    {/* dashboard top_nav start */}
-                    <div className="dashboard">
-                        <div className="inner2_board">
-                            {this.state.listOpen?listBoard:showLogs}
-
-                        </div>
-                    </div>
-                </div>
-            </main>
+                </main>
+        
+            </div>;
+            
             
         </div>;
     }
