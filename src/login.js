@@ -2,7 +2,7 @@ import React from "react";
 import { Link, animateScroll as scroll } from "react-scroll";
 // import hp1 from './homepage.jpg';
 // let currentUserData;
-
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
 class Login extends React.Component{
     constructor(props){
         super(props);
@@ -59,28 +59,29 @@ class Login extends React.Component{
                 <div className="homepage">
                     <div className="aPart">
                         <div className="hpIntro">
-                            <div className="hpIntroTitle1">DO YOUR DOIT</div>
                             <div className="hpIntroTitle">PLAN YOUR DAY,</div>
                             <div className="hpIntroTitle">WEEK AND MONTH.</div>
                             <div className="hpIntroTitle">QUICKLY.</div>
                             <div className="hpIntroContent">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                                 Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
                                 when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
+                            
+                            <Link
+                                activeClass="active"
+                                to="start"
+                                spy={true}
+                                smooth={true}
+                                offset={-70}
+                                duration= {500}
+                            ><div className="lgbtn animate__pulse">Log In</div></Link>
                         </div>
                         <div className="hpImg">
                             <img src="./homepage.jpg"/>
                         </div>
                     </div>
                     <div className="bPart">
-                        <Link
-                            activeClass="active"
-                            to="start"
-                            spy={true}
-                            smooth={true}
-                            offset={-70}
-                            duration= {500}
-                        ><div className="bpartTitle">START NOW</div></Link>
                         
+                        <div className="bpartTitle">START TO DO!</div>
                         <div id="start" className="login_board" data-type={'login'} onKeyDown={this.enterLogin}>
                             <div className="login_title">Log in</div>
                             <div>

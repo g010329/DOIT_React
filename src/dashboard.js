@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import RenderMonthLog from "./month_log";
 import RenderWeekLog from "./week_log";
 import RenderDayLog from "./day_log";
+import * as firebase from "firebase";
+import 'firebase/auth';
+import 'firebase/database';
 // 此頁有 dashboard 的 sidebar和top nav
 // 有使用者的uid: this.props.uid
 class Dashboard extends React.Component{
@@ -10,15 +13,37 @@ class Dashboard extends React.Component{
         super(props);
         this.state={
             reRender: false,
-            btToday:false
+            btToday: false,
+            //List
+            ifInput: false,
+            listOpen: false,
+            listItems: [
+                // {title:'個人專案'},
+                // {title:'英文學習'},
+                // {title:'課程影片'}
+            ],
+            note:''
+
         };
         this.toggleNav = this.toggleNav.bind(this);
         this.getDate = this.toggleNav.bind(this);
         this.reRenderLog = this.reRenderLog.bind(this);
         this.toggleBackToToday = this.toggleBackToToday.bind(this);
-        
+        //list
+        this.toggleIfInput = this.toggleIfInput.bind(this); 
+        this.handleNoteChange = this.handleNoteChange.bind(this);
+        this.addListToDB = this.addListToDB.bind(this);
+        this.enterClick = this.enterClick.bind(this);
+        this.ListFromDb = this.getListFromDB.bind(this);
+        this.getListFromDB = this.getListFromDB.bind(this);
+        this.listenLists = this.listenLists.bind(this);
     }
-    
+    handleNoteChange(e){
+        this.setState({
+            note:e.currentTarget.value
+        });
+        // console.log(e.currentTarget.value);
+    }
     reRenderLog(){
         this.setState(preState=>{
             let reRender = preState.reRender;
@@ -29,7 +54,29 @@ class Dashboard extends React.Component{
             }
         })
     }
-
+    getListFromDB(){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("lists");
+        let listItems = [];
+        ref.orderBy('createdAt','asc').get().then(querySnapshot=>{
+            querySnapshot.forEach(doc=>{
+                listItems.push({
+                    title: doc.data().title
+                });
+                console.log(doc.data());
+            });
+            this.setState({listItems:listItems});
+        })
+    }
+    listenLists(){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("lists");
+        ref.orderBy('createdAt','desc').limit(1).onSnapshot(querySnapshot=>{
+            querySnapshot.forEach(doc=>{
+                // console.log(doc.data());
+            })
+        })
+    }
     toggleBackToToday(){
         console.log('toggleBackToToday');
         this.setState(preState=>{
@@ -39,7 +86,10 @@ class Dashboard extends React.Component{
             }
         })
     }
-
+    componentDidMount(){
+        this.getListFromDB();
+        this.listenLists();
+    }
     toggleNav(){
         let sider = document.getElementById("sidebar");
         if(sider.style.display == "block"){
@@ -69,7 +119,84 @@ class Dashboard extends React.Component{
         
         console.log(logBtn);
     }
+    addListToDB(){
+        this.setState(preState=>{
+            let listItems = preState.listItems;
+            listItems.push({title:this.state.note});
+            return{
+                // listItems:listItems,
+                ifInput: false,
+            }
+        })
+        console.log(this.state.note);
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("lists").doc();
+        ref.set({
+            title: this.state.note,
+            isDone: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(()=>{console.log('成功新增')})
+    }
+    toggleIfInput(){
+        this.setState({
+            ifInput: true
+        });
+        console.log(this.state.ifInput);
+    }
+    enterClick(){
+        if (event.keyCode==13){
+            document.getElementById("inputList").click(); //觸動按鈕的點擊
+        } 
+    }
     render(){
+        
+        let renderListItem = this.state.listItems.map((item,index)=>
+            <div className="sidebar_li" key={index}>
+                <span className="sidebar_icon">
+                    <i className="fas fa-ellipsis-v"></i>
+                </span> 
+                <span>{item.title}</span>
+            </div>
+        );
+        let showListInput = <div className="sidebar_input" onKeyDown={this.enterClick}>
+                <span>
+                    <input className="inputList" type="text"  onChange={this.handleNoteChange} placeholder="Add New List" autoFocus/>
+                </span>
+                <div className="inputCancelAdd" >
+                    {/* <span className="cancel" >Cancel</span>
+                    <span className="add" >Add</span> */}
+                    <span className="add" onClick={()=>{this.setState({ifInput:false})}}><i className="fas fa-times"></i></span>
+                    <span id="inputList" className="cancel" onClick={this.addListToDB}><i className="fas fa-check" ></i></span>
+                </div>
+            </div>
+        
+        let showLogs = <div>
+            <div className="top_nav">
+                <div>
+                    <span id="mbtn" className="top_nav_btn tnb1" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
+                    <span id="wbtn" className="top_nav_btn tnb1 tbtb" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
+                </div>
+                <span id="dbtn" className="top_nav_btn tnb2" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
+            </div>
+            <div className="inner_board">
+                <Route path="/dashboard"><RenderMonthLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+                <Route path="/dashboard"><RenderWeekLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+                <Route path="/dashboard"><RenderDayLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
+            </div>
+        </div>
+        
+        let listBoard = <div className="listBoard">
+                <div className="listTitle">個人專案</div>
+                <div className="list">
+                    <div>1.取得當下時間每天換頁面日期(月、週)</div>
+                    <div>2.月、週曆時間可任意往前往後</div>
+                    <div>3.得當下時間每天換頁面日期(Today)+可以切換天+新增todo</div>
+                    <div>4.todo刪除</div>
+                    <div>5.主頁面右半部React(Today,Overdue)</div>
+                </div>
+                <div>Total Hours: 40hrs</div>
+                <div className="bgc"></div>
+            </div>
         console.log(this.props.uid);
         return <div>
             <header>
@@ -98,22 +225,16 @@ class Dashboard extends React.Component{
                             </div>
                         </div>
                         <div className="sidebar_line">Lists</div>
-
-                        <div className="sidebar_li">
+                        {renderListItem}
+                        {this.state.ifInput?showListInput:''}
+                        {/* <div className="sidebar_li">
                             <span className="sidebar_icon">
                                 <i className="fas fa-ellipsis-v"></i>
                             </span> 
                             <span>個人專案</span>
-                        </div>
-
-                        <div className="sidebar_li">
-                            <span className="sidebar_icon">
-                                <i className="fas fa-ellipsis-v"></i>
-                            </span> 
-                            <span>英文學習</span>
-                        </div>
+                        </div> */}
                         
-                        <div className="sidebar_li">
+                        <div className="sidebar_li"  onClick={this.toggleIfInput}>
                             <span className="sidebar_icon">
                                 <i className="fas fa-plus"></i>
                             </span> 
@@ -125,27 +246,8 @@ class Dashboard extends React.Component{
                     {/* dashboard top_nav start */}
                     <div className="dashboard">
                         <div className="inner2_board">
-                        {/* top nav */}
-                            <div className="top_nav">
-                                <div>
-                                    <span id="mbtn" className="top_nav_btn tnb1" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
-                                    <span id="wbtn" className="top_nav_btn tnb1 tbtb" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
-                                </div>
-                                <span id="dbtn" className="top_nav_btn tnb2" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
-                                {/* <span className="top_nav_btn" data-btn={"overdue"} onClick={this.toggleBtn}>overdue</span> */}
-                            </div>
-                            {/* 主控制面板 */}
-                            <div className="inner_board">
+                            {this.state.listOpen?listBoard:showLogs}
 
-                                {/* 左面版 */}
-                                <Route path="/dashboard"><RenderMonthLog btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
-                                <Route path="/dashboard"><RenderWeekLog btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
-                                {/* <Route path="/dashboard/week_log"><RenderWeekLog/></Route> */}
-                                {/* 左面版結束 */}
-
-                                {/* 右面板 */}
-                                <Route path="/dashboard"><RenderDayLog btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/></Route>
-                            </div>
                         </div>
                     </div>
                 </div>

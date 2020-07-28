@@ -20,13 +20,15 @@ class RenderDayLog extends React.Component{
             ifInput: false,
             ifShowMore: false,
             note:"",
+            timer:0,
             moreInfoBoard:{
                 oldTitle:'',
                 index:null,
                 newTitle:'',
                 iYear:null,
                 iMonth:null,
-                iDate:null
+                iDate:null,
+                list:null
             },
             overdue:[
                 // {"id":'dn1k3ednklwjebd',"title":'zzz',"ifDone":false,"year":2020,"month":5,"date":15}
@@ -65,8 +67,19 @@ class RenderDayLog extends React.Component{
         this.changeDate= this.changeDate.bind(this);
         //overdue done
         this.overdueIfDone = this.overdueIfDone.bind(this);
-        
+        //timer
+        this.timer = this.timer.bind(this); 
+        this.chooseList = this.chooseList.bind(this);  
+            
     }
+
+    timer(e){
+        this.setState({
+            timer: e.currentTarget.value
+        });
+        console.log(this.state.timer);
+    }
+
     setWeekNum(){
         this.setState(preState=>{
             let year = preState.year;
@@ -173,6 +186,7 @@ class RenderDayLog extends React.Component{
     }
     
     getOverdueFromDB(){
+        // console.log('0getOverdueFromDB');
         let overdue =[];
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
@@ -181,7 +195,7 @@ class RenderDayLog extends React.Component{
             .get().then(querySnapshot => {
                 querySnapshot.forEach(doc=>{
                     // this.setState(preState)
-                    console.log('1getOverdueFromDB','id',doc.id);
+                    // console.log('1getOverdueFromDB','id',doc.id);
                     overdue.push({
                         id:doc.id,
                         title: doc.data().title,
@@ -189,7 +203,9 @@ class RenderDayLog extends React.Component{
                         year: doc.data().year,
                         month: doc.data().month,
                         date: doc.data().date,
-                        week: null
+                        week: null,
+                        timer: doc.data().timer,
+                        list: doc.data().list
                     });
                 })
                 this.setState({
@@ -201,7 +217,7 @@ class RenderDayLog extends React.Component{
             .get().then(querySnapshot => {
                 querySnapshot.forEach(doc=>{
                     // this.setState(preState)
-                    console.log('2getOverdueFromDB','id',doc.id);
+                    // console.log('2getOverdueFromDB',doc.data());
                     overdue.push({
                         id:doc.id,
                         title: doc.data().title,
@@ -209,7 +225,30 @@ class RenderDayLog extends React.Component{
                         year: doc.data().year,
                         month: doc.data().month,
                         date: doc.data().date,
-                        week: null
+                        week: null,
+                        timer: doc.data().timer,
+                        list: doc.data().list
+                    });
+                })
+                this.setState({
+                    overdue:overdue
+                })
+            })
+            ref.where("month","<",new Date().getMonth()).where("year","==",new Date().getFullYear()).where("isDone","==",false).where('week',"==",null)
+            .get().then(querySnapshot => {
+                querySnapshot.forEach(doc=>{
+                    // this.setState(preState)
+                    // console.log('2getOverdueFromDB',doc.data());
+                    overdue.push({
+                        id:doc.id,
+                        title: doc.data().title,
+                        ifDone: doc.data().isDone,
+                        year: doc.data().year,
+                        month: doc.data().month,
+                        date: doc.data().date,
+                        week: null,
+                        timer: doc.data().timer,
+                        list: doc.data().list
                     });
                 })
                 this.setState({
@@ -221,7 +260,7 @@ class RenderDayLog extends React.Component{
         .get().then(querySnapshot => {
             querySnapshot.forEach(doc=>{
                 // this.setState(preState)
-                console.log('3getOverdueFromDB','id',doc.id);
+                // console.log('3getOverdueFromDB','id',doc.id);
                 overdue.push({
                     id:doc.id,
                     title: doc.data().title,
@@ -229,7 +268,9 @@ class RenderDayLog extends React.Component{
                     year: doc.data().year,
                     month: doc.data().month,
                     date: doc.data().date,
-                    week: null
+                    week: null,
+                    timer: doc.data().timer,
+                    list: doc.data().list
                 });
             })
             this.setState({
@@ -237,11 +278,11 @@ class RenderDayLog extends React.Component{
             })
         })
         //比較週數
-        ref.where("week","<",this.countWeekNum(new Date())).where("week",">",0)
+        ref.where("week","<",this.countWeekNum(new Date())).where("week",">",0).where("isDone","==",false)
         .get().then(querySnapshot => {
             querySnapshot.forEach(doc=>{
                 // this.setState(preState)
-                console.log('3getOverdueFromDB','id',doc.id,this.countWeekNum(new Date()));
+                // console.log('3getOverdueFromDB','id',doc.id,this.countWeekNum(new Date()));
                 overdue.push({
                     id:doc.id,
                     title: doc.data().title,
@@ -249,7 +290,9 @@ class RenderDayLog extends React.Component{
                     year: doc.data().year,
                     month: doc.data().month,
                     date: doc.data().date,
-                    week: null
+                    week: null,
+                    timer: doc.data().timer,
+                    list: doc.data().list
                 });
             })
             this.setState({
@@ -267,12 +310,16 @@ class RenderDayLog extends React.Component{
         let date = e.currentTarget.getAttribute("data-date");
         let week = e.currentTarget.getAttribute("data-week");
         let id = e.currentTarget.getAttribute("data-id");
+        let list = e.currentTarget.getAttribute("data-list");
+        let timer = e.currentTarget.getAttribute("data-timer");
         console.log(year,month,date);
         console.log(type);
+        console.log(timer);
         if(type=='overdue'){
             this.setState(preState=>{
                 let ifShowMore = preState.ifShowMore;
                 let moreInfoBoard = preState.moreInfoBoard;
+                
                 moreInfoBoard.oldTitle = oldTitle;
                 moreInfoBoard.index = index;
                 moreInfoBoard.iYear = parseInt(year);
@@ -280,6 +327,8 @@ class RenderDayLog extends React.Component{
                 moreInfoBoard.iDate = parseInt(date);
                 moreInfoBoard.iWeek = week;
                 moreInfoBoard.id = id;
+                moreInfoBoard.timer = timer;
+                moreInfoBoard.list = list;
                 // console.log('toggleIfShowMore',moreInfoBoard);
                 return{
                     ifShowMore: !ifShowMore,
@@ -299,6 +348,8 @@ class RenderDayLog extends React.Component{
                 moreInfoBoard.iDate = this.state.date;
                 moreInfoBoard.id = id;
                 moreInfoBoard.iWeek = null;
+                moreInfoBoard.timer = timer;
+                moreInfoBoard.list = list;
                 // console.log('toggleIfShowMore',moreInfoBoard);
                 return{
                     ifShowMore: !ifShowMore,
@@ -309,12 +360,25 @@ class RenderDayLog extends React.Component{
             })
         }
     }
+    chooseList(e){
+        let list = e.target.value;
+        console.log(e.target.value);
+        this.setState(preState=>{
+            let moreInfoBoard = preState.moreInfoBoard;
+            moreInfoBoard.list = list;
+            return{
+                moreInfoBoard: moreInfoBoard
+            }
+        })
+    }
     autoHeight(){
         let x = document.getElementById("testHeight");
         x.style.height = 'auto';
         x.style.height = x.scrollHeight + "px";
     }
     showMoreInfo(){
+        console.log('listItems',this.props.listItems);
+        let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
         console.log('showMoreInfo',this.state.moreInfoBoard);
         let showScheTime1 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
@@ -322,6 +386,7 @@ class RenderDayLog extends React.Component{
         let iWeek = this.state.moreInfoBoard.iWeek;
         let iDate = this.state.moreInfoBoard.iDate;
         let iMonth = this.state.moreInfoBoard.iMonth;
+        let list = this.state.moreInfoBoard.list;
         return(
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
@@ -333,13 +398,42 @@ class RenderDayLog extends React.Component{
                         {/* <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div> */}
                         <div className="info" onClick={this.showCalen}>
-                            <i className="fas fa-calendar"></i>
-                            {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
-                            {iWeek!=null && this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
-                            {((iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
+                            <div className="infoLi">
+                                <i className="fas fa-calendar"></i>
+                                <span className="addList">Change Time</span>
+                            </div>
+                            <div className="infoLi2">
+                                {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
+                                {iWeek!=null && this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
+                                {((iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
+                            </div>
                         </div>
-                        {/* <div className="info"><i className="fas fa-list-ul"></i>
-                            <span>add to list</span></div> */}
+                        <div className="info">
+                            <div className="infoLi">
+                                <i className="fas fa-list-ul"></i>
+                                
+                                <span className="addList">{this.state.moreInfoBoard.list==null?'Add To List':list}</span>
+                            </div>
+                            <div className="infoLi2">
+                                <select className="selectList" onChange={this.chooseList}>
+                                    <option value="">Choose List</option>
+                                    {selectList}
+                                    <option value={null}>尚未選擇</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="info">
+                            <div className="infoLi">
+                                <i className="fas fa-clock"></i>
+                                <span className="addList">Timer</span>
+                            </div>
+                            <div className="infoLi2">
+                                <input className="inputTimer" type="number" step=".5" defaultValue={this.state.moreInfoBoard.timer} onClickCapture={this.timer} autoFocus/>
+                                {/* <input type="text" placeholder="spending hours?" onChange={this.timer} autoFocus/> */}
+                            </div>
+                            
+                        </div>
+                        
                     </div>
                 </div>
                 <div className="infoBtns">
@@ -351,13 +445,13 @@ class RenderDayLog extends React.Component{
         )
     }
     adjustTodo(){
-        let oldTitle = this.state.moreInfoBoard.oldTitle;
         let note;
         this.setState(preState=>{
             note = preState.note;
             let moreInfoBoard = preState.moreInfoBoard;
             let thisDayToDos = preState.thisDayToDos;
             let ifShowMore = preState.ifShowMore;
+            let timer = preState.timer;
             // thisDayToDos[moreInfoBoard.index].title = note;
             console.log(moreInfoBoard);
             if(moreInfoBoard.iDate!=this.state.date){
@@ -370,7 +464,6 @@ class RenderDayLog extends React.Component{
                 calenIfShow:false
             }
         });
-        // console.log(this.state.year,this.state.month,this.state.date,oldTitle);
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         // ref.where("year","==",this.state.year).where("month","==",this.state.month).where("date","==",this.state.date).where("title","==",oldTitle)
@@ -379,21 +472,23 @@ class RenderDayLog extends React.Component{
         //             doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
         //         })
         //     })
-        console.log('adjust todo');
+        console.log('adjust todo',this.state.timer);
         ref.doc(this.state.moreInfoBoard.id)
             .update({
                 title:this.state.note,
                 month:this.state.moreInfoBoard.iMonth,
                 year:this.state.moreInfoBoard.iYear,
                 date:this.state.moreInfoBoard.iDate,
-                week:this.state.moreInfoBoard.iWeek
+                week:this.state.moreInfoBoard.iWeek,
+                timer:this.state.timer,
+                list: this.state.moreInfoBoard.list
+                
             }).then(()=>{
+                console.log('update成功');
                 this.getDBdataInState(this.state.month,this.state.year,this.state.date);
                 this.getOverdueFromDB();
                 this.props.reRenderLog();
-                    
         })
-        
     }
 
 
@@ -408,9 +503,11 @@ class RenderDayLog extends React.Component{
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         if(dataType == 'overdue'){
             // console.log('overdue')
-            ref.doc(dataId).delete().then(()=>{
+            // ref.doc(dataId).delete().then(()=>{
+            ref.doc(dataId).update({isDone:true}).then(()=>{
                 console.log('overdue刪除成功');
                 this.props.reRenderLog();
+                
                 this.getDBdataInState(this.state.month,this.state.year,this.state.date);
                 this.setState(preState=>{
                     let overdue = preState.overdue;
@@ -426,7 +523,8 @@ class RenderDayLog extends React.Component{
             ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",deleteTitle)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
-                    doc.ref.delete().then(()=>{
+                    doc.ref.update({isDone:true}).then(()=>{
+                    // doc.ref.delete().then(()=>{
                         console.log('日刪除成功');
                         this.props.reRenderLog();
                         this.getOverdueFromDB();
@@ -465,7 +563,7 @@ class RenderDayLog extends React.Component{
         ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",title)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
-                    console.log(doc.data());
+                    // console.log(doc.data());
                     doc.ref.update({isDone:newStatus})
                 })
             })
@@ -481,10 +579,10 @@ class RenderDayLog extends React.Component{
 
     overdueIfDone(e){
         let id = e.currentTarget.getAttribute("data-id");
-        console.log(id);
+        // console.log(id);
         let index = e.currentTarget.getAttribute("data-index");
         let newStatus;
-        console.log(this.state.overdue);
+        // console.log(this.state.overdue);
         
         this.setState(preState=>{
             let overdue = preState.overdue;
@@ -517,7 +615,9 @@ class RenderDayLog extends React.Component{
                     thisDayToDos.push({
                         id:doc.id,
                         title: doc.data().title,
-                        ifDone: doc.data().isDone
+                        ifDone: doc.data().isDone,
+                        timer: doc.data().timer,
+                        list: doc.data().list
                     });
                 })
                 this.setState({thisDayToDos:thisDayToDos});
@@ -529,8 +629,7 @@ class RenderDayLog extends React.Component{
         // 原本沒有使用時，props.state更新後就進到 componentDidupdate
         // 然後因為在 componentDidupdate 裡使用 getDBdataInState，state狀態改變後又進入componentDidupdate
         // 因此程式會一直循環印出console.log("Day Update")，database會爆掉
-        
-        
+
         if(preProps.reRender !== this.props.reRender){
             console.log("Day Update");
             this.getDBdataInState(this.state.month,this.state.year,this.state.date);
@@ -555,7 +654,8 @@ class RenderDayLog extends React.Component{
             date: date,
             type: "task",
             isDone: false,
-            overdue: false           
+            overdue: false,
+            timer:0          
         });
     }
     handleNoteChange(e){
@@ -617,8 +717,8 @@ class RenderDayLog extends React.Component{
                     <input className="noScheInput" type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture2">
-                    <span onClick={this.toggleIfInput}>Cancel</span>
-                    <span id="inputDay" onClick={this.addThisDayToDos}>Add</span>
+                    <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
+                    <span className="add" id="inputDay" onClick={this.addThisDayToDos}>Add</span>
                 </span>
             </div>
         )
@@ -660,6 +760,7 @@ class RenderDayLog extends React.Component{
         this.setWeekNum();
         this.getDBdataInState(this.state.month,this.state.year,this.state.date);
         this.getOverdueFromDB();
+        console.log('listitems',this.props.listItems);
     }
     render(){
         let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>
@@ -670,7 +771,7 @@ class RenderDayLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture mf4">
                     {/* <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span> */}
-                    <span ><i className="fas fa-pen" data-id={todo.id} data-type={'date'} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-id={todo.id} data-type={'date'} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                     <span><i className="fas fa-trash" data-type={'day'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
@@ -682,7 +783,7 @@ class RenderDayLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture mf2">
                     {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
-                    <span ><i className="fas fa-pen" data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
+                    <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                     <span><i className="fas fa-trash" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>
@@ -697,6 +798,7 @@ class RenderDayLog extends React.Component{
                 </div>
             </div>  
         let todayHint = <span className="onlyShowToday">Today </span>
+        let yearHint = <span className="showYear">{this.state.year}</span>
         return <div className="right_board">
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
@@ -705,10 +807,12 @@ class RenderDayLog extends React.Component{
                 <div>
                     {this.state.date==new Date().getDate()&&this.state.month==new Date().getMonth()?todayHint:''}
                     <span className="title_month">
-                    
                         {this.state.month+1}/{this.state.date}
                     </span>
+                    {this.state.date==new Date().getDate()&&this.state.month==new Date().getMonth()?'':yearHint}
+                    
                 </div>
+                
                 <span className="title_right">
                     <span className="icon_hover_span"><i className="fas fa-calendar" onClick={this.ifChangeDate}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>

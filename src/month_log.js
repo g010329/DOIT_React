@@ -201,12 +201,12 @@ class RenderMonthLog extends React.Component{
             //沒改過時間的
             if (this.state.moreInfoBoard.iDate==null){
                 console.log('沒改時間');
-                
-                ref.doc(this.state.moreInfoBoard.id).update({title:this.state.note})
-                    .then(()=>{
-                        this.getDBdataInState(this.state.month,this.state.year,0);
-                        this.props.reRenderLog();
-                    })
+                ref.doc(this.state.moreInfoBoard.id).update({
+                    title:this.state.note
+                }).then(()=>{
+                    this.getDBdataInState(this.state.month,this.state.year,0);
+                    this.props.reRenderLog();
+                })
                 
             }else{
                 //改過時間的
@@ -217,7 +217,12 @@ class RenderMonthLog extends React.Component{
                 //     })
                 // });
                 console.log('改過時間','m',this.state.moreInfoBoard.iMonth,'year',this.state.moreInfoBoard.iYear,'date',this.state.moreInfoBoard.iDate,'week',this.state.moreInfoBoard.iWeek);
-                ref.doc(this.state.moreInfoBoard.id).update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek});
+                ref.doc(this.state.moreInfoBoard.id).update({
+                    title:this.state.note,
+                    month:this.state.moreInfoBoard.iMonth,
+                    year:this.state.moreInfoBoard.iYear,
+                    date:this.state.moreInfoBoard.iDate,
+                    week:this.state.moreInfoBoard.iWeek});
             }
             
             // ref.where("id","==",this.state.moreInfoBoard.id)
@@ -337,17 +342,19 @@ class RenderMonthLog extends React.Component{
                     <div className="info1">
                         <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
                     </div>
-                    <div onClick={this.showCalen}>
-                        {/* <div className="info"><i className="fas fa-check-square"></i>
-                            <span>task</span></div> */}
-                        <div className="info" >
-                            <i className="fas fa-calendar" ></i>
+                    <div className="info" onClick={this.showCalen}>
+                        <div className="infoLi">
+                            <i className="fas fa-calendar"></i>
+                            <span className="addList">Change Time</span>
+                        </div>
+                        <div className="infoLi2" >
                             {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
                             {iWeek!=null && iWeek!=0 && iDate==0? showScheTime2:''}
                             {((iWeek==0 || iWeek==undefined) && iDate>0)? showScheTime3:''}
                         </div>
-                        {/* <div className="info"><i className="fas fa-list-ul"></i>
-                            <span>add to list</span></div> */}
+                        {/* <div className="info">
+                            <i className="fas fa-list-ul"></i>
+                        </div> */}
                     </div>
                 </div>
                 <div className="infoBtns">
@@ -509,24 +516,24 @@ class RenderMonthLog extends React.Component{
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
+        // ref.where("month","==",this.state.month).where("year","==",this.state.year).where("title","==",deleteTitle)
+        //     .get().then(querySnapshot=>{
+        //         querySnapshot.forEach(doc=>{
+        //             doc.ref.delete().then(()=>{
+        //                 this.props.reRenderLog();
+        //                 this.getDBdataInState(this.state.month,this.state.year,0);
+        //             });
+        //         })
+        //     });
         ref.where("month","==",this.state.month).where("year","==",this.state.year).where("title","==",deleteTitle)
-            .get().then(querySnapshot=>{
-                querySnapshot.forEach(doc=>{
-                    doc.ref.delete().then(()=>{
-                        this.props.reRenderLog();
-                        this.getDBdataInState(this.state.month,this.state.year,0);
-                    });
-                })
-            });
-
-        // this.setState(preState=>{
-        //     let thisMonthToDos = preState.thisMonthToDos;
-        //     thisMonthToDos.splice(deleteIndex,1);
-        //     return{
-        //         thisMonthToDos:thisMonthToDos
-        //     }
-        // });
-        
+        .get().then(querySnapshot=>{
+            querySnapshot.forEach(doc=>{
+                doc.ref.update({isDone:true}).then(()=>{
+                    this.props.reRenderLog();
+                    this.getDBdataInState(this.state.month,this.state.year,0);
+                });
+            })
+        });
     }
     
     
@@ -568,9 +575,8 @@ class RenderMonthLog extends React.Component{
                 <input  className="addmd_input" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
             </span>
             <span className="month_todo_feacture2">
-                <span id="inputMonthDate" data-addday={i} onClick={this.addThisDayToDos} >Add</span>
-                <span onClick={this.turnOffEachDayIfInput}>Cancel</span>
-
+                <span className="cancel" onClick={this.turnOffEachDayIfInput}>Cancel</span>
+                <span className="add" id="inputMonthDate" data-addday={i} onClick={this.addThisDayToDos} >Add</span>
             </span>
         </div>
         )
@@ -683,8 +689,8 @@ class RenderMonthLog extends React.Component{
                 <input className="noScheInput"  type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange} autoFocus/>
             </span>
             <span className="month_todo_feacture2">
-                <span onClick={this.toggleIfInput}>Cancel</span>
-                <span id="inputMonth" onClick={this.addThisMonthToDos}>Add</span>
+                <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
+                <span className="add" id="inputMonth" onClick={this.addThisMonthToDos}>Add</span>
             </span>
         </div>
         )
@@ -732,18 +738,19 @@ class RenderMonthLog extends React.Component{
             <div key={index}>
             {/* 每日事項input */}
                 <div className="month_day" >
-                {/* 每日新增事件 */}
+                    {/* 每日新增事件 */}
+                    <div className="month_day_a">
+                        <span className="m_date" >{eachday.date+1}</span>
+                        <span className="m_day_of_week" >{eachDay[eachday.day]}</span>
+                        <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
+                    </div>
+                    <div className="month_day_b">
+                        {eachday.todos.map((todo,innerIndex)=><span data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
+                        <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
+                    </div>
+                </div>
+                {eachday.day==6?<div className="weekBorder"></div>:''}
                 
-                <div className="month_day_a">
-                    <span className="m_date" >{eachday.date+1}</span>
-                    <span className="m_day_of_week" >{eachDay[eachday.day]}</span>
-                    <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
-                </div>
-                <div className="month_day_b">
-                    {eachday.todos.map((todo,innerIndex)=><span data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
-                    <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
-                </div>
-            </div>
             </div>);
         let hint = <div className="hint">hint：點擊右上+按鈕，新增此月待辦事項！</div>
                 

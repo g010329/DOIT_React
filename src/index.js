@@ -1,7 +1,7 @@
 import './basic.css'
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Switch, Route, Link,Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import Login from "./login.js";
 import Dashboard from "./dashboard.js";
 // import Homepage from "./homepage.js";
@@ -42,7 +42,7 @@ class App extends React.Component {
         if (firebase.auth().currentUser) {
             // [START signout]
             firebase.auth().signOut();
-            alert('sigh out');
+            // alert('sigh out');
             // [END signout]
         } else {
             // Sign in with email and pass.
