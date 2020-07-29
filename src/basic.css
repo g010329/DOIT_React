@@ -22,7 +22,7 @@
     
 }
 .listTitleName{
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     font-size: 2rem;
     color: #eceaea;
 }
@@ -58,12 +58,26 @@
 .list{
     margin-top: 10px;
     background-color: #e8e8e8;
-    box-shadow: 0px 0px 10px #6e6e6e;
+    /* box-shadow: 0px 0px 10px #6e6e6e; */
     margin-bottom: 10px;
     border-radius: 15px;
     padding: 20px;
     width: 600px;
     min-width:300px;
+}
+.list2{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 10px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px #6e6e6e;
+    margin-bottom: 50px;
+    border-radius: 15px;
+    padding: 20px;
+    width: 600px;
+    min-width:300px;
+    
 }
 .doneListTop{
     letter-spacing: 1px;
@@ -127,7 +141,9 @@
     color: #747474;
 }
 .btDashboardbtn{
-    
+    color:  #bebcbc;
+    box-shadow: 0 0 0 .5px #e8e8e8;
+    background-color: #222222;
     letter-spacing: 1px;
     margin-top: 20px;
     font-weight: 900;
@@ -135,19 +151,80 @@
     line-height: 25px;
     cursor: pointer;
     width: 120px;
-    background-color: #fff;
+    /* background-color: #fff; */
     border-radius: 5px;
     text-align: center;
     line-height: 1.5rem;
-    box-shadow: 0px 0px 15px #111111;
+    /* box-shadow: 0px 0px 15px #111111; */
+    transition: ease all .5s;
+}
+.btDashboardbtn:hover{
+    background-color: #e8e8e8;
+    color:#2c2c2c
 }
 .btDashboardbtn1{
     margin-right:5px;
 }
-.btDashboardbtn2{
-    
-}
+
 /* List */
+/* #reactgooglegraph-2{
+    width: 500px;
+    height: 300px;
+} */
+
+@media(max-width: 650px){
+    .listTitle{
+        width: 400px;
+    }
+    .listInfo{
+        width:400px;
+    }
+    .list{
+        width:400px;
+    }
+    .list2{
+        width: 400px;
+    }
+}
+@media(max-width: 380px){
+    #rectgoog
+    .btDashboardbtn{
+        letter-spacing: 1px;
+        margin-top: 10px;
+        font-weight: 900;
+        font-size: 0.5rem;
+        width: 120px;
+        border-radius: 5px;
+        line-height: 1.5rem;
+    }
+    .listBoard{
+        margin-top: 9px;
+    }
+    .listTitleName{
+        font-size: 1.5rem;
+    }
+    .listInfo{
+        font-size: 12px;
+    }
+    .doneListTop{
+        display:  block;
+    }
+    .doneListTitle{
+        font-size: 1rem;
+    }
+    .listTitle{
+        width: 300px;
+    }
+    .listInfo{
+        width:300px;
+    }
+    .list{
+        width:300px;
+    }
+    .list2{
+        width: 300px;
+    }
+}
 .bgc{
     position: absolute;
     top: 0;
@@ -173,8 +250,8 @@
     margin-left: 3px;
     padding-left: 3px;
     border-radius: 5px;
-    /* background-color: #f3d5ad; */
-    border: solid 1px orange;
+    border: solid 2px rgb(189, 187, 187);
+    background-color: rgb(204, 202, 202);
 }
 
 .sidebar_input{
@@ -462,6 +539,7 @@ header{
     display: flex;
     justify-content: space-between;
     box-shadow: 0px 3px 5px #181818;
+    z-index: 99999;
 }
 .icon_hover_span{
     /* border: solid 1px black; */
@@ -705,22 +783,36 @@ main{
 /* 左側邊欄ul */
 .sidebar{
     width: 200px;
-    /* height: 100%; */
-    background-color:#e8e8e8 ;
-    padding: 8px;
+    
+    /* background-color:#e8e8e8; */
+    background-color: #858383;
+    padding: 0px 8px 8px 8px;
     color: #585858;
     display: none;
+    border-radius: 0px 0px 5px 5px;
+    box-shadow: inset 0 0 5px #333333;
 }
 .sidebar a{
     text-decoration: none;
     color: rgb(54, 53, 53);
 }
+@media(min-width:1150px){
+    .sidebar{
+        height: 100%;
+        
+    }
+}
 @media(max-width:1150px){
     .sidebar{
         position: fixed;
+        z-index: 2;
+        
     }
 }
 /* 側邊欄內li */
+.addListcancel{
+    margin: 0px 10px;
+}
 .sidebar_ul{
     border-bottom: solid 0.3px #7c7a7a;
 }
@@ -732,21 +824,28 @@ main{
     cursor: pointer;
 }
 .sidebar_li:first-child{
-    background-color: rgb(156, 155, 155);
+    letter-spacing: 2px;
+    color: #383838;
+    transition: ease all .5s;
+    /* color: #e8e8e8; */
+    /* background-color: #e8e8e8; */
 }
 .sidebar_li:hover{
-    background-color: rgb(131, 128, 128);
+    
+    background-color: rgb(204, 202, 202);
 }
 .sidebar_icon{
     text-align: center;
     width: 25px;
     margin-left: 3px;
-    margin-right: 20px;
+    margin-right: 10px;
     font-size: 25px;
 }
 .sidebar_line{
+    letter-spacing: 2px;
     line-height: 40px;
     margin-left: 6px;
+    font-weight: 900;
 }
 
 /* 主操控畫面(月) */
@@ -946,8 +1045,8 @@ main{
     display: flex;
 }
 /* 30天 */
-.month_log{
-
+.month_log div:nth-child(30) div{
+    /* background-color: #424242; */
 }
 .month_log span{
     display: inline-block;
@@ -1010,10 +1109,25 @@ main{
     margin: 15px 0px;
     line-height: 30px; 
 }
-.month_todo{
+.month_todos .month_todo{
     display: flex;
     justify-content: space-between;
     margin: 0px 0px 0px 3px;
+}
+.week_day .month_todo{
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 0px 0px 3px;
+}
+.month_day_b .month_todo{
+    /* display: flex; */
+    /* justify-content: space-between; */
+    margin: 0px 0px 0px 3px;
+    z-index: 10;
+}
+.month_day_b .month_todo_feacture2 span{
+    /* height: 25px; */
+    margin: 3px 0px;
 }
 .month_week{
     /* text-align: center; */
@@ -1033,7 +1147,9 @@ main{
 .month_day{
     display: flex;
     /* justify-content: space-between; */
-    padding: 0px 0px 8px 0px;
+    margin: 0px 0px 8px 0px;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .month_day_a{
@@ -1151,6 +1267,15 @@ main{
     left: 55%;
     z-index: 999;
 }
+@media(max-width:400px){
+    .showCalen{
+        position: absolute;
+        top: 160px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+    
+}
 .showCalenW{
     position: absolute;
     top: 170px;
@@ -1159,12 +1284,30 @@ main{
     box-shadow: 0px 0px 10px #181818;
     border-radius: 10px;
 }
+@media(max-width:400px){
+    .showCalenW{
+        position: absolute;
+        top: 160px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+    
+}
+
 .showCalenD{
     position: absolute;
     top: 170px;
     left: 70%;
 }
-
+@media(max-width:400px){
+    
+    .showCalenD{
+        position: absolute;
+        top: 160px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+}
 /* 首頁 */
 .homepage{
     

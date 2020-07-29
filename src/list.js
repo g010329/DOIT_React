@@ -3,6 +3,11 @@ import * as firebase from "firebase";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import 'firebase/auth';
 import 'firebase/database';
+// google chart
+import { Chart } from "react-google-charts";
+// import * as React from "react";
+// import { render } from "react-dom";
+
 class List extends React.Component{
     constructor(props){
         super(props);
@@ -16,16 +21,18 @@ class List extends React.Component{
             doneList:[],
             undoneList:[],
             showMoreDoneList: false,
-            showMoreTodoList: false
+            showMoreTodoList: true,
+            showPieChart: false,
+            pieChartData:[]
         }
         this.getListDBdata = this.getListDBdata.bind(this);
         this.toggleShowMoreDoneList = this.toggleShowMoreDoneList.bind(this);
         this.toggleShowMoreTodoList = this.toggleShowMoreTodoList.bind(this);
+        this.toggleShowPieChart = this.toggleShowPieChart.bind(this);
     }
     toggleShowMoreDoneList(){
         this.setState(preState=>{
             let showMoreDoneList = preState.showMoreDoneList;
-            console.log(!showMoreDoneList);
             return{
                 showMoreDoneList: !showMoreDoneList 
             }
@@ -34,22 +41,35 @@ class List extends React.Component{
     toggleShowMoreTodoList(){
         this.setState(preState=>{
             let showMoreTodoList = preState.showMoreTodoList;
-            console.log(!showMoreTodoList);
             return{
                 showMoreTodoList: !showMoreTodoList 
             }
         })
     }
+    toggleShowPieChart(){
+        console.log('pie!!');
+        this.setState(preState=>{
+            let showPieChart = preState.showPieChart;
+            return{
+                showPieChart: !showPieChart 
+            }
+        })
+        
+    }
     componentDidMount(){
-        // console.log(this.props.showWhichList);
         this.getListDBdata();
     }
-    componentDidUpdate(){
-        console.log('list Update');
+    componentDidUpdate(preProps){
+        if(preProps.showWhichList !== this.props.showWhichList){
+            console.log('list Update');
+            this.getListDBdata();
+        }
+        
     }
     getListDBdata(){
         let doneList = [];
         let undoneList = [];
+        let pieChartData = [['Task', 'Spending Hours']];
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid);
         // 搜尋lists
@@ -78,8 +98,13 @@ class List extends React.Component{
                     title: doc.data().title,
                     timer: doc.data().timer
                 });
+                pieChartData.push([doc.data().title, parseFloat(doc.data().timer)]);
             })
-            this.setState({doneList:doneList});
+            console.log('done-pieChartData',pieChartData)
+            this.setState({
+                doneList:doneList,
+                pieChartData: pieChartData
+            });
         })
         // 搜尋todos:undone
         ref.collection("todos").where("list","==",this.props.showWhichList).where("isDone","==",false).get().then(querySnapshot=>{
@@ -89,8 +114,13 @@ class List extends React.Component{
                     title: doc.data().title,
                     timer: doc.data().timer
                 });
+                pieChartData.push([doc.data().title, parseFloat(doc.data().timer)]);
             })
-            this.setState({undoneList:undoneList})
+            console.log('undone-pieChartData',this.state.pieChartData)
+            this.setState({
+                undoneList:undoneList,
+                pieChartData: pieChartData
+            })
         })
     }
     render(){
@@ -146,6 +176,43 @@ class List extends React.Component{
         //         </div>
                 
         //     </div>
+        let pieChart = <Chart
+                // width={'500px'}
+                // height={'300px'}
+                chartType="PieChart"
+                loader={<div>Loading Chart</div>}
+                data={
+                    // [['Task', 'Spending Hours'],
+                    // ['Work', 11],
+                    // ['Eat', 2],
+                    // ['Commute', 2],
+                    // ['Watch TV', 2],
+                    // ['Sleep', 7]]
+                    this.state.pieChartData
+                }
+                // options={{
+                //     title: 'My Daily Activities',
+                // }}
+                rootProps={{ 'data-testid': '1' }}
+            />
+        let chart = <div className="list2">
+                <div className="doneListTop">
+                    <div>
+                        <span className="doneListTitle">TIME DISTRIBUTION</span>
+                        <span>({this.state.undoneList.length+this.state.doneList.length} items)</span>
+                    </div>
+                    <div className="doneListTitle2">
+                        {this.state.showPieChart?
+                            <span className="lessList" onClick={this.toggleShowPieChart}><i className="fas fa-caret-up"/></span>:
+                            <span className="moreList" onClick={this.toggleShowPieChart}><i className="fas fa-caret-down"/></span>}
+                    </div>
+                </div>
+                <div className="showPieChart">
+                    {this.state.showPieChart? pieChart:''}
+                </div>
+                
+                
+            </div>
         let listBoard = <div className="listBoard">
                 <div className="listTitle">
                     <span className="listTitleName">{this.props.showWhichList}</span>
@@ -201,7 +268,7 @@ class List extends React.Component{
                     {/* {doneList} */}
                 </div>
                 
-                
+                {chart}
                 <div className="bgc"></div>
             </div>
         return <div>
@@ -212,6 +279,8 @@ class List extends React.Component{
                 </div>
             </Link>
             {listBoard}
+            
+            
         </div>
     }
     

@@ -43,7 +43,8 @@ class RenderWeekLog extends React.Component{
                 iYear:null,
                 iMonth:null,
                 iDate:null,
-                iWeek:null
+                iWeek:null,
+                list:null
             },
             calenIfShow:false,
             ifChangeWeek:false
@@ -81,9 +82,31 @@ class RenderWeekLog extends React.Component{
         //date calen
         this.ifChangeWeek = this.ifChangeWeek.bind(this);
         this.changeWeek= this.changeWeek.bind(this);
-        
+        //List
+        this.chooseList = this.chooseList.bind(this);  
+        // input required
+        this.handleValidation = this.handleValidation.bind(this);
     }
+    chooseList(e){
+        let list = e.target.value;
+        console.log(e.target.value);
+        this.setState(preState=>{
+            let moreInfoBoard = preState.moreInfoBoard;
+            moreInfoBoard.list = list;
+            return{
+                moreInfoBoard: moreInfoBoard
+            }
+        })
+    }
+    handleValidation(){
+        let field = this.state.note;
+        let formIsValid = true;
 
+        if(!field){
+            formIsValid = false;
+        }
+        return formIsValid;
+    }
     ifChangeWeek(){
         this.setState(preState=>{
             let ifChangeWeek = !preState.ifChangeWeek;
@@ -177,8 +200,9 @@ class RenderWeekLog extends React.Component{
         let innerIndex = e.currentTarget.getAttribute("data-innerindex");
         let month = e.currentTarget.getAttribute("data-month");
         let date = e.currentTarget.getAttribute("data-date");
-        
-        console.log(month,date);
+        let list = e.currentTarget.getAttribute("data-list");
+        // console.log(month,date);
+        console.log('list',list);
         this.setState(preState=>{
             
             let ifShowMore = preState.ifShowMore;
@@ -193,16 +217,19 @@ class RenderWeekLog extends React.Component{
                 //選擇月
                 moreInfoBoard.iMonth = parseInt(month);
                 moreInfoBoard.iWeek = null;
+                moreInfoBoard.list = list;
             }
             if(date != null){
                 //選擇日
                 moreInfoBoard.iDate = parseInt(date);
                 moreInfoBoard.iWeek = null;
+                moreInfoBoard.list = list;
             }
             else{
                 // moreInfoBoard.iMonth = parseInt(month);
                 moreInfoBoard.iWeek = this.state.weekNum;
                 moreInfoBoard.iDate = 0;
+                moreInfoBoard.list = list;
             }
             // moreInfoBoard.iMonth = this.state.month;
             
@@ -221,6 +248,7 @@ class RenderWeekLog extends React.Component{
         x.style.height = x.scrollHeight + "px";
     }
     showMoreInfo(){
+        let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
         console.log(this.state.moreInfoBoard);
         let showScheTime1 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
@@ -228,6 +256,7 @@ class RenderWeekLog extends React.Component{
         let iWeek = this.state.moreInfoBoard.iWeek;
         let iDate = this.state.moreInfoBoard.iDate;
         let iMonth = this.state.moreInfoBoard.iMonth;
+        let list = this.state.moreInfoBoard.list;
         return(
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
@@ -244,6 +273,20 @@ class RenderWeekLog extends React.Component{
                             {iDate==0 && iWeek==null && iMonth>=0? showScheTime1:''}
                             {iWeek!=null && iWeek!=0 && iDate==0? showScheTime2:''}
                             {((iWeek==0 || iWeek==undefined) && iDate>0)? showScheTime3:''}
+                        </div>
+                    </div>
+                    <div className="info">
+                        <div className="infoLi">
+                            <i className="fas fa-list-ul"></i>
+                            
+                            <span className="addList">{this.state.moreInfoBoard.list==null?'Add To List':list}</span>
+                        </div>
+                        <div className="infoLi2">
+                            <select className="selectList" onChange={this.chooseList}>
+                                <option value="">Choose List</option>
+                                {selectList}
+                                <option value={null}>尚未選擇</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -288,13 +331,20 @@ class RenderWeekLog extends React.Component{
                                 month:this.state.moreInfoBoard.iMonth,
                                 year:this.state.moreInfoBoard.iYear,
                                 date:this.state.moreInfoBoard.iDate,
-                                week:this.state.moreInfoBoard.iWeek
+                                week:this.state.moreInfoBoard.iWeek,
+                                list: this.state.moreInfoBoard.list
                             }).then(()=>{
                                 this.props.reRenderLog();
                             })
                         }else{
                             console.log('222');
-                            doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,week:this.state.moreInfoBoard.iWeek})
+                            doc.ref.update({
+                                title:this.state.note,
+                                month:this.state.moreInfoBoard.iMonth,
+                                year:this.state.moreInfoBoard.iYear,
+                                week:this.state.moreInfoBoard.iWeek,
+                                list: this.state.moreInfoBoard.list
+                            })
                         }
                         
                     })
@@ -327,7 +377,8 @@ class RenderWeekLog extends React.Component{
                     month:this.state.moreInfoBoard.iMonth,
                     year:this.state.moreInfoBoard.iYear,
                     date:this.state.moreInfoBoard.iDate,
-                    week:this.state.moreInfoBoard.iWeek
+                    week:this.state.moreInfoBoard.iWeek,
+                    list: this.state.moreInfoBoard.list
                 }).then(()=>{
                     this.props.reRenderLog();
                     this.setWeekNum();
@@ -339,7 +390,8 @@ class RenderWeekLog extends React.Component{
                     title:this.state.note,
                     month:this.state.moreInfoBoard.iMonth,
                     year:this.state.moreInfoBoard.iYear,
-                    week:this.state.moreInfoBoard.iWeek
+                    week:this.state.moreInfoBoard.iWeek,
+                    list: this.state.moreInfoBoard.list
                 }).then(()=>{
                     this.props.reRenderLog();
                     this.setWeekNum();
@@ -481,22 +533,27 @@ class RenderWeekLog extends React.Component{
     }
     
     addThisWeekToDos(){
-        this.setState(preState=>{
-            let thing = preState.note;
-            let {year} = preState;
-            let {month} = preState;
-            let {weekNum} = preState;
-            let thisWeekToDos = preState.thisWeekToDos;
-            let ifInput = preState.ifInput;
-            thisWeekToDos.push({"title":thing,"index":thisWeekToDos.length,"iDone":false});
-            console.log('addThisWeekToDos');
-            this.addToDB(thing, year, 0, 0, weekNum);
-            return{
-                thisWeekToDos:thisWeekToDos,
-                note:"",
-                ifInput:!ifInput
-            };
-        });
+        if(this.handleValidation()==true){
+            this.setState(preState=>{
+                let thing = preState.note;
+                let {year} = preState;
+                let {month} = preState;
+                let {weekNum} = preState;
+                let thisWeekToDos = preState.thisWeekToDos;
+                let ifInput = preState.ifInput;
+                thisWeekToDos.push({"title":thing,"index":thisWeekToDos.length,"iDone":false});
+                console.log('addThisWeekToDos');
+                this.addToDB(thing, year, 0, 0, weekNum);
+                return{
+                    thisWeekToDos:thisWeekToDos,
+                    note:"",
+                    ifInput:!ifInput
+                };
+            });
+        }else{
+            alert("Please Input Task")
+            return;
+        }
     }
 
     addToDB(title,year,month,date,week){
@@ -531,7 +588,8 @@ class RenderWeekLog extends React.Component{
                         thisWeekToDos.push({
                             title: doc.data().title,
                             ifDone: doc.data().isDone,
-                            id: doc.id
+                            id: doc.id,
+                            list: doc.data().list
                         });
                     });
                     this.setState({
@@ -546,7 +604,11 @@ class RenderWeekLog extends React.Component{
                         // console.log(day);
                         this.setState(preState=>{
                             let eachDayToDos = preState.eachDayToDos;
-                            eachDayToDos[day].todos.push({title:doc.data().title,ifDone:false,id:doc.id});
+                            eachDayToDos[day].todos.push({
+                                title:doc.data().title,
+                                ifDone:false,id:doc.id,
+                                list: doc.data().list
+                            });
                             return{
                                 eachDayToDos: eachDayToDos
                             }
@@ -573,28 +635,33 @@ class RenderWeekLog extends React.Component{
     }
 
     addThisDayToDos(day){
-        let indexDay = day.currentTarget.getAttribute("data-addday");
-        // console.log(day.currentTarget.getAttribute("data-addday"));
-        this.setState(preState=>{
-            let thing = preState.note;
-            let eachDayToDos = preState.eachDayToDos;
-            let {year} = preState;
-            let {month} = preState;
-            let date = preState.date;
-            // let weekNum = preState.weekNum;
-            let weekNum = 0;
-            let todayDay = new Date(`${year}-${month+1}-${date}`).getDay();
-            eachDayToDos[indexDay].todos.push({title:thing,ifDone:false});
-            eachDayToDos[indexDay].ifInput = false;
-            // console.log(eachDayToDos[indexDay].month+1+' / '+eachDayToDos[indexDay].date);
-            console.log('addThisDayToDos',thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
-            // 因為已經將月份日期存入eachDayToDos[]陣列裡，可以透過點擊index取出月份日期，再存入DB
-            this.addToDB(thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
-            return{
-                eachDayToDos:eachDayToDos,
-                note:""
-            }
-        });
+        if(this.handleValidation()==true){
+            let indexDay = day.currentTarget.getAttribute("data-addday");
+            // console.log(day.currentTarget.getAttribute("data-addday"));
+            this.setState(preState=>{
+                let thing = preState.note;
+                let eachDayToDos = preState.eachDayToDos;
+                let {year} = preState;
+                let {month} = preState;
+                let date = preState.date;
+                // let weekNum = preState.weekNum;
+                let weekNum = 0;
+                let todayDay = new Date(`${year}-${month+1}-${date}`).getDay();
+                eachDayToDos[indexDay].todos.push({title:thing,ifDone:false});
+                eachDayToDos[indexDay].ifInput = false;
+                // console.log(eachDayToDos[indexDay].month+1+' / '+eachDayToDos[indexDay].date);
+                console.log('addThisDayToDos',thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
+                // 因為已經將月份日期存入eachDayToDos[]陣列裡，可以透過點擊index取出月份日期，再存入DB
+                this.addToDB(thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
+                return{
+                    eachDayToDos:eachDayToDos,
+                    note:""
+                }
+            });
+        }else{
+            alert("Please Input Task")
+            return;
+        }
     }
 
 

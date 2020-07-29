@@ -96,6 +96,9 @@ class Dashboard extends React.Component{
         let sider = document.getElementById("sidebar");
         if(sider.style.display == "block"){
             sider.style.display = "none";
+            this.setState({
+                ifInput: false
+            })
         }else{
             sider.style.display = "block";
         }
@@ -174,8 +177,8 @@ class Dashboard extends React.Component{
                     <input className="inputList" type="text"  onChange={this.handleNoteChange} placeholder="Add New List" autoFocus/>
                 </span>
                 <div className="inputCancelAdd" >
-                    <span className="add" onClick={()=>{this.setState({ifInput:false})}}><i className="fas fa-times"></i></span>
-                    <span id="inputList" className="cancel" onClick={this.addListToDB}><i className="fas fa-check" ></i></span>
+                    <span className="add" onClick={()=>{this.setState({ifInput:false})}}><i className="fas fa-times addListcancel"/></span>
+                    <span id="inputList" className="cancel" onClick={this.addListToDB}><i className="fas fa-check addListcancel" /></span>
                 </div>
             </div>
         
@@ -213,15 +216,15 @@ class Dashboard extends React.Component{
                     <div className="dashboard_visual">
                         {/* sidebar */}
                         <div id="sidebar" className="sidebar">
-                            <div className="sidebar_ul">
+                            {/* <div className="sidebar_ul">
                                 <div className="sidebar_li">
                                     <span className="sidebar_icon">
                                         <i className="fas fa-clipboard-list"></i>
                                     </span> 
                                     <span>Future Log</span>
                                 </div>
-                            </div>
-                            <div className="sidebar_line">Lists</div>
+                            </div> */}
+                            <div className="sidebar_line">LIST</div>
                             {renderListItem}
                             {this.state.ifInput?showListInput:''}
                             {/* <div className="sidebar_li">
@@ -256,7 +259,7 @@ class Dashboard extends React.Component{
                     </div>
                 </main>
         
-            </div>;
+            </div>
             
             
         </div>;

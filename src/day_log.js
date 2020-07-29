@@ -20,6 +20,7 @@ class RenderDayLog extends React.Component{
             ifInput: false,
             ifShowMore: false,
             note:"",
+            // errors: {},
             timer:0,
             moreInfoBoard:{
                 oldTitle:'',
@@ -70,8 +71,34 @@ class RenderDayLog extends React.Component{
         //timer
         this.timer = this.timer.bind(this); 
         this.chooseList = this.chooseList.bind(this);  
-            
+        // input required
+        this.handleValidation = this.handleValidation.bind(this);
+        
     }
+
+    handleValidation(){
+        // let fields = this.state.fields;
+        let field = this.state.note;
+        // let errors = {};
+        let formIsValid = true;
+
+        //Name
+        if(!field){
+            formIsValid = false;
+            // errors["name"] = "Task cannot be empty";
+        }
+        // if(typeof fields["name"] !== "undefined"){
+        //     if(!fields["name"].match(/^[a-zA-Z]+$/)){
+        //         formIsValid = false;
+        //         errors["name"] = "Only letters";
+        //     }        
+        // }
+        // this.setState({errors: errors});
+        console.log(formIsValid);
+        return formIsValid;
+    }
+
+
 
     timer(e){
         this.setState({
@@ -312,9 +339,10 @@ class RenderDayLog extends React.Component{
         let id = e.currentTarget.getAttribute("data-id");
         let list = e.currentTarget.getAttribute("data-list");
         let timer = e.currentTarget.getAttribute("data-timer");
-        console.log(year,month,date);
-        console.log(type);
-        console.log(timer);
+        console.log('list',list);
+        // console.log(year,month,date);
+        // console.log(type);
+        // console.log(timer);
         if(type=='overdue'){
             this.setState(preState=>{
                 let ifShowMore = preState.ifShowMore;
@@ -391,7 +419,7 @@ class RenderDayLog extends React.Component{
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
                     <div className="info1">
-                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
+                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus required></textarea>
                         {/* <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
                     <div>
@@ -666,25 +694,32 @@ class RenderDayLog extends React.Component{
     }
 
     addThisDayToDos(){
+        if(this.handleValidation()==true){
+            // alert("Form submitted");
+            this.setState(preState=>{
+                let thing = preState.note;
+                let thisDayToDos = preState.thisDayToDos;
+                let ifInput = preState.ifInput;
+                let {year} = preState;
+                let {month} = preState;
+                let date = preState.date;
+                this.addToDB(thing,year,month,date);
+                thisDayToDos.push({"title":thing,"index":thisDayToDos.length,"ifDone":false});
+                // console.log(list);
+                this.props.reRenderLog();
+                return{
+                    thisDayToDos:thisDayToDos,
+                    note:"",
+                    ifInput:!ifInput
+                };
+            });
+            this.getOverdueFromDB();
+        }else{
+            alert("Please Input Task")
+            return;
+        }
         // console.log('yo');
-        this.setState(preState=>{
-            let thing = preState.note;
-            let thisDayToDos = preState.thisDayToDos;
-            let ifInput = preState.ifInput;
-            let {year} = preState;
-            let {month} = preState;
-            let date = preState.date;
-            this.addToDB(thing,year,month,date);
-            thisDayToDos.push({"title":thing,"index":thisDayToDos.length,"ifDone":false});
-            // console.log(list);
-            this.props.reRenderLog();
-            return{
-                thisDayToDos:thisDayToDos,
-                note:"",
-                ifInput:!ifInput
-            };
-        });
-        this.getOverdueFromDB();
+        
         
     }
 
@@ -714,7 +749,7 @@ class RenderDayLog extends React.Component{
             <div className="month_todo" data-enter={'day'} onKeyDown={this.enterClick}>
                 <span>
                     {/* <input type="checkbox" /> */}
-                    <input className="noScheInput" type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus/>
+                    <input className="noScheInput" type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus required="required"/>
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
@@ -760,6 +795,7 @@ class RenderDayLog extends React.Component{
         this.setWeekNum();
         this.getDBdataInState(this.state.month,this.state.year,this.state.date);
         this.getOverdueFromDB();
+        
         // console.log('listitems',this.props.listItems);
     }
     render(){
