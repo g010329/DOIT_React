@@ -243,11 +243,11 @@ class Dashboard extends React.Component{
                         {/* dashboard top_nav start */}
                         <div className="dashboard">
                             <div className="inner2_board">
-                                {/* <Route path="/dashboard" exact>{showLogs}</Route> */}
+                                <Route path="/dashboard" exact>{showLogs}</Route>
                                 
                                 <div className="listNoDeco">
-                                    <Route path="/dashboard">
-                                    {/* <Route path="/dashboard/list"> */}
+                                    {/* <Route path="/dashboard"> */}
+                                    <Route path="/dashboard/list">
                                         <List showWhichList={this.state.showWhichList} uid={this.props.uid}/>
                                     </Route>
                                 </div>

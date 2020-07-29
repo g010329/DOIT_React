@@ -14,9 +14,31 @@ class List extends React.Component{
                 day: null
             },
             doneList:[],
-            undoneList:[]
+            undoneList:[],
+            showMoreDoneList: false,
+            showMoreTodoList: false
         }
         this.getListDBdata = this.getListDBdata.bind(this);
+        this.toggleShowMoreDoneList = this.toggleShowMoreDoneList.bind(this);
+        this.toggleShowMoreTodoList = this.toggleShowMoreTodoList.bind(this);
+    }
+    toggleShowMoreDoneList(){
+        this.setState(preState=>{
+            let showMoreDoneList = preState.showMoreDoneList;
+            console.log(!showMoreDoneList);
+            return{
+                showMoreDoneList: !showMoreDoneList 
+            }
+        })
+    }
+    toggleShowMoreTodoList(){
+        this.setState(preState=>{
+            let showMoreTodoList = preState.showMoreTodoList;
+            console.log(!showMoreTodoList);
+            return{
+                showMoreTodoList: !showMoreTodoList 
+            }
+        })
     }
     componentDidMount(){
         // console.log(this.props.showWhichList);
@@ -53,7 +75,7 @@ class List extends React.Component{
             querySnapshot.forEach(doc=>{
                 console.log('搜尋todos:done',doc.data());
                 doneList.push({
-                    title: doc.date().title,
+                    title: doc.data().title,
                     timer: doc.data().timer
                 });
             })
@@ -74,48 +96,111 @@ class List extends React.Component{
     render(){
         let undoneTotalTime=0;
         let undoneTimer = this.state.undoneList.map((undone,index)=>{
-            console.log(undone.timer);
-            undoneTotalTime+=parseInt(undone.timer);
+            console.log(parseFloat(undone.timer));
+            undoneTotalTime+=parseFloat(undone.timer);
+        })
+        console.log('undoneTotalTime',undoneTotalTime);
+        let doneTotalTime=0;
+        let doneTimer = this.state.doneList.map((done,index)=>{
+            console.log(done.timer);
+            doneTotalTime+=parseFloat(done.timer);
         })
         
         let createdAt = this.state.createdAt;
+        
         let doneList = this.state.doneList.map((doneItem,index)=><div className="listLi" key={index}>
-                <span>{doneItem.title}</span><span>{doneItem.timer}hr</span>
+                <div>
+                    <span className="doneCircle"><i className="fas fa-circle"/></span>
+                    <span>{doneItem.title}</span>
+                </div>
+                <div>{doneItem.timer}hr</div>
             </div>)
         let undoneList = this.state.undoneList.map((undoneItem,index)=><div className="listLi" key={index}>
-                <span>{undoneItem.title}</span><span>{undoneItem.timer}hr</span>
+                <div>
+                    <span className="doneCircle"><i className="fas fa-circle"/></span>
+                    <span>{undoneItem.title}</span>
+                </div>
+                <div>{undoneItem.timer}hr</div>
             </div>)
+        let doneListContent = <div className="doneListMiddle">
+                {doneList}
+            </div>
+        let todoListContent = <div className="doneListMiddle">
+                {undoneList}
+            </div>
+        
+        // let todoListContent = <div className="doneListMiddle">
+        //         <div className="listLi">
+        //             <div>
+        //                 <span className="doneCircle"><i className="far fa-circle"/></span>
+        //                 <span>做List版面RWD</span>
+        //             </div>
+        //             <div>3hr</div>
+        //         </div>
+        //         <div className="listLi">
+        //             <div>
+        //                 <span className="doneCircle"><i className="far fa-circle"/></span>
+        //                 <span>List串firebase</span>
+        //             </div>
+        //             <div>2hr</div>
+        //         </div>
+                
+        //     </div>
         let listBoard = <div className="listBoard">
-                <div className="listTitle">[個人專案]{this.props.showWhichList}</div>
-                <div>Created At: {createdAt.year}-{createdAt.month+1}-{createdAt.date}</div>
-                <div>Done At: ???</div>
-                <div>Spending Hours: 40hrs</div>
+                <div className="listTitle">
+                    <span className="listTitleName">{this.props.showWhichList}</span>
+                    <span className="listTitleIcon">
+                        <span><i className="fas fa-pen"></i></span>
+                        <span><i className="fas fa-trash"></i></span>
+                    </span>
+                </div>
+                <div className="listInfo">
+                    <div className="listInfo_div">
+                        <div>Created At</div>
+                        <div>{createdAt.year}-{createdAt.month+1}-{createdAt.date}</div>
+                    </div>
+                    <div className="listInfo_div">
+                        <div>Spending Hours</div>
+                        <div>{doneTotalTime+undoneTotalTime} hr(s)</div>
+                    </div>
+                    <div className="listInfo_div">
+                        <div>Done At</div>
+                        <div>???</div>
+                    </div>
+                </div>
                 <div className="list">
-                    <div className="doneListTitle">DONE</div>
-                    <div className="doneListMiddle">
-                        <div className="listLi">
-                            <div>做List版面UI</div><div>3hr</div>
+                    <div className="doneListTop">
+                        <div>
+                            <span className="doneListTitle">TODO LIST</span>
+                            <span>({this.state.undoneList.length} items)</span>
                         </div>
-                        <div className="listLi">
-                            <div>List串firebase</div><div>5hr</div>
-                        </div>
-                        <div className="listLi">
-                            <div>想一下圖表怎麼做</div><div>1hr</div>
+                        <div className="doneListTitle2">
+                            <span className="listTotalHours">Total Hours :  {undoneTotalTime} hr(s)</span>
+                            {this.state.showMoreTodoList?
+                                <span className="lessList" onClick={this.toggleShowMoreTodoList}><i className="fas fa-caret-up"/></span>:
+                                <span className="moreList" onClick={this.toggleShowMoreTodoList}><i className="fas fa-caret-down"/></span>}
                         </div>
                     </div>
-                    
-                        
+                    {this.state.showMoreTodoList?todoListContent:''}
                     {/* {doneList} */}
-                    <div>Total Hours:  304hrs</div>
                 </div>
                 <div className="list">
-                    <div className="doneListTitle">TODO</div>
-                    <div className="listLi">
-                        <div>List版面RWD</div><div>3hr</div>
+                    <div className="doneListTop">
+                        <div>
+                            <span className="doneListTitle">DONE LIST</span>
+                            <span>({this.state.doneList.length} items)</span>
+                        </div>
+                        <div className="doneListTitle2">
+                            <span className="listTotalHours">Total Hours :  {doneTotalTime} hr(s)</span>
+                            {this.state.showMoreDoneList?
+                                <span className="lessList" onClick={this.toggleShowMoreDoneList}><i className="fas fa-caret-up"/></span>:
+                                <span className="moreList" onClick={this.toggleShowMoreDoneList}><i className="fas fa-caret-down"/></span>}
+                        </div>
                     </div>
-                    {/* {undoneList} */}
-                    <div>Total Hours: {undoneTotalTime} hrs</div>
+                    {this.state.showMoreDoneList?doneListContent:''}
+                    {/* {doneList} */}
                 </div>
+                
                 
                 <div className="bgc"></div>
             </div>
