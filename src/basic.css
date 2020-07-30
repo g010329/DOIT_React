@@ -1024,12 +1024,19 @@ main{
     
     text-align: center;
 }
+.weekday_n{
+    background-color:  #1F1F1F;
+}
 .week_day{
     line-height: 2rem;
     border-radius: 5px;
-    background-color:  #1F1F1F;
     margin: 3px 0px 10px 0px;
     padding: 5px 5px 5px 7px;
+}
+.week_day_today{
+    border: solid 1px #d8d5d5;
+    background-color:  #1F1F1F;
+
 }
 .w_add_bt{
     /* display: inline-block; */

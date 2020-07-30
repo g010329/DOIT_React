@@ -85,17 +85,12 @@ class RenderMonthLog extends React.Component{
         this.backToTodayBtn = this.backToTodayBtn.bind(this);
         //list
         this.chooseList = this.chooseList.bind(this);  
-        //changeTodayBgc
-        this.changeTodayBgc = this.changeTodayBgc.bind(this);
         // input required
         this.handleValidation = this.handleValidation.bind(this);
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
     }
-    changeTodayBgc(){
-        console.log(`todayBgc${this.state.date+1}`);
-        document.getElementById(`todayBgc${this.state.date}`).style.backgroundColor='#424242'
-    }
+    
     handleValidation(){
         let field = this.state.note;
         let formIsValid = true;
@@ -853,7 +848,7 @@ class RenderMonthLog extends React.Component{
             return <div key={index}>
             {/* 每日事項input */}
                 {/* {index==this.state.date+1?bgcdate:notBgcdate} */}
-                <div className={index==parseInt(this.state.date)?"month_day todayBgc":"month_day"}>
+                <div className={index==parseInt(this.state.date)&&this.state.month==new Date().getMonth()?"month_day todayBgc":"month_day"}>
                     {/* 每日新增事件 */}
                     <div className="month_day_a">
                         <span className="m_date" >{eachday.date+1}</span>

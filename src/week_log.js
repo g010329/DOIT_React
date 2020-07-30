@@ -895,8 +895,9 @@ class RenderWeekLog extends React.Component{
             </div>);
         let dayName = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
         // 每日待辦
-        let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>
-            <div className="week_day" key={index}>
+        let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>{
+            console.log(eachday.month,new Date().getMonth(),eachday.date,new Date().getDate())
+            return <div className={eachday.month== new Date().getMonth()&&eachday.date==new Date().getDate()?"week_day week_day_today":"week_day weekday_n"} key={index}>
                 <div className="week_day_a">
                     <span className="week_day_title">{eachday.month+1}月{eachday.date}日</span>
                     <span className="week_day_title">{dayName[index]}</span>
@@ -916,7 +917,7 @@ class RenderWeekLog extends React.Component{
                             <span><i className="fas fa-trash" data-id={todo.id} data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                         </span>
                     </div>)}
-            </div>);
+                </div>});
         let hint = <div className="hint">hint：點擊右上+按鈕，新增此週待辦事項！</div>
         // let renderAddThing = this.state.note.map((thing,index)=>
         // <div className="month_todo" key={index}>
