@@ -73,9 +73,28 @@ class RenderDayLog extends React.Component{
         this.chooseList = this.chooseList.bind(this);  
         // input required
         this.handleValidation = this.handleValidation.bind(this);
+        //outside
+        this.handleClickOutside = this.handleClickOutside.bind(this);
         
     }
-
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickOutside, false);
+    }
+    handleClickOutside(event) {
+        // 點擊sidebar外部關閉sidebar
+        // console.log(event.target.className);
+        let cN = event.target.classList;
+        if(cN.contains('popUp')){
+            console.log('dont clos div');
+        }else{
+            console.log('outside');
+            this.setState({
+                calenIfShow:false,
+                ifChangeDate:false
+            })
+        }
+        
+    }
     handleValidation(){
         // let fields = this.state.fields;
         let field = this.state.note;
@@ -408,9 +427,9 @@ class RenderDayLog extends React.Component{
         console.log('listItems',this.props.listItems);
         let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
         console.log('showMoreInfo',this.state.moreInfoBoard);
-        let showScheTime1 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
-        let showScheTime2 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
-        let showScheTime3 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
+        let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
+        let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
+        let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
         let iWeek = this.state.moreInfoBoard.iWeek;
         let iDate = this.state.moreInfoBoard.iDate;
         let iMonth = this.state.moreInfoBoard.iMonth;
@@ -425,12 +444,12 @@ class RenderDayLog extends React.Component{
                     <div>
                         {/* <div className="info"><i className="fas fa-check-square"></i>
                             <span>task</span></div> */}
-                        <div className="info" onClick={this.showCalen}>
-                            <div className="infoLi">
-                                <i className="fas fa-calendar"></i>
-                                <span className="addList">Change Time</span>
+                        <div className="info popUp" onClick={this.showCalen}>
+                            <div className="infoLi popUp">
+                                <i className="fas fa-calendar popUp"></i>
+                                <span className="addList popUp">Change Time</span>
                             </div>
-                            <div className="infoLi2">
+                            <div className="infoLi2 popUp">
                                 {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
                                 {iWeek!=null && this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
                                 {((iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
@@ -795,7 +814,7 @@ class RenderDayLog extends React.Component{
         this.setWeekNum();
         this.getDBdataInState(this.state.month,this.state.year,this.state.date);
         this.getOverdueFromDB();
-        
+        document.addEventListener('click', this.handleClickOutside, false);
         // console.log('listitems',this.props.listItems);
     }
     render(){
@@ -850,7 +869,7 @@ class RenderDayLog extends React.Component{
                 </div>
                 
                 <span className="title_right">
-                    <span className="icon_hover_span"><i className="fas fa-calendar" onClick={this.ifChangeDate}></i></span>
+                    <span className="icon_hover_span"><i className="fas fa-calendar popUp" onClick={this.ifChangeDate}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-angle-right" onClick={this.handleDateForward}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>

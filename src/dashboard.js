@@ -7,6 +7,7 @@ import List from "./list";
 import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
+import PropTypes from 'prop-types';
 // 此頁有 dashboard 的 sidebar和top nav
 // 有使用者的uid: this.props.uid
 class Dashboard extends React.Component{
@@ -39,6 +40,8 @@ class Dashboard extends React.Component{
         this.getListFromDB = this.getListFromDB.bind(this);
         this.listenLists = this.listenLists.bind(this);
         this.showList = this.showList.bind(this);
+        //outside
+        this.handleClickOutside = this.handleClickOutside.bind(this);
     }
     handleNoteChange(e){
         this.setState({
@@ -91,8 +94,29 @@ class Dashboard extends React.Component{
     componentDidMount(){
         this.getListFromDB();
         this.listenLists();
+        document.addEventListener('click', this.handleClickOutside, false);
     }
-    toggleNav(){
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickOutside, false);
+    }
+    
+    handleClickOutside(event) {
+        // 點擊sidebar外部關閉sidebar
+        // console.log(event.target.className);
+        let sider = document.getElementById("sidebar");
+        if(event.target.className=='fas fa-bars'||event.target.className=='top_nav_logo'){
+            // console.log('dont clos div');
+        }else if(this.node.contains(event.target)){
+            // console.log('inside,dont clos div');
+        }else{
+            // console.log('outside');
+            sider.style.display = "none";
+            this.setState({
+                ifInput: false
+            })
+        }
+    }
+    toggleNav(e){
         let sider = document.getElementById("sidebar");
         if(sider.style.display == "block"){
             sider.style.display = "none";
@@ -201,7 +225,7 @@ class Dashboard extends React.Component{
             <div>
                 <header>
                     <div>
-                        <span onClick={this.toggleNav} className="top_nav_logo"><i className="fas fa-bars"></i></span>
+                        <span onClick={this.toggleNav}  className="top_nav_logo"><i className="fas fa-bars"></i></span>
                         <span className="bulletword">DOIT</span>
                         <span><i className="fas fa-bolt"></i></span>
                         
@@ -215,7 +239,7 @@ class Dashboard extends React.Component{
                 <main>
                     <div className="dashboard_visual">
                         {/* sidebar */}
-                        <div id="sidebar" className="sidebar">
+                        <div id="sidebar" ref={node=>this.node=node} className="sidebar">
                             {/* <div className="sidebar_ul">
                                 <div className="sidebar_li">
                                     <span className="sidebar_icon">
@@ -265,6 +289,9 @@ class Dashboard extends React.Component{
         </div>;
     }
 }
+// Dashboard.propTypes = {
+//     children: PropTypes.element.isRequired,
+// };
 export default Dashboard;
 
 // 在dashboard裡面有 month,week,day不同部位，使用者點擊上方按鈕，選擇要在dashboard顯示的部位

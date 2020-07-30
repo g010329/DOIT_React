@@ -68,23 +68,23 @@ class ChangeDateCal extends React.Component{
         console.log(day,this.state.calFirstDateDay);
         let calDatesOfMonth = this.state.calDatesOfMonth;
         let eachMonth = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        let mCalen = <div className="calentype">
-                <div className="calenTitle">
-                    <div onClick={this.calMonthBackward}><i className="fas fa-angle-left"></i></div>
-                    <div>{eachMonth[this.state.calMonth]} {this.state.calYear}</div>
-                    <div onClick={this.calMonthForward}><i className="fas fa-angle-right"></i></div>
+        let mCalen = <div className="calentype popUp">
+                <div className="calenTitle popUp">
+                    <div className="popUp" onClick={this.calMonthBackward}><i className="fas fa-angle-left popUp"></i></div>
+                    <div className="popUp">{eachMonth[this.state.calMonth]} {this.state.calYear}</div>
+                    <div className="popUp" onClick={this.calMonthForward}><i className="fas fa-angle-right popUp"></i></div>
                 </div>
-                <div className="calenBoard">
+                <div className="calenBoard popUp">
                     <table>
                         <thead>
                             <tr>
-                                <th>M</th>
-                                <th>T</th>
-                                <th>W</th>
-                                <th>T</th>
-                                <th>F</th>
-                                <th>S</th>
-                                <th>S</th>
+                                <th className="popUp">M</th>
+                                <th className="popUp">T</th>
+                                <th className="popUp">W</th>
+                                <th className="popUp">T</th>
+                                <th className="popUp">F</th>
+                                <th className="popUp">S</th>
+                                <th className="popUp">S</th>
                             </tr>
                         </thead>
                         <tbody>

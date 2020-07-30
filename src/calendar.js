@@ -196,10 +196,10 @@ class Calendar extends React.Component{
         let yCalen = <div className="calentype">
                 <div className="calenTitle">
                     <div onClick={this.yCalYearBackward}><i className="fas fa-angle-left"></i></div>
-                    <div>{this.state.yCalYear}</div>
+                    <div className="calenTM">{this.state.yCalYear}</div>
                     <div onClick={this.yCalYearForward}><i className="fas fa-angle-right"></i></div>
                 </div>
-                <div className="calenBoard">
+                <div className="calenBoard popUp">
                 <table className="calenMonth">
                     <tbody>
                         <tr>
@@ -254,20 +254,20 @@ class Calendar extends React.Component{
         let wCalen = <div className="calentype">
                 <div className="calenTitle">
                     <div onClick={this.calMonthBackward}><i className="fas fa-angle-left"></i></div>
-                    <div>{eachMonth[this.state.calMonth]} {this.state.calYear} week{this.countWeekNum(new Date(`${this.props.year}-${this.props.month+1}-${this.props.date}`))}</div>
+                    <div className="calenTM">{eachMonth[this.state.calMonth]} {this.state.calYear} week{this.countWeekNum(new Date(`${this.props.year}-${this.props.month+1}-${this.props.date}`))}</div>
                     <div onClick={this.calMonthForward}><i className="fas fa-angle-right"></i></div>
                 </div>
-                <div className="calenBoard">
+                <div className="calenBoard popUp">
                     <table>
                         <thead>
                             <tr>
-                                <th>M</th>
-                                <th>T</th>
-                                <th>W</th>
-                                <th>T</th>
-                                <th>F</th>
-                                <th>S</th>
-                                <th>S</th>
+                                <th className="popUp">M</th>
+                                <th className="popUp">T</th>
+                                <th className="popUp">W</th>
+                                <th className="popUp">T</th>
+                                <th className="popUp">F</th>
+                                <th className="popUp">S</th>
+                                <th className="popUp">S</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -320,33 +320,33 @@ class Calendar extends React.Component{
                             <tr>
                                 <td data-value={36-day}onClick={this.changeWeek} onClick={()=>this.props.calenUpdateTime(this.state.wCalYear,this.state.wCalMonth,36-day,999)}>{(36-day)<=calDatesOfMonth? 36-day : ''}</td>
                                 <td className="darktd">{(37-day)<=calDatesOfMonth? 37-day : ''}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td className="popUp"></td>
+                                <td className="popUp"></td>
+                                <td className="popUp"></td>
+                                <td className="popUp"></td>
+                                <td className="popUp"></td>
                             </tr> 
                         </tbody>
                     </table>
                 </div>
             </div>
         let mCalen = <div className="calentype">
-                <div className="calenTitle">
-                    <div onClick={this.calMonthBackward}><i className="fas fa-angle-left"></i></div>
-                    <div>{eachMonth[this.state.calMonth]} {this.state.calYear}</div>
-                    <div onClick={this.calMonthForward}><i className="fas fa-angle-right"></i></div>
+                <div className="calenTitle popUp">
+                    <div onClick={this.calMonthBackward}><i className="fas fa-angle-left popUp"></i></div>
+                    <div className="calenTM popUp">{eachMonth[this.state.calMonth]} {this.state.calYear}</div>
+                    <div onClick={this.calMonthForward}><i className="fas fa-angle-right popUp"></i></div>
                 </div>
-                <div className="calenBoard">
+                <div className="calenBoard popUp">
                     <table>
                         <thead>
                             <tr>
-                                <th>M</th>
-                                <th>T</th>
-                                <th>W</th>
-                                <th>T</th>
-                                <th>F</th>
-                                <th>S</th>
-                                <th>S</th>
+                                <th className="popUp">M</th>
+                                <th className="popUp">T</th>
+                                <th className="popUp">W</th>
+                                <th className="popUp">T</th>
+                                <th className="popUp">F</th>
+                                <th className="popUp">S</th>
+                                <th className="popUp">S</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -412,9 +412,9 @@ class Calendar extends React.Component{
         
         return <div className="showCalen">
             <div className="changeCalen">
-                <div className="data-calentype" data-calentype='day' onClick={this.setCalenType}>DAY</div>
-                <div className="data-calentype" data-calentype='week' onClick={this.setCalenType}>WEEK</div>
-                <div className="data-calentype" data-calentype='month' onClick={this.setCalenType}>MONTH</div>
+                <div className="data-calentype popUp" data-calentype='day' onClick={this.setCalenType}>DAY</div>
+                <div className="data-calentype popUp" data-calentype='week' onClick={this.setCalenType}>WEEK</div>
+                <div className="data-calentype popUp" data-calentype='month' onClick={this.setCalenType}>MONTH</div>
             </div>
                 {this.state.calenType=='month'? yCalen : ''}
                 {this.state.calenType=='week'? wCalen : ''}

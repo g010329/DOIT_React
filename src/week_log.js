@@ -86,6 +86,27 @@ class RenderWeekLog extends React.Component{
         this.chooseList = this.chooseList.bind(this);  
         // input required
         this.handleValidation = this.handleValidation.bind(this);
+        //outside
+        this.handleClickOutside = this.handleClickOutside.bind(this);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickOutside, false);
+    }
+    handleClickOutside(event) {
+        // 點擊sidebar外部關閉sidebar
+        // console.log(event.target.className);
+        let cN = event.target.classList;
+        if(cN.contains('popUp')){
+            console.log('dont clos div');
+        }else{
+            console.log('outside');
+            this.setState({
+                ifChangeWeek:false,
+                calenIfShow:false,
+            })
+        }
+        
     }
     chooseList(e){
         let list = e.target.value;
@@ -250,9 +271,9 @@ class RenderWeekLog extends React.Component{
     showMoreInfo(){
         let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
         console.log(this.state.moreInfoBoard);
-        let showScheTime1 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
-        let showScheTime2 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
-        let showScheTime3 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
+        let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
+        let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
+        let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
         let iWeek = this.state.moreInfoBoard.iWeek;
         let iDate = this.state.moreInfoBoard.iDate;
         let iMonth = this.state.moreInfoBoard.iMonth;
@@ -264,12 +285,12 @@ class RenderWeekLog extends React.Component{
                         <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
                         {/* <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
-                    <div className="info" onClick={this.showCalen}>
-                        <div className="infoLi">
-                            <i className="fas fa-calendar"></i>
-                            <span className="addList">Change Time</span>
+                    <div className="info popUp" onClick={this.showCalen}>
+                        <div className="infoLi popUp">
+                            <i className="fas fa-calendar popUp"></i>
+                            <span className="addList popUp">Change Time</span>
                         </div>
-                        <div className="infoLi2" >
+                        <div className="infoLi2 popUp" >
                             {iDate==0 && iWeek==null && iMonth>=0? showScheTime1:''}
                             {iWeek!=null && iWeek!=0 && iDate==0? showScheTime2:''}
                             {((iWeek==0 || iWeek==undefined) && iDate>0)? showScheTime3:''}
@@ -773,6 +794,7 @@ class RenderWeekLog extends React.Component{
         // updateEachDayToDosOfWeek()寫在setWeekNum()裡面
         this.setWeekNum();
         this.updateEachDayToDosOfWeek();
+        document.addEventListener('click', this.handleClickOutside, false);
     }
 
     countWeekNum(d){
@@ -915,7 +937,7 @@ class RenderWeekLog extends React.Component{
             <div className="month_title">
                 <span className="title_month">Week {this.state.weekNum}</span>
                 <span className="title_right">
-                    <span className="icon_hover_span"><i className="fas fa-calendar" onClick={this.ifChangeWeek}></i></span>
+                    <span className="icon_hover_span popUp"><i className="fas fa-calendar popUp" onClick={this.ifChangeWeek}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-angle-left" onClick={this.handleWeekBackward}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-angle-right" onClick={this.handleWeekForward}></i></span>
                     <span className="icon_hover_span"><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>

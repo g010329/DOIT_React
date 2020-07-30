@@ -89,6 +89,8 @@ class RenderMonthLog extends React.Component{
         this.changeTodayBgc = this.changeTodayBgc.bind(this);
         // input required
         this.handleValidation = this.handleValidation.bind(this);
+        //outside
+        this.handleClickOutside = this.handleClickOutside.bind(this);
     }
     changeTodayBgc(){
         console.log(`todayBgc${this.state.date+1}`);
@@ -553,6 +555,26 @@ class RenderMonthLog extends React.Component{
         this.updateEachDayToDos();
         // 將該月未安排事件放入state
         this.getDBdataInState(this.state.month,this.state.year,0);
+        document.addEventListener('click', this.handleClickOutside, false);
+    }
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickOutside, false);
+    }
+    handleClickOutside(event) {
+        // 點擊sidebar外部關閉sidebar
+        console.log(event.target.className);
+        let cN = event.target.className;
+        if(cN=='calenTitle'||cN=='fas fa-calendar'||cN=='fas fa-angle-left'||cN=='fas fa-angle-right'||cN=='calenTM'){
+            console.log('dont clos div');
+        }else if(cN=='addList'||cN=='littleCal'||cN=='info'||cN=='infoLi2'||cN=='calenBoard'||cN=='data-calentype'){
+            console.log('dont clos div');
+        }else{
+            console.log('outside');
+            this.setState({
+                ifChangeMonth: false,
+                calenIfShow: false
+            })
+        }
         
     }
     addThisMonthToDos(){
@@ -804,10 +826,34 @@ class RenderMonthLog extends React.Component{
             </span>
         </div>);
         // render 每日事項
-        let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>
-            <div key={index}>
+        // let notBgcdate = <div className="month_day">
+        //     <div className="month_day_a">
+        //         <span className="m_date" >{eachday.date+1}</span>
+        //         <span className="m_day_of_week" >{eachDay[eachday.day]}</span>
+        //         <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
+        //     </div>
+        //     <div className="month_day_b">
+        //         {eachday.todos.map((todo,innerIndex)=><span data-list={todo.list} data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
+        //         <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
+        //     </div>
+        // </div>
+        // let bgcdate = <div className="month_day todayBgc">
+        //     <div className="month_day_a">
+        //         <span className="m_date" >{eachday.date+1}</span>
+        //         <span className="m_day_of_week" >{eachDay[eachday.day]}</span>
+        //         <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
+        //     </div>
+        //     <div className="month_day_b">
+        //         {eachday.todos.map((todo,innerIndex)=><span data-list={todo.list} data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
+        //         <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
+        //     </div>
+        // </div>
+        let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>{
+            // console.log(index, this.state.date);
+            return <div key={index}>
             {/* 每日事項input */}
-                <div id={'todayBgc'+index} className="month_day" >
+                {/* {index==this.state.date+1?bgcdate:notBgcdate} */}
+                <div className={index==parseInt(this.state.date)?"month_day todayBgc":"month_day"}>
                     {/* 每日新增事件 */}
                     <div className="month_day_a">
                         <span className="m_date" >{eachday.date+1}</span>
@@ -821,7 +867,7 @@ class RenderMonthLog extends React.Component{
                 </div>
                 {eachday.day==6?<div className="weekBorder"></div>:''}
                 
-            </div>);
+        </div>});
         let hint = <div className="hint">hint：點擊右上+按鈕，新增此月待辦事項！</div>
                 
         return <div id="month" className="left_board">
@@ -907,6 +953,7 @@ class RenderMonthLog extends React.Component{
                 </div>
             </div> */}
         </div>
+        <div className="wbgc"></div>
         {/* 單一事件控制面板 */}
         {this.state.ifShowMore? this.showMoreInfo(): ''}
     </div>;

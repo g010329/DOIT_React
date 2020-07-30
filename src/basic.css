@@ -8,9 +8,7 @@
     background-color: #A58D7F #F5B895 #F3D5AD;
     font-family: Roboto,sans-serif;
 }
-*{
-    /* border: solid 1px rgb(94, 93, 93); */
-}
+
 /* ListBoard */
 .listTitle{
     /* margin: 20px 0px; */
@@ -1241,7 +1239,9 @@ main{
     background-color: #2C2C2C;
 }
 
-
+.todayBgc{
+    background-color: #424242;
+}
 .darktd{
     color:rgb(92, 91, 91)
 }
@@ -1263,8 +1263,9 @@ main{
 }
 .showCalen{
     position: absolute;
-    top: 280px;
-    left: 55%;
+    top: 310px;
+    left: 50%;
+    transform: translateX(40px);
     z-index: 999;
 }
 @media(max-width:400px){
@@ -1319,7 +1320,8 @@ main{
 }
 
 .aPart{
-    height: 650px;
+    height: 100vh;
+    /* height: 100%; */
     display: flex;
     scroll-behavior: smooth;
 }
@@ -1365,7 +1367,7 @@ main{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-top: 40px;
+    /* margin-top: 40px; */
 }
 
 .hpIntroContent{
@@ -1389,7 +1391,8 @@ main{
     flex-direction: column;
     align-items: center;
     width:100%;
-    height: 900px;
+    height: 100vh;
+    /* height: 100%; */
     background-color: #2C2C2C;
 }
 .bpartTitle{

@@ -28,10 +28,10 @@ class ChangeMonthCal extends React.Component{
         })
     }
     render(){
-        let yCalen = <div className="calentype">
+        let yCalen = <div  className="calentype">
                 <div className="calenTitle">
                     <div onClick={this.yCalYearBackward}><i className="fas fa-angle-left"></i></div>
-                    <div>{this.state.yCalYear}</div>
+                    <div className="calenTM">{this.state.yCalYear}</div>
                     <div onClick={this.yCalYearForward}><i className="fas fa-angle-right"></i></div>
                 </div>
                 <div className="calenBoard">
