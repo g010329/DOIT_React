@@ -896,7 +896,7 @@ class RenderWeekLog extends React.Component{
         let dayName = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
         // 每日待辦
         let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>{
-            console.log(eachday.month,new Date().getMonth(),eachday.date,new Date().getDate())
+            // console.log(eachday.month,new Date().getMonth(),eachday.date,new Date().getDate())
             return <div className={eachday.month== new Date().getMonth()&&eachday.date==new Date().getDate()?"week_day week_day_today":"week_day weekday_n"} key={index}>
                 <div className="week_day_a">
                     <span className="week_day_title">{eachday.month+1}月{eachday.date}日</span>

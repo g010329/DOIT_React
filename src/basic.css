@@ -20,9 +20,19 @@
     
 }
 .listTitleName{
+    display:inline-block;
     letter-spacing: 2px;
     font-size: 2rem;
     color: #eceaea;
+    background-color: transparent;
+    border: 0px;
+    text-align: center;
+    width: 60%;
+}
+@media(min-width:600px){
+    .listTitleName{
+        width: 70%;
+    }
 }
 .listTitleIcon{
     font-size: 1.2rem;
@@ -1335,6 +1345,13 @@ main{
 
 @media(max-width:850px){
     .aPart{
+        margin-top: 100px;
+        display: block;
+    }
+}
+@media(max-width:450px){
+    .aPart{
+        margin-top: 40px;
         display: block;
     }
 }

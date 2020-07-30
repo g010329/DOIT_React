@@ -18,6 +18,8 @@ class List extends React.Component{
                 date: 28,
                 day: null
             },
+            listTitle:this.props.showWhichList,
+            listId:null,
             doneList:[],
             undoneList:[],
             showMoreDoneList: false,
@@ -29,6 +31,50 @@ class List extends React.Component{
         this.toggleShowMoreDoneList = this.toggleShowMoreDoneList.bind(this);
         this.toggleShowMoreTodoList = this.toggleShowMoreTodoList.bind(this);
         this.toggleShowPieChart = this.toggleShowPieChart.bind(this);
+        this.handleNoteChange = this.handleNoteChange.bind(this);
+        this.adjsutListTitleInDB = this.adjsutListTitleInDB.bind(this);
+        this.autoHeight = this.autoHeight.bind(this);
+        this.enterClick - this.enterClick.bind(this);
+        this.deleteConfirm = this.deleteConfirm.bind(this);
+        this.deleteListInDB = this.deleteListInDB.bind(this);
+    }
+    enterClick(e){
+        let btntype = e.currentTarget.getAttribute("data-enter");
+        // console.log('enter0');
+        if (event.keyCode==13 && btntype=='titleName'){
+            // console.log('enter1');
+            document.getElementById("adjsutList").click(); //觸動按鈕的點擊
+        } 
+    }
+    handleNoteChange(e){
+        this.setState({
+            note: e.currentTarget.value,
+            // listTitle: e.currentTarget.value
+        });
+        // console.log('note: '+e.currentTarget.value);
+    }
+    adjsutListTitleInDB(){
+        let db = firebase.firestore();
+        let ref = db.collection("members").doc(this.props.uid).collection("lists");
+        ref.doc(this.state.listId).update({title:this.state.note}).then(()=>{console.log('update title')})
+    }
+    deleteListInDB(){
+        if (this.deleteConfirm()){
+            alert('刪除');
+            let db = firebase.firestore();
+            let ref = db.collection("members").doc(this.props.uid).collection("lists");
+            ref.doc(this.state.listId).delete().then(()=>{console.log('delete list')})
+        }else{
+            return;
+        }
+        
+    }
+    deleteConfirm(){
+        if(window.confirm('列表刪除後即無法復原，仍要刪除嗎？')){
+            return true;
+        }else{
+            return false;
+        }
     }
     toggleShowMoreDoneList(){
         this.setState(preState=>{
@@ -47,7 +93,7 @@ class List extends React.Component{
         })
     }
     toggleShowPieChart(){
-        console.log('pie!!');
+        // console.log('pie!!');
         this.setState(preState=>{
             let showPieChart = preState.showPieChart;
             return{
@@ -61,10 +107,13 @@ class List extends React.Component{
     }
     componentDidUpdate(preProps){
         if(preProps.showWhichList !== this.props.showWhichList){
-            console.log('list Update');
+            // console.log('list Update');
             this.getListDBdata();
         }
         
+    }
+    adjustTodo(){
+
     }
     getListDBdata(){
         let doneList = [];
@@ -76,7 +125,7 @@ class List extends React.Component{
         ref.collection("lists").where("title","==",this.props.showWhichList).get().then(querySnapshot=>{
             querySnapshot.forEach(doc=>{
                 this.setState(preState=>{
-                    console.log(doc.data());
+                    // console.log(doc.data());
                     let createdAt = preState.createdAt;
                     createdAt.year = doc.data().createdAt.toDate().getYear()+1900;
                     createdAt.month = doc.data().createdAt.toDate().getMonth();
@@ -84,7 +133,8 @@ class List extends React.Component{
                     createdAt.day = doc.data().createdAt.toDate().getDay();
                 
                     return{
-                        createdAt:createdAt
+                        createdAt:createdAt,
+                        listId: doc.id
                     }    
                 })
                 
@@ -93,14 +143,14 @@ class List extends React.Component{
         // 搜尋todos:done
         ref.collection("todos").where("list","==",this.props.showWhichList).where("isDone","==",true).get().then(querySnapshot=>{
             querySnapshot.forEach(doc=>{
-                console.log('搜尋todos:done',doc.data());
+                // console.log('搜尋todos:done',doc.data());
                 doneList.push({
                     title: doc.data().title,
                     timer: doc.data().timer
                 });
                 pieChartData.push([doc.data().title, parseFloat(doc.data().timer)]);
             })
-            console.log('done-pieChartData',pieChartData)
+            // console.log('done-pieChartData',pieChartData)
             this.setState({
                 doneList:doneList,
                 pieChartData: pieChartData
@@ -109,30 +159,35 @@ class List extends React.Component{
         // 搜尋todos:undone
         ref.collection("todos").where("list","==",this.props.showWhichList).where("isDone","==",false).get().then(querySnapshot=>{
             querySnapshot.forEach(doc=>{
-                console.log('todos:undone',doc.data());
+                // console.log('todos:undone',doc.data());
                 undoneList.push({
                     title: doc.data().title,
                     timer: doc.data().timer
                 });
                 pieChartData.push([doc.data().title, parseFloat(doc.data().timer)]);
             })
-            console.log('undone-pieChartData',this.state.pieChartData)
+            // console.log('undone-pieChartData',this.state.pieChartData);
             this.setState({
                 undoneList:undoneList,
                 pieChartData: pieChartData
             })
         })
     }
+    autoHeight(){
+        let x = document.getElementById("inputTitle");
+        x.style.height = 'auto';
+        x.style.height = x.scrollHeight + "px";
+    }
     render(){
         let undoneTotalTime=0;
         let undoneTimer = this.state.undoneList.map((undone,index)=>{
-            console.log(parseFloat(undone.timer));
+            // console.log(parseFloat(undone.timer));
             undoneTotalTime+=parseFloat(undone.timer);
         })
-        console.log('undoneTotalTime',undoneTotalTime);
+        // console.log('undoneTotalTime',undoneTotalTime);
         let doneTotalTime=0;
         let doneTimer = this.state.doneList.map((done,index)=>{
-            console.log(done.timer);
+            // console.log(done.timer);
             doneTotalTime+=parseFloat(done.timer);
         })
         
@@ -215,10 +270,11 @@ class List extends React.Component{
             </div>
         let listBoard = <div className="listBoard">
                 <div className="listTitle">
-                    <span className="listTitleName">{this.props.showWhichList}</span>
-                    <span className="listTitleIcon">
-                        <span><i className="fas fa-pen"></i></span>
-                        <span><i className="fas fa-trash"></i></span>
+                    {/* <span className="listTitleName">{this.props.showWhichList}</span> */}
+                    <textarea id="inputTitle" rows="1" onInput={this.autoHeight} className="listTitleName" defaultValue={this.state.listTitle} onChange={this.handleNoteChange}/>
+                    <span className="listTitleIcon" data-enter="titleName" onKeyDown={this.enterClick}>
+                        <span id="adjsutList" onClick={this.adjsutListTitleInDB}><i className="fas fa-pen"></i></span>
+                        <span onClick={this.deleteListInDB}><i className="fas fa-trash"></i></span>
                     </span>
                 </div>
                 <div className="listInfo">

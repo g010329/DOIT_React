@@ -767,7 +767,7 @@ class RenderMonthLog extends React.Component{
         this.setState({
             note:e.currentTarget.value
         });
-        console.log('note: '+e.currentTarget.value);
+        // console.log('note: '+e.currentTarget.value);
     }
     showInput(){
         return(
