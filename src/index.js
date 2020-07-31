@@ -83,6 +83,7 @@ class App extends React.Component {
                     alert('The password is too weak.');
                 } else {
                     alert(errorMessage);
+                    return;
                 }
                 console.log(error);
             });

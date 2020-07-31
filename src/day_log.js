@@ -827,7 +827,7 @@ class RenderDayLog extends React.Component{
                 <span className="month_todo_feacture mf4">
                     {/* <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span> */}
                     <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-id={todo.id} data-type={'date'} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-trash" data-type={'day'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    <span><i className="fas fa-check" data-type={'day'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
         let overdue = this.state.overdue.map((todo,index)=>
@@ -839,7 +839,7 @@ class RenderDayLog extends React.Component{
                 <span className="month_todo_feacture mf2">
                     {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                     <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-trash" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    <span><i className="fas fa-check" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>
         );

@@ -561,6 +561,8 @@ class RenderMonthLog extends React.Component{
         let cN = event.target.className;
         if(cN=='calenTitle'||cN=='fas fa-calendar'||cN=='fas fa-angle-left'||cN=='fas fa-angle-right'||cN=='calenTM'){
             console.log('dont clos div');
+        }else if(cN.contains('popUp')){
+            console.log('dont clos div');
         }else if(cN=='addList'||cN=='littleCal'||cN=='info'||cN=='infoLi2'||cN=='calenBoard'||cN=='data-calentype'){
             console.log('dont clos div');
         }else{

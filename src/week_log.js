@@ -890,7 +890,7 @@ class RenderWeekLog extends React.Component{
                 <span className="month_todo_feacture mf2 ">
                     {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                     <span><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-trash" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
+                    <span><i className="fas fa-check" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>);
         let dayName = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
@@ -914,7 +914,7 @@ class RenderWeekLog extends React.Component{
                         <span className="month_todo_feacture mf3">
                             {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                             <span><i className="fas fa-pen" data-id={todo.id} data-title={todo.title} data-index={index} data-month={eachday.month} data-date={eachday.date} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
-                            <span><i className="fas fa-trash" data-id={todo.id} data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
+                            <span><i className="fas fa-check" data-id={todo.id} data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
                         </span>
                     </div>)}
                 </div>});
