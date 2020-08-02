@@ -31,13 +31,18 @@ class App extends React.Component {
             uid: null,
             isLogin: false,
             isNewUser: null,
-            email:null
+            email:null,
+            theme:'dk'
         }
         this.handleSignUp = this.handleSignUp.bind(this);
         this.toggleSignIn = this.toggleSignIn.bind(this);
         this.onAuthStateChanged = this.onAuthStateChanged.bind(this);
     }
-    
+    changeTheme(theme){
+        this.setState({
+            theme:theme
+        })
+    }
     toggleSignIn(email,pass) {
         if (firebase.auth().currentUser) {
             // [START signout]
@@ -153,7 +158,7 @@ class App extends React.Component {
             return <div><Redirect to ="/dashboard"/>
             <Route path="/dashboard">
                 {/* <Calendar/> */}
-                <Dashboard uid={this.state.uid} toggleSignIn={this.toggleSignIn.bind(this)}/>
+                <Dashboard theme={this.state.theme} uid={this.state.uid} changeTheme={this.changeTheme.bind(this)} toggleSignIn={this.toggleSignIn.bind(this)}/>
             </Route></div>
             
         }else{    

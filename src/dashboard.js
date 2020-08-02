@@ -24,7 +24,8 @@ class Dashboard extends React.Component{
                 // {title:'英文學習'},
                 // {title:'課程影片'}
             ],
-            note:''
+            note:'',
+            theme: this.props.theme
 
         };
         this.toggleNav = this.toggleNav.bind(this);
@@ -92,6 +93,7 @@ class Dashboard extends React.Component{
         })
     }
     componentDidMount(){
+        console.log(this.state.theme)
         this.getListFromDB();
         this.listenLists();
         document.addEventListener('click', this.handleClickOutside, false);
@@ -186,6 +188,7 @@ class Dashboard extends React.Component{
         // console.log(e.currentTarget.getAttribute("data-listtitle"));
     }
     render(){
+        let theme = this.state.theme;
         let renderListItem = this.state.listItems.map((item,index)=>
             <Link to='/dashboard/list' data-listtitle={item.title} key={index} onClick={this.showList}>
                 <div className="sidebar_li" >
@@ -210,20 +213,20 @@ class Dashboard extends React.Component{
             <div className="top_nav">
                 <div>
                     <span id="mbtn" className="top_nav_btn tnb1" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
-                    <span id="wbtn" className="top_nav_btn tnb1 tbtb" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
+                    <span id="wbtn" className="top_nav_btn tnb1-2" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
                 </div>
                 <span id="dbtn" className="top_nav_btn tnb2" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
             </div>
             <div className="inner_board">
-                <RenderMonthLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
-                <RenderWeekLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
-                <RenderDayLog listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <RenderMonthLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <RenderWeekLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <RenderDayLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
             </div>
         </div>
         // console.log(this.props.uid);
         return <div>
             <div>
-                <header>
+                <header className={'header_'+theme}>
                     <div>
                         <span onClick={this.toggleNav}  className="top_nav_logo"><i className="fas fa-bars"></i></span>
                         <span className="bulletword">DOIT</span>
@@ -231,7 +234,7 @@ class Dashboard extends React.Component{
                         
                     </div>
                     <span className="header_member">
-                        <div className="logout" onClick={this.props.toggleSignIn}>LOG OUT</div>
+                        <div className={`logout logout_${theme}`} onClick={this.props.toggleSignIn}>LOG OUT</div>
                         {/* <span className="top_nav_logo"><i className="fas fa-user"></i></span> */}
                     </span>   
                 </header>
@@ -268,7 +271,8 @@ class Dashboard extends React.Component{
                         {/* sidebar end */}
 
                         {/* dashboard top_nav start */}
-                        <div className="dashboard">
+                        {/* <div className="dashboard dashboard_dk"> */}
+                        <div className={`dashboard dashboard_${theme}`}>
                             <div className="inner2_board">
                                 <Route path="/dashboard" exact>{showLogs}</Route>
                                 

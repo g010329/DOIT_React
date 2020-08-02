@@ -8,6 +8,27 @@
     background-color: #A58D7F #F5B895 #F3D5AD;
     font-family: Roboto,sans-serif;
 }
+/* theme - dark mode */
+.header_dk{
+    background-color: #272727;
+    color: #e8e8e8;
+    box-shadow: 0px 3px 5px #181818;
+}
+.dashboard_dk{
+    background-color: #2C2C2C;
+}
+.logout_dk{
+    background-color: #e8e8e8;
+    box-shadow: 0px 0px 15px #0e0d0d;
+    color: #272727;
+}
+.left_board_dk{
+    color: #d3d0d0;
+}
+.right_board_dk{
+    color: #d3d0d0;
+}
+/* ----------------- */
 
 .loader{
     z-index: 100000000;
@@ -80,15 +101,18 @@
 }
 .list{
     margin-top: 10px;
-    background-color: #e8e8e8;
+    /* background-color: #e8e8e8; */
+    background-color: #525151;
+    box-shadow: 0px 0px 12px #181818;
     /* box-shadow: 0px 0px 10px #6e6e6e; */
     margin-bottom: 10px;
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 20px;
     width: 600px;
     min-width:300px;
 }
 .list2{
+    opacity: .9;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -96,21 +120,22 @@
     background-color: #ffffff;
     box-shadow: 0px 0px 10px #6e6e6e;
     margin-bottom: 50px;
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 20px;
     width: 600px;
     min-width:300px;
     
 }
 .doneListTop{
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     display: flex;
     justify-content: space-between;
 }
 .doneListTitle{
-    font-size: 1.5rem;
-    letter-spacing: 1px;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
     margin-right: 5px;
+    line-height: 33px;
 }
 .doneListTitle2{
     line-height: 33px;
@@ -157,6 +182,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 5px;
+    color: #e8e8e8;
 }
 .doneCircle{
     font-size: 5px;
@@ -554,14 +580,14 @@ body{
 /* 上方 header */
 header{
     position: relative;
-    background-color: #272727;
+    /* background-color: #272727; */
     height: 48px;
     line-height: 48px;
     font-size: 25px;
-    color: #e8e8e8;
+    /* color: #e8e8e8; */
     display: flex;
     justify-content: space-between;
-    box-shadow: 0px 3px 5px #181818;
+    /* box-shadow: 0px 3px 5px #181818; */
     z-index: 99999;
 }
 .icon_hover_span{
@@ -602,25 +628,22 @@ header{
 }
 #dbtn{
     color:  #bebcbc;
-    /* background-color: #575555; */
     box-shadow: 0 0 0 .5px #e8e8e8;
     background-color: #222222;
 }
-.tnb1{
-    width: 70px;
+.tnb1-2{
+    
 }
 .tnb2{
-    width: 70px;
-}
-.tnb2{
-        
+    color:  #bebcbc;
+    box-shadow: 0 0 0 .5px #e8e8e8;
+    background-color: #222222;
     margin: 0px 55px;
 }
 .top_nav_btn{
     letter-spacing: 1px;
-    /* margin: 0px 7px; */
     display: inline-block;
-    
+    width: 70px;
     border-radius: 5px;
     font-weight: 900;
     color:  #c4c1c1;
@@ -645,9 +668,7 @@ header{
     margin-right: 10px;
 } */
 .logout{
-    background-color: #e8e8e8;
-    box-shadow: 0px 0px 15px #0e0d0d;
-    color: #272727;
+    
     font-weight: 700;
     letter-spacing: 1px;
     font-size: 10px;
@@ -873,7 +894,7 @@ main{
 
 /* 主操控畫面(月) */
 .dashboard{
-    background-color: #2C2C2C;
+    /* background-color: #2C2C2C; */
     flex: 1;
     display: flex;
     flex-wrap: wrap;
@@ -933,10 +954,7 @@ main{
     box-shadow: 0px 0px 5px #af5858;
     
 }
-.inner2_board{
-    /* border: solid 1px rgb(202, 98, 115); */
-    /* padding: 0px 30px; */
-}
+
 .inner_board{
     width: 100%;
     display: flex;
@@ -946,12 +964,11 @@ main{
     width: 50%;
     color: #d3d0d0;
     padding: 30px 55px;
-    
 }
+
 .right_board{
-    
     width: 50%;
-    color: #d3d0d0;
+    
     padding: 30px 55px;
 }
 @media(min-width:1000px){
@@ -1049,7 +1066,7 @@ main{
     
     text-align: center;
 }
-.weekday_n{
+.weekday_dk{
     background-color:  #1F1F1F;
 }
 .week_day{

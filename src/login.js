@@ -77,7 +77,7 @@ class Login extends React.Component{
                 </div>
             </div>
         return <div>
-            <header>
+            <header className="header_dk">
                 <div>
                     <span className="top_nav_logo"><i className="fas fa-bars"></i></span>
                     <span className="bulletword">DOIT</span>

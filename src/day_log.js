@@ -35,7 +35,8 @@ class RenderDayLog extends React.Component{
                 // {"id":'dn1k3ednklwjebd',"title":'zzz',"ifDone":false,"year":2020,"month":5,"date":15}
             ],
             calenIfShow:false,
-            ifChangeDate:false
+            ifChangeDate:false,
+            theme: this.props.theme
         }
         this.handleDateForward = this.handleDateForward.bind(this);
         this.handleDateBackward = this.handleDateBackward.bind(this);
@@ -818,6 +819,7 @@ class RenderDayLog extends React.Component{
         // console.log('listitems',this.props.listItems);
     }
     render(){
+        let theme = this.state.theme;
         let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
                 <span>
@@ -854,7 +856,7 @@ class RenderDayLog extends React.Component{
             </div>  
         let todayHint = <span className="onlyShowToday">Today </span>
         let yearHint = <span className="showYear">{this.state.year}</span>
-        return <div className="right_board">
+        return <div className={`right_board right_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className="today_board">

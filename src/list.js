@@ -202,7 +202,7 @@ class List extends React.Component{
             </div>)
         let undoneList = this.state.undoneList.map((undoneItem,index)=><div className="listLi" key={index}>
                 <div>
-                    <span className="doneCircle"><i className="fas fa-circle"/></span>
+                    <span className="doneCircle"><i className="far fa-circle"/></span>
                     <span>{undoneItem.title}</span>
                 </div>
                 <div>{undoneItem.timer}hr</div>

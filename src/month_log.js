@@ -46,7 +46,8 @@ class RenderMonthLog extends React.Component{
                 list:null
             },
             calenIfShow:false,
-            ifChangeMonth:false
+            ifChangeMonth:false,
+            theme: this.props.theme
             
         };
         this.updateEachDayToDos = this.updateEachDayToDos.bind(this);
@@ -547,6 +548,7 @@ class RenderMonthLog extends React.Component{
         }
     }
     componentDidMount(){
+        console.log(this.state.theme);
         this.updateEachDayToDos();
         // 將該月未安排事件放入state
         this.getDBdataInState(this.state.month,this.state.year,0);
@@ -805,6 +807,7 @@ class RenderMonthLog extends React.Component{
         } 
     }
     render(){
+        let theme = this.state.theme;
         // console.log(`${this.state.year}/${this.state.month}`);
         // console.log(this.state.eachDayToDos);
         let eachMonth = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -850,7 +853,7 @@ class RenderMonthLog extends React.Component{
             return <div key={index}>
             {/* 每日事項input */}
                 {/* {index==this.state.date+1?bgcdate:notBgcdate} */}
-                <div className={index==parseInt(this.state.date)&&this.state.month==new Date().getMonth()?"month_day todayBgc":"month_day"}>
+                <div className={index==parseInt(this.state.date-1)&&this.state.month==new Date().getMonth()?"month_day todayBgc":"month_day"}>
                     {/* 每日新增事件 */}
                     <div className="month_day_a">
                         <span className="m_date" >{eachday.date+1}</span>
@@ -867,7 +870,7 @@ class RenderMonthLog extends React.Component{
         </div>});
         let hint = <div className="hint">hint：點擊右上+按鈕，新增此月待辦事項！</div>
                 
-        return <div id="month" className="left_board">
+        return <div id="month" className={`left_board left_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeMonth?<ChangeMonthCal changeMonth={this.changeMonth.bind(this)}/>:''}
         {/* 月-標題 */}

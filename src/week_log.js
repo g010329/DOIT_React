@@ -47,7 +47,8 @@ class RenderWeekLog extends React.Component{
                 list:null
             },
             calenIfShow:false,
-            ifChangeWeek:false
+            ifChangeWeek:false,
+            theme: this.props.theme
         };
         this.updateEachDayToDosOfWeek = this.updateEachDayToDosOfWeek.bind(this);
         this.countWeekNum = this.countWeekNum.bind(this);
@@ -880,6 +881,7 @@ class RenderWeekLog extends React.Component{
         }  
     }
     render(){
+        let theme = this.state.theme;
         // 此週待辦
         let renderThisWeekTodos = this.state.thisWeekToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
@@ -897,7 +899,7 @@ class RenderWeekLog extends React.Component{
         // 每日待辦
         let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>{
             // console.log(eachday.month,new Date().getMonth(),eachday.date,new Date().getDate())
-            return <div className={eachday.month== new Date().getMonth()&&eachday.date==new Date().getDate()?"week_day week_day_today":"week_day weekday_n"} key={index}>
+            return <div className={eachday.month== new Date().getMonth()&&eachday.date==new Date().getDate()?"week_day week_day_today":"week_day weekday_dk"} key={index}>
                 <div className="week_day_a">
                     <span className="week_day_title">{eachday.month+1}月{eachday.date}日</span>
                     <span className="week_day_title">{dayName[index]}</span>
@@ -932,7 +934,7 @@ class RenderWeekLog extends React.Component{
         
 
         // console.log(this.state.eachDayToDos);
-        return <div id="week" className="left_board">
+        return <div id="week" className={`left_board left_board_${theme}`}>
             {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
             {this.state.ifChangeWeek?<ChangeWeekCal changeWeek={this.changeWeek.bind(this)} weekNum={this.state.weekNum}/>:''}
             <div className="month_title">
