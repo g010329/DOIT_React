@@ -141,11 +141,11 @@ class RenderWeekLog extends React.Component{
                     year:year,
                     month:month,
                     date:date,
-                    weekNum:countWeekNum(new Date(`${year}-${month+1}-${date}`)),
+                    weekNum:countWeekNum(new Date(`${year}-${month+1}-${date}`.replace(/\s/, 'T'))),
                     ifChangeWeek:false
                 }
             });
-            this.getDBdataInState(countWeekNum(new Date(`${year}-${month+1}-${date}`)),year,0);
+            this.getDBdataInState(countWeekNum(new Date(`${year}-${month+1}-${date}`.replace(/\s/, 'T'))),year,0);
             this.updateEachDayToDosOfWeek();
         }
         
@@ -186,7 +186,7 @@ class RenderWeekLog extends React.Component{
                 moreInfoBoard.iWeek = null;
                 console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
-                    week = countWeekNum(new Date(`${year}-${month+1}-${date}`));
+                    week = countWeekNum(new Date(`${year}-${month+1}-${date}`.replace(/\s/, 'T')));
                     console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = week;
@@ -619,9 +619,17 @@ class RenderWeekLog extends React.Component{
             let year = preState.year;
             let month = preState.month;
             let date = preState.date;
+            if(month<10){
+                month="0"+(month+1);
+            }
+            if(date<10){
+                date="0"+date;
+            }
+            // console.log(year, month, date);
+            // console.log(countWeekNum(new Date(`${year}-${month+1}-${date}`)));
             // 將該週未安排事件放入state
-            this.getDBdataInState(countWeekNum(new Date(`${year}-${month+1}-${date}`)),this.state.year,0);
-            return {weekNum:countWeekNum(new Date(`${year}-${month+1}-${date}`))}
+            this.getDBdataInState(countWeekNum(new Date(`${year}-${month}-${date}`)),this.state.year,0);
+            return {weekNum:countWeekNum(new Date(`${year}-${month}-${date}`))}
         })
     }
 
@@ -665,12 +673,22 @@ class RenderWeekLog extends React.Component{
             let month = preState.month;
             let {weekNum} = preState;
             let date = preState.date;
+            if(month<10){
+                month="0"+(month+1);
+            }
+            if(date<10){
+                date="0"+date;
+            }
+            console.log(year,month,date);
+
             let eachDayToDos = preState.eachDayToDos;
             eachDayToDos = [];
             for (let i=0; i<7; i++){
-                let curr = new Date(`${year}-${month+1}-${date}`);
+                let curr = new Date(`${year}-${month}-${date}`);
+                
                 let first = curr.getDate() - curr.getDay()+1;
                 let firstday = new Date(curr.setDate(first));
+                console.log(curr,first,firstday);
                 firstday.setDate(firstday.getDate()+i);
                 eachDayToDos.push({
                     month:firstday.getMonth(),
@@ -680,7 +698,6 @@ class RenderWeekLog extends React.Component{
                     ifInput:false
                 });
                 this.getDBdataInState(weekNum,year,firstday.getDate(),i,firstday.getMonth());
-                // console.log('updateEachDayToDosOfWeek',weekNum,year,firstday.getDate(),i,firstday.getMonth());
             }
             return{eachDayToDos:eachDayToDos}
         });    
@@ -769,7 +786,13 @@ class RenderWeekLog extends React.Component{
             let month = preState.month;
             let date = preState.date;
             let {eachDayToDos} = preState.eachDayToDos;
-            let newdate = new Date(`${year}-${month+1}-${date}`);
+            if(month<10){
+                month="0"+(month+1);
+            }
+            if(date<10){
+                date="0"+date;
+            }
+            let newdate = new Date(`${year}-${month}-${date}`);
             newdate = newdate.setDate(newdate.getDate()+7);
             newdate = new Date(newdate);
             // console.log(newdate);
@@ -789,8 +812,14 @@ class RenderWeekLog extends React.Component{
             let year = preState.year;
             let month = preState.month;
             let date = preState.date;
+            if(month<10){
+                month="0"+(month+1);
+            }
+            if(date<10){
+                date="0"+date;
+            }
             let {eachDayToDos} = preState.eachDayToDos;
-            let newdate = new Date(`${year}-${month+1}-${date}`);
+            let newdate = new Date(`${year}-${month}-${date}`);
             newdate = newdate.setDate(newdate.getDate()-7);
             newdate = new Date(newdate);
             return{
