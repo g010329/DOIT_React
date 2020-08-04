@@ -106,10 +106,11 @@ class Dashboard extends React.Component{
         // 點擊sidebar外部關閉sidebar
         // console.log(event.target.className);
         let sider = document.getElementById("sidebar");
+        // let sider = this.node.current;
         if(event.target.className=='fas fa-bars'||event.target.className=='top_nav_logo'){
-            // console.log('dont clos div');
+            return;
         }else if(this.node.contains(event.target)){
-            // console.log('inside,dont clos div');
+            return;
         }else{
             // console.log('outside');
             sider.style.display = "none";
@@ -147,8 +148,6 @@ class Dashboard extends React.Component{
             document.getElementById("mbtn").style.backgroundColor='#222222';
             document.getElementById("mbtn").style.color='#c4c1c1';
         }
-        
-        // console.log(logBtn);
     }
     addListToDB(){
         this.setState(preState=>{
@@ -191,7 +190,7 @@ class Dashboard extends React.Component{
         let theme = this.state.theme;
         let renderListItem = this.state.listItems.map((item,index)=>
             <Link to='/dashboard/list' data-listtitle={item.title} key={index} onClick={this.showList}>
-                <div className="sidebar_li" >
+                <div className={`sidebar_li sidebar_li_${theme}`} >
                     <span className="sidebar_icon">
                         <i className="fas fa-ellipsis-v"></i>
                     </span> 
@@ -212,10 +211,10 @@ class Dashboard extends React.Component{
         let showLogs = <div>
             <div className="top_nav">
                 <div>
-                    <span id="mbtn" className="top_nav_btn tnb1" data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
-                    <span id="wbtn" className="top_nav_btn tnb1-2" data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
+                    <span id="mbtn" className={`top_nav_btn tnb1_${theme}`} data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
+                    <span id="wbtn" className={`top_nav_btn tnb1-2_${theme}`} data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
                 </div>
-                <span id="dbtn" className="top_nav_btn tnb2" data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
+                <span id="dbtn" className={`top_nav_btn tnb2_${theme}`} data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
             </div>
             <div className="inner_board">
                 <RenderMonthLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
@@ -242,7 +241,7 @@ class Dashboard extends React.Component{
                 <main>
                     <div className="dashboard_visual">
                         {/* sidebar */}
-                        <div id="sidebar" ref={node=>this.node=node} className="sidebar">
+                        <div id="sidebar" ref={node=>this.node=node} className={`sidebar sidebar_${theme}`}>
                             {/* <div className="sidebar_ul">
                                 <div className="sidebar_li">
                                     <span className="sidebar_icon">
@@ -261,7 +260,7 @@ class Dashboard extends React.Component{
                                 <span>個人專案</span>
                             </div> */}
                             
-                            <div className="sidebar_li"  onClick={this.toggleIfInput}>
+                            <div className={`sidebar_li sidebar_li_${theme}`}  onClick={this.toggleIfInput}>
                                 <span className="sidebar_icon">
                                     <i className="fas fa-plus"></i>
                                 </span> 
@@ -279,7 +278,7 @@ class Dashboard extends React.Component{
                                 <div className="listNoDeco">
                                     {/* <Route path="/dashboard"> */}
                                     <Route path="/dashboard/list">
-                                        <List showWhichList={this.state.showWhichList} uid={this.props.uid}/>
+                                        <List theme={this.state.theme} showWhichList={this.state.showWhichList} uid={this.props.uid}/>
                                     </Route>
                                 </div>
                             </div>

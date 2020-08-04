@@ -34,7 +34,7 @@ class ChangeMonthCal extends React.Component{
                     <div className="calenTM">{this.state.yCalYear}</div>
                     <div onClick={this.yCalYearForward}><i className="fas fa-angle-right"></i></div>
                 </div>
-                <div className="calenBoard">
+                <div className="calenBoard popUp">
                     <table className="calenMonth">
                         <tbody>
                             <tr>

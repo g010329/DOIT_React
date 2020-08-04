@@ -28,6 +28,97 @@
 .right_board_dk{
     color: #d3d0d0;
 }
+
+.bgc_dk{
+    background-color:#2C2C2C;
+}
+
+.icon_hover_span_dk{
+    color: #858383;
+}
+.icon_hover_span_dk :hover{
+    color: #f1f0f0;
+}
+.mf2_dk{
+    color: #2C2C2C;
+}
+.mf3_dk{
+    color: #202020;
+}
+.mf4_dk{
+    color: #383838;
+}
+.w_add_bt_dk{
+    color: #1F1F1F;
+}
+.w_add_bt_dk:hover{
+    background-color: #858383;
+}
+.m_bt_dk{
+    color: #d3d0d0;
+    background-color: #32485c;
+}
+.m_day_of_week_dk{
+    color: #858383;
+}
+.m_add_bt_dk{
+    color: #858383;
+}
+.m_add_bt_dk:hover{
+    background-color: rgba(104, 102, 102, 0.815);
+    color: #e8e8e8;
+}
+.todayBgc_dk{
+    background-color: #424242;
+}
+
+.week_day_title_dk{
+    color: #858383;
+}
+.today_board_dk{
+    background-color: #383838;
+    box-shadow: 0px 0px 12px #181818;
+}
+.hint_dk{
+    color: #a7a8a8;
+}
+.overdue_board_dk{
+    box-shadow: 0px 0px 12px #181818;
+}
+.month_title_dk{
+    border-bottom: solid 1px #59595a;
+}
+
+.tnb1_dk{
+    color:  #c4c1c1;
+    background-color: #222222;
+    box-shadow: 0px 0px 3px #111111;
+}
+.tnb1-2_dk{
+    color:  #222222;
+    background-color: #e8e8e8;
+    box-shadow: 0px 0px 3px #111111;
+}
+.tnb2_dk{
+    color:  #bebcbc;
+    box-shadow: 0 0 0 .5px #e8e8e8;
+    background-color: #222222;
+    margin: 0px 55px;
+}
+.sidebar_dk{
+    background-color: #858383;
+    box-shadow: inset 0 0 5px #333333;
+    color: #585858;
+}
+.sidebar_dk a{
+    color: rgb(54, 53, 53);
+}
+.sidebar_li_dk:first-child{
+    color: #383838;
+}
+.sidebar_li_dk:hover{
+    background-color: rgb(204, 202, 202);
+}
 /* ----------------- */
 
 .loader{
@@ -280,9 +371,9 @@
     bottom: 0;
     right: 0;
     left: 0;
-    background-color:#2C2C2C;
     z-index: -333;
 }
+
 .inputCancelAdd{
     display: flex;
     justify-content: center;
@@ -344,20 +435,16 @@
     cursor: pointer;
 } */
 .today_board{
-    background-color: #383838;
-    /* border: solid 1px #d3d0d0; */
-    box-shadow: 0px 0px 12px #181818;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 40px;
 }
+
 .overdue_board{
-    /* border: #464545 solid 3px; */
-    box-shadow: 0px 0px 12px #181818;
-    /* box-shadow: 0px 0px 10px #525151; */
     padding: 20px;
     border-radius: 10px;
 }
+
 input:focus{
     outline:none
 }
@@ -367,17 +454,13 @@ textarea:focus{
 .m_add_bt{
     width: 30px;
     text-align: center;
-    color: #858383;
+    
     cursor: pointer;
     border-radius: 5px;
     transition: all .5s ease;
 }
-.m_add_bt:hover{
-    background-color: rgba(104, 102, 102, 0.815);
-    color: #e8e8e8;
-}
+
 .hint{
-    color: #a7a8a8;
     font-size: 12px;
     cursor:default;
 }
@@ -591,23 +674,16 @@ header{
     z-index: 99999;
 }
 .icon_hover_span{
-    /* border: solid 1px black; */
     text-align: center;
     height: 30px;
     display: inline-block;
-    /* margin-right: 5px; */
-    color: #858383;
     width: 30px;
 }
 .icon_hover_span i{
     padding-bottom: -5px;
     transition: all .5s ease;
 }
-.icon_hover_span :hover{
-    color: #f1f0f0;
-    /* background-color: #504f4f; */
-    /* border-radius: 50%; */
-}
+
 
 /* log btn */
 #month{
@@ -622,38 +698,20 @@ header{
     text-align: center;
     width: 48px;
 }
-.top_nav_btn:nth-child(2){
-    color:  #222222;
-    background-color: #e8e8e8;
-}
-#dbtn{
-    color:  #bebcbc;
-    box-shadow: 0 0 0 .5px #e8e8e8;
-    background-color: #222222;
-}
-.tnb1-2{
-    
-}
-.tnb2{
-    color:  #bebcbc;
-    box-shadow: 0 0 0 .5px #e8e8e8;
-    background-color: #222222;
-    margin: 0px 55px;
-}
+
 .top_nav_btn{
     letter-spacing: 1px;
     display: inline-block;
     width: 70px;
     border-radius: 5px;
     font-weight: 900;
-    color:  #c4c1c1;
-    background-color: #222222;
+    
     font-size: 0.75rem;
     min-width:50px;
     text-align: center;
     line-height: 25px;
     cursor: pointer;
-    box-shadow: 0px 0px 3px #111111;
+    
 }
 /* .login{
     background-color: #F3D5AD;
@@ -827,18 +885,14 @@ main{
 /* 左側邊欄ul */
 .sidebar{
     width: 200px;
-    
-    /* background-color:#e8e8e8; */
-    background-color: #858383;
     padding: 0px 8px 8px 8px;
-    color: #585858;
     display: none;
     border-radius: 0px 0px 5px 5px;
-    box-shadow: inset 0 0 5px #333333;
 }
+
 .sidebar a{
     text-decoration: none;
-    color: rgb(54, 53, 53);
+
 }
 @media(min-width:1150px){
     .sidebar{
@@ -869,15 +923,9 @@ main{
 }
 .sidebar_li:first-child{
     letter-spacing: 2px;
-    color: #383838;
     transition: ease all .5s;
-    /* color: #e8e8e8; */
-    /* background-color: #e8e8e8; */
 }
-.sidebar_li:hover{
-    
-    background-color: rgb(204, 202, 202);
-}
+
 .sidebar_icon{
     text-align: center;
     width: 25px;
@@ -911,15 +959,6 @@ main{
     transition: all .5s ease;
     cursor: pointer;
 }
-.mf2{
-    color: #2C2C2C;
-}
-.mf3{
-    color: #202020;
-}
-.mf4{
-    color: #383838;
-}
 .month_todo_feacture{
 
     display: flex;
@@ -931,9 +970,7 @@ main{
     justify-content: flex-end;
     flex:1;
 }
-#inputMonth{
-    /* box-shadow: 0px 0px 5px #58a9af; */
-}
+
 .month_todo_feacture2 span{
     width: 60px;
     text-align: center;
@@ -947,7 +984,6 @@ main{
 }
 .month_todo_feacture:hover{
     color: #e8e8e8;
-
 }
 .month_todo_feacture span:hover{
     color: rgb(207, 149, 149);
@@ -962,13 +998,11 @@ main{
 }
 .left_board{
     width: 50%;
-    color: #d3d0d0;
     padding: 30px 55px;
 }
 
 .right_board{
     width: 50%;
-    
     padding: 30px 55px;
 }
 @media(min-width:1000px){
@@ -1056,16 +1090,14 @@ main{
 
 .w_add_bt{
     border-radius: 5px;
-    /* color:#0F4C81; */
     transition: all .5s ease;
 }
 .w_add_bt:hover{
-    background-color: #858383;
     opacity: 0.5;
     cursor: pointer;
-    
     text-align: center;
 }
+
 .weekday_dk{
     background-color:  #1F1F1F;
 }
@@ -1083,10 +1115,10 @@ main{
 .w_add_bt{
     /* display: inline-block; */
     margin-left: -3px;
-    color: #1F1F1F;
+
     flex: 1;
-    
 }
+
 .week_day_a{
     min-width: 110px;
     display: flex;
@@ -1107,8 +1139,9 @@ main{
 .m_day_of_week{
     width: 30px;
     text-align: center;
-    color: #858383;
+    
 }
+
 
 /* 30天格子寬高 */
 .showYear{
@@ -1123,13 +1156,12 @@ main{
 
 }
 .month_title{
-    
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: solid 1px #59595a;
     padding-bottom: 15px;
 }
+
 .title_month{
     display: inline-block;
     /* width: 200px; */
@@ -1212,18 +1244,18 @@ main{
     width: 70px;
     margin-left: 3px;
     margin-right: 10px;
-    color: #858383;
+
 }
 
+
 .m_bt{
-    color: #d3d0d0;
-    background-color: #32485c;
     border-radius: 3px;
     padding: 0px 10px; 
     margin-right: 5px;
     margin: 2px 1px 2px 0px;
     cursor: pointer;
 }
+
 
 .bt_type div{
     display: inline-block;
@@ -1288,9 +1320,7 @@ main{
     background-color: #2C2C2C;
 }
 
-.todayBgc{
-    background-color: #424242;
-}
+
 .darktd{
     color:rgb(92, 91, 91)
 }

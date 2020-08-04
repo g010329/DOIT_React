@@ -4,6 +4,7 @@ import 'firebase/auth';
 import 'firebase/database';
 import Calendar from "./calendar";
 import ChangeDateCal from "./changeDateCal";
+import {countWeekNum,handleValidation} from './util.js';
 class RenderDayLog extends React.Component{
     constructor(props){
         super(props);
@@ -64,7 +65,6 @@ class RenderDayLog extends React.Component{
         this.showCalen = this.showCalen.bind(this);
         //date calen
         this.setWeekNum = this.setWeekNum.bind(this);
-        this.countWeekNum = this.countWeekNum.bind(this);
         this.ifChangeDate = this.ifChangeDate.bind(this);
         this.changeDate= this.changeDate.bind(this);
         //overdue done
@@ -73,7 +73,7 @@ class RenderDayLog extends React.Component{
         this.timer = this.timer.bind(this); 
         this.chooseList = this.chooseList.bind(this);  
         // input required
-        this.handleValidation = this.handleValidation.bind(this);
+        // this.handleValidation = this.handleValidation.bind(this);
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
         
@@ -96,29 +96,6 @@ class RenderDayLog extends React.Component{
         }
         
     }
-    handleValidation(){
-        // let fields = this.state.fields;
-        let field = this.state.note;
-        // let errors = {};
-        let formIsValid = true;
-
-        //Name
-        if(!field){
-            formIsValid = false;
-            // errors["name"] = "Task cannot be empty";
-        }
-        // if(typeof fields["name"] !== "undefined"){
-        //     if(!fields["name"].match(/^[a-zA-Z]+$/)){
-        //         formIsValid = false;
-        //         errors["name"] = "Only letters";
-        //     }        
-        // }
-        // this.setState({errors: errors});
-        console.log(formIsValid);
-        return formIsValid;
-    }
-
-
 
     timer(e){
         this.setState({
@@ -133,22 +110,10 @@ class RenderDayLog extends React.Component{
             let month = preState.month;
             let date = preState.date;
             // 將該週未安排事件放入state
-            // this.getDBdataInState(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)),this.state.year,0);
-            
-            // console.log(`${year}-${month+1}-${date}`);
-            // console.log(this.countWeekNum(new Date(`${year}-${month+1}-${date}`)));
-            
-            return {weekNum:this.countWeekNum(new Date(`${year}-${month+1}-${date}`))}
+            return {weekNum:countWeekNum(new Date(`${year}-${month+1}-${date}`))}
         })
     }
-    countWeekNum(d){
-        //算出今日是第幾週 d=new Date("2020-05-02")
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-        return weekNo;
-    }
+    
     changeDate(year,month,date){
         console.log(year,month,date);
         if(date<1){
@@ -192,7 +157,7 @@ class RenderDayLog extends React.Component{
                 moreInfoBoard.iDate = date;
                 console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
-                    week = this.countWeekNum(new Date(`${year}-${month+1}-${date}`));
+                    week = countWeekNum(new Date(`${year}-${month+1}-${date}`));
                     console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = week;
@@ -325,11 +290,9 @@ class RenderDayLog extends React.Component{
             })
         })
         //比較週數
-        ref.where("week","<",this.countWeekNum(new Date())).where("week",">",0).where("isDone","==",false)
+        ref.where("week","<",countWeekNum(new Date())).where("week",">",0).where("isDone","==",false)
         .get().then(querySnapshot => {
             querySnapshot.forEach(doc=>{
-                // this.setState(preState)
-                // console.log('3getOverdueFromDB','id',doc.id,this.countWeekNum(new Date()));
                 overdue.push({
                     id:doc.id,
                     title: doc.data().title,
@@ -367,7 +330,6 @@ class RenderDayLog extends React.Component{
             this.setState(preState=>{
                 let ifShowMore = preState.ifShowMore;
                 let moreInfoBoard = preState.moreInfoBoard;
-                
                 moreInfoBoard.oldTitle = oldTitle;
                 moreInfoBoard.index = index;
                 moreInfoBoard.iYear = parseInt(year);
@@ -514,12 +476,6 @@ class RenderDayLog extends React.Component{
         });
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        // ref.where("year","==",this.state.year).where("month","==",this.state.month).where("date","==",this.state.date).where("title","==",oldTitle)
-        //     .get().then(querySnapshot=>{
-        //         querySnapshot.forEach(doc=>{
-        //             doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
-        //         })
-        //     })
         console.log('adjust todo',this.state.timer);
         ref.doc(this.state.moreInfoBoard.id)
             .update({
@@ -589,9 +545,6 @@ class RenderDayLog extends React.Component{
                 })
             });
         }
-        
-        
-        
     }
 
     ifDone(e){
@@ -615,14 +568,7 @@ class RenderDayLog extends React.Component{
                     doc.ref.update({isDone:newStatus})
                 })
             })
-        // ref.where("id","==",e.currentTarget.getAttribute("data-id"))
-        //     .get().then(querySnapshot=>{
-        //         querySnapshot.forEach(doc=>{
-        //             // console.log(doc.data());
-        //             console.log("newstatus",newStatus);
-        //             doc.ref.update({isDone:newStatus})
-        //         })
-        //     })
+        
     }
 
     overdueIfDone(e){
@@ -714,7 +660,7 @@ class RenderDayLog extends React.Component{
     }
 
     addThisDayToDos(){
-        if(this.handleValidation()==true){
+        if(handleValidation(this.state.note)==true){
             // alert("Form submitted");
             this.setState(preState=>{
                 let thing = preState.note;
@@ -768,7 +714,6 @@ class RenderDayLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'day'} onKeyDown={this.enterClick}>
                 <span>
-                    {/* <input type="checkbox" /> */}
                     <input className="noScheInput" type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus required="required"/>
                 </span>
                 <span className="month_todo_feacture2">
@@ -816,18 +761,15 @@ class RenderDayLog extends React.Component{
         this.getDBdataInState(this.state.month,this.state.year,this.state.date);
         this.getOverdueFromDB();
         document.addEventListener('click', this.handleClickOutside, false);
-        // console.log('listitems',this.props.listItems);
     }
     render(){
         let theme = this.state.theme;
         let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
                 <span>
-                    {/* <input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.ifDone}></input> */}
                     {todo.title}
                 </span>
-                <span className="month_todo_feacture mf4">
-                    {/* <span><i className="fas fa-angle-double-right" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span> */}
+                <span className={`month_todo_feacture mf4_${theme}`}>
                     <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-id={todo.id} data-type={'date'} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                     <span><i className="fas fa-check" data-type={'day'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
@@ -835,19 +777,17 @@ class RenderDayLog extends React.Component{
         let overdue = this.state.overdue.map((todo,index)=>
             <div className="month_todo"  key={index}>
                 <span>
-                    {/* <input type="checkbox" data-id={todo.id} data-index={index} data-title={todo.title} onChange={this.overdueIfDone}></input> */}
                     {todo.title}
                 </span>
-                <span className="month_todo_feacture mf2">
-                    {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
+                <span className={`month_todo_feacture mf2_${theme}`}>
                     <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                     <span><i className="fas fa-check" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
                 </span>
             </div>
         );
-        let hint = <div className="hint">hint：點擊右上+按鈕，新增此日待辦事項！</div>
-        let overdueDiv = <div id="overdue" className="overdue_board">
-                <div className="month_title">
+        let hint = <div className={`hint hint_${theme}`}>hint：點擊右上+按鈕，新增此日待辦事項！</div>
+        let overdueDiv = <div id="overdue" className={`overdue_board overdue_board_${theme}`}>
+                <div className={`month_title month_title_${theme}`}>
                     <span className="title_month">Overdue</span>
                 </div>
                 <div className="month_todos">
@@ -859,8 +799,8 @@ class RenderDayLog extends React.Component{
         return <div className={`right_board right_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
-        <div id="today" className="today_board">
-            <div className="month_title">
+        <div id="today" className={`today_board today_board_${theme}`}>
+            <div className={`month_title month_title_${theme}`}>
                 <div>
                     {this.state.date==new Date().getDate()&&this.state.month==new Date().getMonth()?todayHint:''}
                     <span className="title_month">
@@ -871,24 +811,16 @@ class RenderDayLog extends React.Component{
                 </div>
                 
                 <span className="title_right">
-                    <span className="icon_hover_span"><i className="fas fa-calendar popUp" onClick={this.ifChangeDate}></i></span>
-                    <span className="icon_hover_span"><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>
-                    <span className="icon_hover_span"><i className="fas fa-angle-right" onClick={this.handleDateForward}></i></span>
-                    <span className="icon_hover_span"><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
+                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-calendar popUp" onClick={this.ifChangeDate}></i></span>
+                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>
+                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-right" onClick={this.handleDateForward}></i></span>
+                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
                 </span>
             </div>
             
             <div className="month_todos">
                 {this.state.ifInput? this.showInput() : ''}
                 {renderThisDayTodos==''?hint:''}
-                {/* <div className="month_todo">
-                    <span><input type="checkbox" name="" id=""/>睡覺</span>
-                    <span className="month_todo_feacture">
-                        <span><i className="fas fa-angle-double-right"></i></span>
-                        <span><i className="fas fa-info-circle"></i></span>
-                        <span><i className="fas fa-arrows-alt"></i></span>
-                    </span>
-                </div> */}
                 {renderThisDayTodos}
             </div>
         </div>

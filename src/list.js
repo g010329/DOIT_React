@@ -25,7 +25,8 @@ class List extends React.Component{
             showMoreDoneList: false,
             showMoreTodoList: true,
             showPieChart: false,
-            pieChartData:[]
+            pieChartData:[],
+            theme:this.props.theme
         }
         this.getListDBdata = this.getListDBdata.bind(this);
         this.toggleShowMoreDoneList = this.toggleShowMoreDoneList.bind(this);
@@ -179,6 +180,7 @@ class List extends React.Component{
         x.style.height = x.scrollHeight + "px";
     }
     render(){
+        let theme= this.state.theme;
         let undoneTotalTime=0;
         let undoneTimer = this.state.undoneList.map((undone,index)=>{
             // console.log(parseFloat(undone.timer));
@@ -325,7 +327,7 @@ class List extends React.Component{
                 </div>
                 
                 {chart}
-                <div className="bgc"></div>
+                <div className={`bgc bgc_${theme}`}></div>
             </div>
         return <div>
             <Link to='/dashboard'>

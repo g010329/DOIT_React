@@ -4,6 +4,7 @@ import * as firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
 import Calendar from "./calendar";
+import {countWeekNum,handleValidation} from './util.js';
 import ChangeMonthCal from "./changeMonthCal";
 // 有使用者的uid: this.props.uid
 
@@ -80,27 +81,17 @@ class RenderMonthLog extends React.Component{
         //下層的calen Component取得新時間後傳回上層
         this.calenUpdateTime = this.calenUpdateTime.bind(this);
         this.adjustTimeInDB = this.adjustTimeInDB.bind(this);
-        this.countWeekNum = this.countWeekNum.bind(this);
         this.ifChangeMonth = this.ifChangeMonth.bind(this);
         //today
         this.backToTodayBtn = this.backToTodayBtn.bind(this);
         //list
         this.chooseList = this.chooseList.bind(this);  
         // input required
-        this.handleValidation = this.handleValidation.bind(this);
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
     }
     
-    handleValidation(){
-        let field = this.state.note;
-        let formIsValid = true;
-
-        if(!field){
-            formIsValid = false;
-        }
-        return formIsValid;
-    }
+    
     changeMonth(year,month){
         // console.log(year,month);
         this.setState(preState=>{
@@ -117,7 +108,6 @@ class RenderMonthLog extends React.Component{
                     ifInput: false,
                     
                 });
-                
                 this.getDBdataInState(month,year,i+1);
             }
             return{
@@ -135,7 +125,6 @@ class RenderMonthLog extends React.Component{
         this.setState(preState=>{
             let ifChangeMonth = !preState.ifChangeMonth;
             console.log('更換月');
-            
             return{
                 ifChangeMonth: ifChangeMonth
             }
@@ -157,7 +146,7 @@ class RenderMonthLog extends React.Component{
                 moreInfoBoard.iDate = date;
                 console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
-                    week = this.countWeekNum(new Date(`${year}-${month+1}-${date}`));
+                    week = countWeekNum(new Date(`${year}-${month+1}-${date}`));
                     console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = week;
@@ -166,7 +155,6 @@ class RenderMonthLog extends React.Component{
                     console.log('表示在選擇月份')
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = null
-                    
                 }
                 // moreInfoBoard.iWeek = week;
                 console.log('calenUpdateTime',moreInfoBoard);
@@ -178,14 +166,7 @@ class RenderMonthLog extends React.Component{
         }
         
     }
-    countWeekNum(d){
-        //算出今日是第幾週 d=new Date("2020-05-02")
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-        return weekNo;
-    }
+
     adjustTodo(){
         console.log('');
         let oldTitle = this.state.moreInfoBoard.oldTitle;
@@ -228,13 +209,6 @@ class RenderMonthLog extends React.Component{
                 })
                 
             }else{
-                //改過時間的
-                // ref.where("year","==",this.state.year).where("month","==",this.state.month).where("title","==",oldTitle)
-                // .get().then(querySnapshot=>{
-                //     querySnapshot.forEach(doc=>{
-                //         doc.ref.update({title:this.state.note,month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
-                //     })
-                // });
                 console.log('改過時間','m',this.state.moreInfoBoard.iMonth,'year',this.state.moreInfoBoard.iYear,'date',this.state.moreInfoBoard.iDate,'week',this.state.moreInfoBoard.iWeek);
                 ref.doc(this.state.moreInfoBoard.id).update({
                     title:this.state.note,
@@ -245,13 +219,6 @@ class RenderMonthLog extends React.Component{
                     list: this.state.moreInfoBoard.list
                 });
             }
-            
-            // ref.where("id","==",this.state.moreInfoBoard.id)
-            //     .get().then(querySnapshot=>{
-            //         querySnapshot.forEach(doc=>{
-            //             doc.ref.update({title:'this.state.note',month:this.state.moreInfoBoard.iMonth,year:this.state.moreInfoBoard.iYear,date:this.state.moreInfoBoard.iDate,week:this.state.moreInfoBoard.iWeek})
-            //         })
-            //     });
             alert('確認修改?');
             this.props.reRenderLog();
         }else{ //該月每天
@@ -362,7 +329,7 @@ class RenderMonthLog extends React.Component{
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
                     console.log('adjustTimeInDB');
-                    console.log(doc.data());
+                    // console.log(doc.data());
                 })
             })
     }
@@ -371,9 +338,9 @@ class RenderMonthLog extends React.Component{
         console.log('listItems',this.props.listItems);
         let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
         // console.log('showMoreInfo',this.state.moreInfoBoard);
-        let showScheTime1 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
-        let showScheTime2 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
-        let showScheTime3 = <span className="littleCal">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
+        let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
+        let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
+        let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
         let iWeek = this.state.moreInfoBoard.iWeek;
         let iDate = this.state.moreInfoBoard.iDate;
         let iMonth = this.state.moreInfoBoard.iMonth;
@@ -384,19 +351,16 @@ class RenderMonthLog extends React.Component{
                     <div className="info1">
                         <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
                     </div>
-                    <div className="info" onClick={this.showCalen}>
-                        <div className="infoLi">
-                            <i className="fas fa-calendar"></i>
-                            <span className="addList">Change Time</span>
+                    <div className="info popUp" onClick={this.showCalen}>
+                        <div className="infoLi popUp">
+                            <i className="fas fa-calendar popUp"></i>
+                            <span className="addList popUp">Change Time</span>
                         </div>
-                        <div className="infoLi2" >
+                        <div className="infoLi2 popUp" >
                             {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
                             {iWeek!=null && iWeek!=0 && iDate==0? showScheTime2:''}
                             {((iWeek==0 || iWeek==undefined) && iDate>0)? showScheTime3:''}
                         </div>
-                        {/* <div className="info">
-                            <i className="fas fa-list-ul"></i>
-                        </div> */}
                     </div>
                     <div className="info">
                         <div className="infoLi">
@@ -422,7 +386,7 @@ class RenderMonthLog extends React.Component{
     }
     
     addThisDayToDos(day){
-        if(this.handleValidation()==true){
+        if(handleValidation(this.state.note)==true){
             let indexDay = day.currentTarget.getAttribute("data-addday");
             // console.log(day.currentTarget.getAttribute("data-addday"));
             this.setState(preState=>{
@@ -461,7 +425,7 @@ class RenderMonthLog extends React.Component{
         ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",0).where("title","==",title)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
-                    console.log(doc.id);
+                    // console.log(doc.id);
                     doc.ref.update({isDone:newStatus})
                 })
             })
@@ -510,7 +474,6 @@ class RenderMonthLog extends React.Component{
     getDBdataInState(month,year,date){
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        
         let thisMonthToDos = [];
         
         if(date == 0){
@@ -524,8 +487,7 @@ class RenderMonthLog extends React.Component{
                             id: doc.id,
                             list: doc.data().list
                         });
-                        console.log(doc.data());
-                        
+                        // console.log(doc.data());
                     });
                     this.setState({
                         thisMonthToDos:thisMonthToDos
@@ -548,7 +510,7 @@ class RenderMonthLog extends React.Component{
         }
     }
     componentDidMount(){
-        console.log(this.state.theme);
+        // console.log(this.state.theme);
         this.updateEachDayToDos();
         // 將該月未安排事件放入state
         this.getDBdataInState(this.state.month,this.state.year,0);
@@ -558,26 +520,20 @@ class RenderMonthLog extends React.Component{
         document.removeEventListener('click', this.handleClickOutside, false);
     }
     handleClickOutside(event) {
-        // 點擊sidebar外部關閉sidebar
-        console.log(event.target.className);
-        let cN = event.target.className;
-        if(cN=='calenTitle'||cN=='fas fa-calendar'||cN=='fas fa-angle-left'||cN=='fas fa-angle-right'||cN=='calenTM'){
-            console.log('dont clos div');
-        }else if(cN.contains('popUp')){
-            console.log('dont clos div');
-        }else if(cN=='addList'||cN=='littleCal'||cN=='info'||cN=='infoLi2'||cN=='calenBoard'||cN=='data-calentype'){
+        let cN = event.target.classList;
+        if(cN.contains('popUp')){
             console.log('dont clos div');
         }else{
             console.log('outside');
             this.setState({
-                ifChangeMonth: false,
-                calenIfShow: false
+                calenIfShow:false,
+                ifChangeMonth:false
             })
         }
         
     }
     addThisMonthToDos(){
-        if(this.handleValidation()==true){
+        if(handleValidation(this.state.note)==true){
             this.setState(preState=>{
                 let year = preState.year;
                 let month = preState.month;
@@ -607,15 +563,7 @@ class RenderMonthLog extends React.Component{
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
         let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        // ref.where("month","==",this.state.month).where("year","==",this.state.year).where("title","==",deleteTitle)
-        //     .get().then(querySnapshot=>{
-        //         querySnapshot.forEach(doc=>{
-        //             doc.ref.delete().then(()=>{
-        //                 this.props.reRenderLog();
-        //                 this.getDBdataInState(this.state.month,this.state.year,0);
-        //             });
-        //         })
-        //     });
+
         ref.where("month","==",this.state.month).where("year","==",this.state.year).where("title","==",deleteTitle)
         .get().then(querySnapshot=>{
             querySnapshot.forEach(doc=>{
@@ -819,71 +767,46 @@ class RenderMonthLog extends React.Component{
                 {/* <input className="checkbox" type="checkbox" data-index={index} data-title={todo.title} onChange={this.ifDone}></input> */}
                 {todo.title}
             </span>
-            <span className="month_todo_feacture mf2">
+            <span className={`month_todo_feacture mf2_${theme}`}>
                 {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
                 <span ><i className="fas fa-pen" data-list={todo.list} data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
                 <span><i className="fas fa-check" data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
             </span>
         </div>);
-        // render 每日事項
-        // let notBgcdate = <div className="month_day">
-        //     <div className="month_day_a">
-        //         <span className="m_date" >{eachday.date+1}</span>
-        //         <span className="m_day_of_week" >{eachDay[eachday.day]}</span>
-        //         <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
-        //     </div>
-        //     <div className="month_day_b">
-        //         {eachday.todos.map((todo,innerIndex)=><span data-list={todo.list} data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
-        //         <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
-        //     </div>
-        // </div>
-        // let bgcdate = <div className="month_day todayBgc">
-        //     <div className="month_day_a">
-        //         <span className="m_date" >{eachday.date+1}</span>
-        //         <span className="m_day_of_week" >{eachDay[eachday.day]}</span>
-        //         <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
-        //     </div>
-        //     <div className="month_day_b">
-        //         {eachday.todos.map((todo,innerIndex)=><span data-list={todo.list} data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
-        //         <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
-        //     </div>
-        // </div>
         let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>{
-            // console.log(index, this.state.date);
             return <div key={index}>
             {/* 每日事項input */}
-                {/* {index==this.state.date+1?bgcdate:notBgcdate} */}
-                <div className={index==parseInt(this.state.date-1)&&this.state.month==new Date().getMonth()?"month_day todayBgc":"month_day"}>
+                <div className={index==parseInt(this.state.date-1)&&this.state.month==new Date().getMonth()?`month_day todayBgc_${theme}`:"month_day"}>
                     {/* 每日新增事件 */}
                     <div className="month_day_a">
                         <span className="m_date" >{eachday.date+1}</span>
-                        <span className="m_day_of_week" >{eachDay[eachday.day]}</span>
-                        <span className="m_add_bt"  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
+                        <span className={`m_day_of_week m_day_of_week_${theme}`} >{eachDay[eachday.day]}</span>
+                        <span className={`m_add_bt m_add_bt_${theme}`}  data-addindex={index} onClick={this.toggleEachDateIfInput}>+</span>
                     </div>
                     <div className="month_day_b">
-                        {eachday.todos.map((todo,innerIndex)=><span data-list={todo.list} data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className="m_bt" key={innerIndex}>{todo.title}</span>)}
+                        {eachday.todos.map((todo,innerIndex)=><span data-list={todo.list} data-id={todo.id} data-title={todo.title} data-index={index} data-innerindex={innerIndex} onClick={this.toggleIfShowMore} className={`m_bt m_bt_${theme}`} key={innerIndex}>{todo.title}</span>)}
                         <div>{eachday.ifInput? this.showEachDateInput(index) : ''}</div>
                     </div>
                 </div>
-                {eachday.day==6?<div className="weekBorder"></div>:''}
+                {eachday.day==0?<div className="weekBorder"></div>:''}
                 
         </div>});
-        let hint = <div className="hint">hint：點擊右上+按鈕，新增此月待辦事項！</div>
+        let hint = <div className={`hint hint_${theme}`}>hint：點擊右上+按鈕，新增此月待辦事項！</div>
                 
         return <div id="month" className={`left_board left_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeMonth?<ChangeMonthCal changeMonth={this.changeMonth.bind(this)}/>:''}
         {/* 月-標題 */}
-        <div className="month_title">
+        <div className={`month_title month_title_${theme}`}>
             <span>
-                <span className="title_month">{eachMonth[this.state.month] }</span>
+                <span className="title_month">{eachMonth[this.state.month]}</span>
                 <span className="title_monthyear"> &nbsp; of {this.state.year}</span>
             </span>
             <span className="title_right">
-                <span className="icon_hover_span"><i className="fas fa-calendar" onClick={this.ifChangeMonth}></i></span>
-                <span className="icon_hover_span"><i className="fas fa-angle-left"  value="-" onClick={this.handleMonthBackward}></i></span>
-                <span className="icon_hover_span"><i className="fas fa-angle-right" onClick={this.handleMonthForward}></i></span>
-                <span className="icon_hover_span"><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
+                <span className={`icon_hover_span icon_hover_span_${theme} popUp`}><i className="fas fa-calendar popUp" onClick={this.ifChangeMonth}></i></span>
+                <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-left"  value="-" onClick={this.handleMonthBackward}></i></span>
+                <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-right" onClick={this.handleMonthForward}></i></span>
+                <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
             </span>
         </div>
         
@@ -892,66 +815,10 @@ class RenderMonthLog extends React.Component{
             {this.state.ifInput? this.showInput() : ''}
             {renderThisMonthTodos==''?hint:''}
             {renderThisMonthTodos}
-            {/* <div className="month_todo">
-                <span><input type="checkbox" name="" id=""></input>睡覺</span>
-                <span className="month_todo_feacture">
-                    <span><i className="fas fa-angle-double-right"></i></span>
-                    <span ><i className="fas fa-info-circle"></i></span>
-                    <span><i className="fas fa-arrows-alt"></i></span>
-                </span>
-            </div>
-            <div className="month_todo">
-                <span><input type="checkbox" name="" id=""></input>背單字</span>
-                <span className="month_todo_feacture">
-                    <span><i className="fas fa-angle-double-right"></i></span>
-                    <span ><i className="fas fa-info-circle"></i></span>
-                    <span><i className="fas fa-arrows-alt"></i></span>
-                </span>
-            </div> */}
         </div>
         {/* 月-30天月曆 */}
         <div className="month_log">
-            {/* <div className="month_week">
-                <div className="month_day_a">
-                    <span className="month_week_title">week1</span>
-                    <span className="m_add_bt">+</span>
-                </div>
-                <div className="month_day_b">
-                    <span className="m_bt">家教1</span>
-                    <span className="m_bt">家教</span>
-                    <span className="m_bt">家教</span>
-                    <span className="m_bt">家教家教家教</span>
-                    <span className="m_bt">家教</span>
-                </div>
-            </div> */}
-            
             {renderEachDayTodos}
-
-            {/* <div className="month_day">
-                <div className="month_day_a">
-                    <span className="m_date">1</span>
-                    <span className="m_day_of_week">M</span>
-                    <span className="m_add_bt">+</span>
-                </div>
-                <div className="month_day_b">
-                    <span className="m_bt">家教</span>
-                    <span className="m_bt">家教</span>
-                    <span className="m_bt">家教</span>
-                    <span className="m_bt">家教家教家教</span>
-                    <span className="m_bt">家教</span>
-                </div>
-            </div> */}
-
-            {/* <div className="month_day">
-                <div className="month_day_a">
-                    <span className="m_date">30</span>
-                    <span className="m_day_of_week">T</span>
-                    <span className="m_add_bt">+</span>
-                </div>
-                <div className="month_day_b">
-                    <span className="m_bt">家教</span>
-                </div>
-            </div> */}
         </div>
         <div className="wbgc"></div>
         {/* 單一事件控制面板 */}
