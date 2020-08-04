@@ -264,7 +264,7 @@ class RenderWeekLog extends React.Component{
     }
     showMoreInfo(){
         let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
-        console.log(this.state.moreInfoBoard);
+        // console.log(this.state.moreInfoBoard);
         let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
         let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
@@ -625,8 +625,6 @@ class RenderWeekLog extends React.Component{
             if(date<10){
                 date="0"+date;
             }
-            // console.log(year, month, date);
-            // console.log(countWeekNum(new Date(`${year}-${month+1}-${date}`)));
             // 將該週未安排事件放入state
             this.getDBdataInState(countWeekNum(new Date(`${year}-${month}-${date}`)),this.state.year,0);
             return {weekNum:countWeekNum(new Date(`${year}-${month}-${date}`))}
@@ -636,7 +634,6 @@ class RenderWeekLog extends React.Component{
     addThisDayToDos(day){
         if(handleValidation(this.state.note)==true){
             let indexDay = day.currentTarget.getAttribute("data-addday");
-            // console.log(day.currentTarget.getAttribute("data-addday"));
             this.setState(preState=>{
                 let thing = preState.note;
                 let eachDayToDos = preState.eachDayToDos;
@@ -648,8 +645,6 @@ class RenderWeekLog extends React.Component{
                 let todayDay = new Date(`${year}-${month+1}-${date}`).getDay();
                 eachDayToDos[indexDay].todos.push({title:thing,ifDone:false});
                 eachDayToDos[indexDay].ifInput = false;
-                // console.log(eachDayToDos[indexDay].month+1+' / '+eachDayToDos[indexDay].date);
-                console.log('addThisDayToDos',thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
                 // 因為已經將月份日期存入eachDayToDos[]陣列裡，可以透過點擊index取出月份日期，再存入DB
                 this.addToDB(thing,year,eachDayToDos[indexDay].month,eachDayToDos[indexDay].date,weekNum);
                 return{
@@ -679,7 +674,6 @@ class RenderWeekLog extends React.Component{
             if(date<10){
                 date="0"+date;
             }
-            console.log(year,month,date);
 
             let eachDayToDos = preState.eachDayToDos;
             eachDayToDos = [];
@@ -688,7 +682,6 @@ class RenderWeekLog extends React.Component{
                 
                 let first = curr.getDate() - curr.getDay()+1;
                 let firstday = new Date(curr.setDate(first));
-                console.log(curr,first,firstday);
                 firstday.setDate(firstday.getDate()+i);
                 eachDayToDos.push({
                     month:firstday.getMonth(),

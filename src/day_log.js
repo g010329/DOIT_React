@@ -86,9 +86,7 @@ class RenderDayLog extends React.Component{
         // console.log(event.target.className);
         let cN = event.target.classList;
         if(cN.contains('popUp')){
-            console.log('dont clos div');
         }else{
-            console.log('outside');
             this.setState({
                 calenIfShow:false,
                 ifChangeDate:false
@@ -649,7 +647,8 @@ class RenderDayLog extends React.Component{
             type: "task",
             isDone: false,
             overdue: false,
-            timer:0          
+            timer: 0,
+            week: 0          
         });
     }
     handleNoteChange(e){

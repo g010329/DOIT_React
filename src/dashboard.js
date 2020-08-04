@@ -112,7 +112,6 @@ class Dashboard extends React.Component{
         }else if(this.node.contains(event.target)){
             return;
         }else{
-            // console.log('outside');
             sider.style.display = "none";
             this.setState({
                 ifInput: false

@@ -263,7 +263,6 @@ class RenderMonthLog extends React.Component{
         let innerIndex = e.currentTarget.getAttribute("data-innerindex");
         let id = e.currentTarget.getAttribute("data-id");
         let list = e.currentTarget.getAttribute("data-list");
-        console.log('list',list);
         this.setState(preState=>{
             let ifShowMore = preState.ifShowMore;
             let moreInfoBoard = preState.moreInfoBoard;
@@ -335,9 +334,7 @@ class RenderMonthLog extends React.Component{
     }
 
     showMoreInfo(){
-        console.log('listItems',this.props.listItems);
         let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
-        // console.log('showMoreInfo',this.state.moreInfoBoard);
         let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
         let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
@@ -507,6 +504,19 @@ class RenderMonthLog extends React.Component{
                         });
                     });
                 });
+            ref.where('month','==',month).where('year','==',year).where('date','==',date).where('week','==',null)
+            .get().then(querySnapshot => {
+                // console.log('getDBdataInState2',month,year,date);
+                querySnapshot.forEach(doc=>{
+                    this.setState(preState=>{
+                        let eachDayToDos = preState.eachDayToDos;
+                        eachDayToDos[doc.data().date-1].todos.push({title:doc.data().title,id:doc.id,list: doc.data().list});
+                        return{
+                            eachDayToDos: eachDayToDos
+                        }
+                    });
+                });
+            });
         }
     }
     componentDidMount(){
@@ -522,9 +532,9 @@ class RenderMonthLog extends React.Component{
     handleClickOutside(event) {
         let cN = event.target.classList;
         if(cN.contains('popUp')){
-            console.log('dont clos div');
+            // console.log('dont clos div');
         }else{
-            console.log('outside');
+            // console.log('outside');
             this.setState({
                 calenIfShow:false,
                 ifChangeMonth:false
@@ -584,7 +594,7 @@ class RenderMonthLog extends React.Component{
             let eachDayToDos = preState.eachDayToDos;
             // 畫面會有瞬間清空bug
             eachDayToDos =[];
-            // let {eachDayToDos} = this.state;
+            console.log('updateEachDayToDos');
             for (let i=0; i<daysOfMonth; i++){
                 eachDayToDos.push({
                     date:i,
