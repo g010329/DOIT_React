@@ -5,6 +5,8 @@ import ChangeDateCal from "./changeDateCal";
 import {countWeekNum,handleValidation} from './util.js';
 
 import LogTitle from "./renderDayLog/dayLogTitle.js";
+import ThisDayToDos from "./renderDayLog/thisDayToDos.js";
+import Overdue from "./renderDayLog/overdue.js"
 class RenderDayLog extends React.Component{
     constructor(props){
         super(props);
@@ -620,50 +622,16 @@ class RenderDayLog extends React.Component{
         document.addEventListener('click', this.handleClickOutside, false);
     }
     render(){
-        let {year, month, date, theme} = this.state;
-        let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>
-            <div className="month_todo" key={index}>
-                <span>
-                    {todo.title}
-                </span>
-                <span className={`month_todo_feacture mf4_${theme}`}>
-                    <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-id={todo.id} data-type={'date'} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-check" data-type={'day'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
-                </span>
-            </div>);
-        let overdue = this.state.overdue.map((todo,index)=>
-            <div className="month_todo"  key={index}>
-                <span>
-                    {todo.title}
-                </span>
-                <span className={`month_todo_feacture mf2_${theme}`}>
-                    <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-check" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
-                </span>
-            </div>
-        );
-        let hint = <div className={`hint hint_${theme}`}>hint：點擊右上+按鈕，新增此日待辦事項！</div>
-        let overdueDiv = <div id="overdue" className={`overdue_board overdue_board_${theme}`}>
-                <div className={`month_title month_title_${theme}`}>
-                    <span className="title_month">Overdue</span>
-                </div>
-                <div className="month_todos">
-                    {overdue}
-                </div>
-            </div>  
+        let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
         return <div className={`right_board right_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className={`today_board today_board_${theme}`}>
             <LogTitle year={year} month={month} date={date} theme={theme} ifChangeDate={this.ifChangeDate.bind(this)} handleDateBackward={this.handleDateBackward.bind(this)} handleDateForward={this.handleDateForward.bind(this)} toggleIfInput={this.toggleIfInput.bind(this)}/>
-            <div className="month_todos">
-                {this.state.ifInput? this.showInput() : ''}
-                {renderThisDayTodos==''?hint:''}
-                {renderThisDayTodos}
-            </div>
+            <ThisDayToDos theme={theme} thisDayToDos={thisDayToDos} ifInput={ifInput} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteInDB={this.deleteInDB.bind(this)} showInput={this.showInput.bind(this)}/>
         </div>
         
-        {this.state.overdue==''?'':overdueDiv}
+        {this.state.overdue==''?'':<Overdue theme={theme} overdue={overdue} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteInDB={this.deleteInDB.bind(this)}/>}
         {/* 單一事件控制面板 */}
         {this.state.ifShowMore? this.showMoreInfo(): ''} 
     </div>
