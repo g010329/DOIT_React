@@ -4,25 +4,9 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import Login from "./login.js";
 import Dashboard from "./dashboard.js";
-// import Homepage from "./homepage.js";
+import db from "./firebase.js";
 import * as firebase from "firebase";
 import 'firebase/auth';
-import 'firebase/database';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyB9Y-LXYOSanoqtrf96n7JsIFy4_75NMTQ",
-    authDomain: "bullet-journal-d10dc.firebaseapp.com",
-    databaseURL: "https://bullet-journal-d10dc.firebaseio.com",
-    projectId: "bullet-journal-d10dc",
-    storageBucket: "bullet-journal-d10dc.appspot.com",
-    messagingSenderId: "842027935278",
-    appId: "1:842027935278:web:783484d8d01ac52306e1bf",
-    measurementId: "G-TX3T2J9KLL"
-};
- {/* // Initialize Firebase */}
-firebase.initializeApp(firebaseConfig);
-let db = firebase.firestore();
-
 
 class App extends React.Component {
     constructor(props) {
@@ -47,7 +31,6 @@ class App extends React.Component {
         if (firebase.auth().currentUser) {
             // [START signout]
             firebase.auth().signOut();
-            // alert('sigh out');
             // [END signout]
         } else {
             // Sign in with email and pass.
@@ -73,9 +56,7 @@ class App extends React.Component {
         firebase.auth().createUserWithEmailAndPassword(email, password)
             .then((cred)=>{
                 alert('Sign Up Successfully!');
-                // console.log(cred);
                 this.setState(preState=>{
-                    let isNewUser = preState.isNewUser;
                     return{
                         isNewUser : cred.additionalUserInfo.isNewUser
                     }
@@ -154,7 +135,6 @@ class App extends React.Component {
 
     render() {
         if(this.state.isLogin == true){
-            
             return <div><Redirect to ="/dashboard"/>
             <Route path="/dashboard">
                 {/* <Calendar/> */}
@@ -164,9 +144,6 @@ class App extends React.Component {
         }else{    
             return <div>
                 <Redirect to ="/"/>
-                {/* <Route exact path="/">
-                    <Homepage/>
-                </Route>   */}
                 <Route path="/">
                     <Login toggleSignIn={this.toggleSignIn.bind(this)} handleSignUp={this.handleSignUp.bind(this)}/>
                 </Route>

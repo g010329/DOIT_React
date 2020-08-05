@@ -1,7 +1,5 @@
 import React from "react";
-import * as firebase from "firebase";
-import 'firebase/auth';
-import 'firebase/database';
+import db from "./firebase.js";
 import Calendar from "./calendar";
 import ChangeWeekCal from "./changeWeekCal.js";
 import {countWeekNum,handleValidation} from './util.js';
@@ -20,16 +18,10 @@ class RenderWeekLog extends React.Component{
                 // {"title":2,"index":1,"ifDone":false}
             ],
             eachDayToDos:[
-                // {month:
+                // {month: 7
                 // date:0,
                 // day:3,
                 // todos:[{title:"eat",ifDone:"false"},'sleep'],
-                // ifInput: false,
-                // id:null }
-
-                // {date:1,
-                // day:4,
-                // todos:['drink','shop','course'],
                 // ifInput: false,
                 // id:null }
             ],
@@ -95,13 +87,10 @@ class RenderWeekLog extends React.Component{
         document.removeEventListener('click', this.handleClickOutside, false);
     }
     handleClickOutside(event) {
-        // 點擊sidebar外部關閉sidebar
-        // console.log(event.target.className);
         let cN = event.target.classList;
         if(cN.contains('popUp')){
-            // console.log('dont clos div');
+            return;
         }else{
-            // console.log('outside');
             this.setState({
                 ifChangeWeek:false,
                 calenIfShow:false,
@@ -153,14 +142,13 @@ class RenderWeekLog extends React.Component{
     showCalen(){
         console.log('showCalen')
         this.setState(preState=>{
-            let calenIfShow = !preState.calenIfShow;
             return{
-                calenIfShow: calenIfShow
+                calenIfShow: !preState.calenIfShow
             }
         })
     }
     backToTodayBtn(){
-        console.log('回到今天');
+        // console.log('回到今天');
         this.setState(preState=>{
             return{
                 year: new Date().getFullYear(), 
@@ -268,16 +256,12 @@ class RenderWeekLog extends React.Component{
         let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
         let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
-        let iWeek = this.state.moreInfoBoard.iWeek;
-        let iDate = this.state.moreInfoBoard.iDate;
-        let iMonth = this.state.moreInfoBoard.iMonth;
-        let list = this.state.moreInfoBoard.list;
+        let {iMonth, iDate, iWeek, list} = this.state.moreInfoBoard;
         return(
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
                     <div className="info1">
                         <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
-                        {/* <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
                     <div className="info popUp" onClick={this.showCalen}>
                         <div className="infoLi popUp">
@@ -321,20 +305,13 @@ class RenderWeekLog extends React.Component{
             console.log('adjust week to do');
             this.setState(preState=>{
                 note = preState.note;
-                let moreInfoBoard = preState.moreInfoBoard;
-                let thisWeekToDos = preState.thisWeekToDos;
-                let ifShowMore = preState.ifShowMore;
+                let {moreInfoBoard, thisWeekToDos, ifShowMore} = preState;
                 thisWeekToDos[moreInfoBoard.index].title = note;
-                // console.log(thisWeekToDos);
-                // console.log(moreInfoBoard);
                 return{
-                    // thisWeekToDos:thisWeekToDos,
                     ifShowMore:!ifShowMore,
                     calenIfShow:false
                 }
             });
-            // console.log('ha',this.state.year,this.state.weekNum,oldTitle,note);
-            let db = firebase.firestore();
             let ref = db.collection("members").doc(this.props.uid).collection("todos");
             ref.where("year","==",this.state.year).where("week","==",this.state.weekNum).where("title","==",oldTitle)
                 .get().then(querySnapshot=>{
@@ -370,23 +347,15 @@ class RenderWeekLog extends React.Component{
             console.log('adjust day to do');
             this.setState(preState=>{
                 note = preState.note;
-                let moreInfoBoard = preState.moreInfoBoard;
-                let eachDayToDos = preState.eachDayToDos;
-                let ifShowMore = preState.ifShowMore;
+                let {moreInfoBoard, eachDayToDos, ifShowMore} = preState;
                 eachDayToDos[moreInfoBoard.index].todos[moreInfoBoard.innerIndex].title = note;
-                
-                // console.log(eachDayToDos);
                 return{
-                    // eachDayToDos:eachDayToDos,
                     ifShowMore:!ifShowMore,
                     calenIfShow:false
                 }
             });
-            console.log('ha',this.state.moreInfoBoard);
-            let db = firebase.firestore();
             let ref = db.collection("members").doc(this.props.uid).collection("todos").doc(this.state.moreInfoBoard.id);
             if(this.state.moreInfoBoard.iDate!=null){
-                console.log('1');
                 ref.update({
                     title:this.state.note,
                     month:this.state.moreInfoBoard.iMonth,
@@ -400,7 +369,6 @@ class RenderWeekLog extends React.Component{
                     this.updateEachDayToDosOfWeek();
                 });
             }else{
-                console.log('2');
                 ref.update({
                     title:this.state.note,
                     month:this.state.moreInfoBoard.iMonth,
@@ -424,7 +392,7 @@ class RenderWeekLog extends React.Component{
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
         let id = bt.currentTarget.getAttribute("data-id");
         console.log('id',id);
-        let db = firebase.firestore();    
+        // let db = firebase.firestore();    
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
     
         ref.where("week","==",this.state.weekNum).where("year","==",this.state.year).where("title","==",deleteTitle)
@@ -453,7 +421,7 @@ class RenderWeekLog extends React.Component{
         let date = parseInt(e.currentTarget.getAttribute("data-date"));
         let week = parseInt(e.currentTarget.getAttribute("data-week"));
         console.log('ifDone',month);
-        let db = firebase.firestore();
+        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         
         if (week>=0){
@@ -506,7 +474,7 @@ class RenderWeekLog extends React.Component{
         // console.log('刪除週日0',id,outerIndex,innerIndex);
         // console.log(outerIndex,innerIndex);
         console.log('deleteEachDay',targetMonth);
-        let db = firebase.firestore();
+        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         ref.doc(id).update({isDone:true}).then(()=>{
             this.props.reRenderLog();
@@ -552,7 +520,7 @@ class RenderWeekLog extends React.Component{
     }
 
     addToDB(title,year,month,date,week){
-        let db = firebase.firestore();
+        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
         ref.set({
             title: title,
@@ -572,7 +540,7 @@ class RenderWeekLog extends React.Component{
     }
 
     getDBdataInState(week,year,date,day,month){
-        let db = firebase.firestore();
+        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         let thisWeekToDos = [];
         

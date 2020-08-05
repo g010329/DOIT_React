@@ -93,7 +93,6 @@ class Dashboard extends React.Component{
         })
     }
     componentDidMount(){
-        console.log(this.state.theme)
         this.getListFromDB();
         this.listenLists();
         document.addEventListener('click', this.handleClickOutside, false);

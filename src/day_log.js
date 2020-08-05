@@ -1,7 +1,5 @@
 import React from "react";
-import * as firebase from "firebase";
-import 'firebase/auth';
-import 'firebase/database';
+import db from "./firebase.js";
 import Calendar from "./calendar";
 import ChangeDateCal from "./changeDateCal";
 import {countWeekNum,handleValidation} from './util.js';
@@ -15,8 +13,7 @@ class RenderDayLog extends React.Component{
             date: new Date().getDate(), //3
             weekNum: null,
             thisDayToDos:[
-                // {"title":1,"index":1,"ifDone":false},
-                // {"title":2,"index":1,"ifDone":false}
+                // {"title":1,"index":1,"ifDone":false}
             ],
             ifInput: false,
             ifShowMore: false,
@@ -72,8 +69,6 @@ class RenderDayLog extends React.Component{
         //timer
         this.timer = this.timer.bind(this); 
         this.chooseList = this.chooseList.bind(this);  
-        // input required
-        // this.handleValidation = this.handleValidation.bind(this);
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
         
@@ -104,16 +99,13 @@ class RenderDayLog extends React.Component{
 
     setWeekNum(){
         this.setState(preState=>{
-            let year = preState.year;
-            let month = preState.month;
-            let date = preState.date;
+            let {year, month, date} = preState;
             // 將該週未安排事件放入state
             return {weekNum:countWeekNum(new Date(`${year}-${month+1}-${date}`))}
         })
     }
     
     changeDate(year,month,date){
-        console.log(year,month,date);
         if(date<1){
             return;
         }
@@ -133,10 +125,9 @@ class RenderDayLog extends React.Component{
     }
     ifChangeDate(){
         this.setState(preState=>{
-            let ifChangeDate = !preState.ifChangeDate;
             console.log('更換日')
             return{
-                ifChangeDate: ifChangeDate
+                ifChangeDate: !preState.ifChangeDate
             }
         })
     }
@@ -149,7 +140,7 @@ class RenderDayLog extends React.Component{
             return;
         }else{
             this.setState(preState=>{
-                let moreInfoBoard = preState.moreInfoBoard;
+                let {moreInfoBoard} = preState;
                 moreInfoBoard.iYear = year;
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
@@ -174,7 +165,6 @@ class RenderDayLog extends React.Component{
         }
     }
     showCalen(){
-        console.log('showCalen')
         this.setState(preState=>{
             let calenIfShow = !preState.calenIfShow;
             return{
@@ -184,7 +174,7 @@ class RenderDayLog extends React.Component{
     }
 
     backToTodayBtn(){
-        console.log('回到今天');
+        // console.log('回到今天');
         this.setState(preState=>{
             return{
                 year: new Date().getFullYear(), 
@@ -194,119 +184,40 @@ class RenderDayLog extends React.Component{
         })
         this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),new Date().getDate());
     }
-    
     getOverdueFromDB(){
-        // console.log('0getOverdueFromDB');
+        let createOverdueObj=(doc)=>{
+            return {
+                id:doc.id,
+                title: doc.data().title,
+                ifDone: doc.data().isDone,
+                year: doc.data().year,
+                month: doc.data().month,
+                date: doc.data().date,
+                week: null,
+                timer: doc.data().timer,
+                list: doc.data().list
+            }
+        }
         let overdue =[];
-        let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        //比較年
-        ref.where("year","<",new Date().getFullYear()).where("isDone","==",false).orderBy("year","asc")
-            .get().then(querySnapshot => {
+        let conditions=[
+            //比較年、同年但月份較小、同年同月份日期小、比較週數
+            ref.where("year","<",new Date().getFullYear()).where("isDone","==",false).orderBy("year","asc"),
+            ref.where("month","<",new Date().getMonth()).where("year","==",new Date().getFullYear()).where("isDone","==",false).where('week',"==",0),
+            ref.where("month","<",new Date().getMonth()).where("year","==",new Date().getFullYear()).where("isDone","==",false).where('week',"==",null),
+            ref.where("date","<",new Date().getDate()).where("date",">",0).where("year","==",new Date().getFullYear()).where("month","==",new Date().getMonth()).where("isDone","==",false),
+            ref.where("week","<",countWeekNum(new Date())).where("week",">",0).where("isDone","==",false)
+        ];
+        for (let i=0; i<5; i++){
+            conditions[i].get().then(querySnapshot => {
                 querySnapshot.forEach(doc=>{
-                    // this.setState(preState)
-                    // console.log('1getOverdueFromDB','id',doc.id);
-                    overdue.push({
-                        id:doc.id,
-                        title: doc.data().title,
-                        ifDone: doc.data().isDone,
-                        year: doc.data().year,
-                        month: doc.data().month,
-                        date: doc.data().date,
-                        week: null,
-                        timer: doc.data().timer,
-                        list: doc.data().list
-                    });
+                    overdue.push(createOverdueObj(doc));
                 })
                 this.setState({
                     overdue:overdue
                 })
             })
-        // 同年、月份較小
-        ref.where("month","<",new Date().getMonth()).where("year","==",new Date().getFullYear()).where("isDone","==",false).where('week',"==",0)
-            .get().then(querySnapshot => {
-                querySnapshot.forEach(doc=>{
-                    // this.setState(preState)
-                    // console.log('2getOverdueFromDB',doc.data());
-                    overdue.push({
-                        id:doc.id,
-                        title: doc.data().title,
-                        ifDone: doc.data().isDone,
-                        year: doc.data().year,
-                        month: doc.data().month,
-                        date: doc.data().date,
-                        week: null,
-                        timer: doc.data().timer,
-                        list: doc.data().list
-                    });
-                })
-                this.setState({
-                    overdue:overdue
-                })
-            })
-            ref.where("month","<",new Date().getMonth()).where("year","==",new Date().getFullYear()).where("isDone","==",false).where('week',"==",null)
-            .get().then(querySnapshot => {
-                querySnapshot.forEach(doc=>{
-                    // this.setState(preState)
-                    // console.log('2getOverdueFromDB',doc.data());
-                    overdue.push({
-                        id:doc.id,
-                        title: doc.data().title,
-                        ifDone: doc.data().isDone,
-                        year: doc.data().year,
-                        month: doc.data().month,
-                        date: doc.data().date,
-                        week: null,
-                        timer: doc.data().timer,
-                        list: doc.data().list
-                    });
-                })
-                this.setState({
-                    overdue:overdue
-                })
-            })
-        // 同年、同月份、日期小
-        ref.where("date","<",new Date().getDate()).where("date",">",0).where("year","==",new Date().getFullYear()).where("month","==",new Date().getMonth()).where("isDone","==",false)
-        .get().then(querySnapshot => {
-            querySnapshot.forEach(doc=>{
-                // this.setState(preState)
-                // console.log('3getOverdueFromDB','id',doc.id);
-                overdue.push({
-                    id:doc.id,
-                    title: doc.data().title,
-                    ifDone: doc.data().isDone,
-                    year: doc.data().year,
-                    month: doc.data().month,
-                    date: doc.data().date,
-                    week: null,
-                    timer: doc.data().timer,
-                    list: doc.data().list
-                });
-            })
-            this.setState({
-                overdue:overdue
-            })
-        })
-        //比較週數
-        ref.where("week","<",countWeekNum(new Date())).where("week",">",0).where("isDone","==",false)
-        .get().then(querySnapshot => {
-            querySnapshot.forEach(doc=>{
-                overdue.push({
-                    id:doc.id,
-                    title: doc.data().title,
-                    ifDone: doc.data().isDone,
-                    year: doc.data().year,
-                    month: doc.data().month,
-                    date: doc.data().date,
-                    week: null,
-                    timer: doc.data().timer,
-                    list: doc.data().list
-                });
-            })
-            this.setState({
-                overdue:overdue
-            })
-        })
+        }
     }
 
     toggleIfShowMore(e){
@@ -321,13 +232,9 @@ class RenderDayLog extends React.Component{
         let list = e.currentTarget.getAttribute("data-list");
         let timer = e.currentTarget.getAttribute("data-timer");
         console.log('list',list);
-        // console.log(year,month,date);
-        // console.log(type);
-        // console.log(timer);
         if(type=='overdue'){
             this.setState(preState=>{
-                let ifShowMore = preState.ifShowMore;
-                let moreInfoBoard = preState.moreInfoBoard;
+                let {ifShowMore, moreInfoBoard} = preState;
                 moreInfoBoard.oldTitle = oldTitle;
                 moreInfoBoard.index = index;
                 moreInfoBoard.iYear = parseInt(year);
@@ -340,15 +247,14 @@ class RenderDayLog extends React.Component{
                 // console.log('toggleIfShowMore',moreInfoBoard);
                 return{
                     ifShowMore: !ifShowMore,
-                    note:oldTitle,
-                    moreInfoBoard:moreInfoBoard,
-                    calenIfShow:false
+                    note: oldTitle,
+                    moreInfoBoard: moreInfoBoard,
+                    calenIfShow: false
                 }
             })
         }else{
             this.setState(preState=>{
-                let ifShowMore = preState.ifShowMore;
-                let moreInfoBoard = preState.moreInfoBoard;
+                let {ifShowMore, moreInfoBoard} = preState;
                 moreInfoBoard.oldTitle = oldTitle;
                 moreInfoBoard.index = index;
                 moreInfoBoard.iYear = this.state.year;
@@ -361,9 +267,9 @@ class RenderDayLog extends React.Component{
                 // console.log('toggleIfShowMore',moreInfoBoard);
                 return{
                     ifShowMore: !ifShowMore,
-                    note:oldTitle,
-                    moreInfoBoard:moreInfoBoard,
-                    calenIfShow:false
+                    note: oldTitle,
+                    moreInfoBoard: moreInfoBoard,
+                    calenIfShow: false
                 }
             })
         }
@@ -391,20 +297,14 @@ class RenderDayLog extends React.Component{
         let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
         let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
-        let iWeek = this.state.moreInfoBoard.iWeek;
-        let iDate = this.state.moreInfoBoard.iDate;
-        let iMonth = this.state.moreInfoBoard.iMonth;
-        let list = this.state.moreInfoBoard.list;
+        let {iMonth, iWeek, iDate, list} = this.state.moreInfoBoard;
         return(
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
                     <div className="info1">
                         <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus required></textarea>
-                        {/* <textarea  className="info_contentInput" cols="50" rows="3" placeholder="Write here"></textarea> */}
                     </div>
                     <div>
-                        {/* <div className="info"><i className="fas fa-check-square"></i>
-                            <span>task</span></div> */}
                         <div className="info popUp" onClick={this.showCalen}>
                             <div className="infoLi popUp">
                                 <i className="fas fa-calendar popUp"></i>
@@ -437,7 +337,6 @@ class RenderDayLog extends React.Component{
                             </div>
                             <div className="infoLi2">
                                 <input className="inputTimer" type="number" step=".5" defaultValue={this.state.moreInfoBoard.timer} onClickCapture={this.timer} autoFocus/>
-                                {/* <input type="text" placeholder="spending hours?" onChange={this.timer} autoFocus/> */}
                             </div>
                             
                         </div>
@@ -447,7 +346,6 @@ class RenderDayLog extends React.Component{
                 <div className="infoBtns">
                     <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>Cancel</span>
                     <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>Save</span>
-                    {/* <i className="fas fa-trash-alt"></i> */}
                 </div>
             </div>
         )
@@ -456,28 +354,22 @@ class RenderDayLog extends React.Component{
         let note;
         this.setState(preState=>{
             note = preState.note;
-            let moreInfoBoard = preState.moreInfoBoard;
-            let thisDayToDos = preState.thisDayToDos;
-            let ifShowMore = preState.ifShowMore;
-            let timer = preState.timer;
-            // thisDayToDos[moreInfoBoard.index].title = note;
+            let {moreInfoBoard, thisDayToDos, ifShowMore} = preState;
             console.log(moreInfoBoard);
             if(moreInfoBoard.iDate!=this.state.date){
                 thisDayToDos.splice(moreInfoBoard.index,1);
             }
-            // console.log(thisDayToDos);
             return{
-                thisDayToDos:thisDayToDos,
+                thisDayToDos: thisDayToDos,
                 ifShowMore: !ifShowMore,
-                calenIfShow:false
+                calenIfShow: false
             }
         });
-        let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         console.log('adjust todo',this.state.timer);
         ref.doc(this.state.moreInfoBoard.id)
             .update({
-                title:this.state.note,
+                title: this.state.note,
                 month:this.state.moreInfoBoard.iMonth,
                 year:this.state.moreInfoBoard.iYear,
                 date:this.state.moreInfoBoard.iDate,
@@ -500,16 +392,11 @@ class RenderDayLog extends React.Component{
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
         let dataId = bt.currentTarget.getAttribute("data-id");
         let dataType = bt.currentTarget.getAttribute("data-type");
-        // console.log(deleteTitle,deleteIndex,this.state.month ,this.state.year,this.state.date);
-        let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         if(dataType == 'overdue'){
-            // console.log('overdue')
-            // ref.doc(dataId).delete().then(()=>{
             ref.doc(dataId).update({isDone:true}).then(()=>{
                 console.log('overdue刪除成功');
                 this.props.reRenderLog();
-                
                 this.getDBdataInState(this.state.month,this.state.year,this.state.date);
                 this.setState(preState=>{
                     let overdue = preState.overdue;
@@ -518,7 +405,6 @@ class RenderDayLog extends React.Component{
                         overdue:overdue
                     }
                 });
-                
             })
         }else{
             // console.log('day');
@@ -538,15 +424,13 @@ class RenderDayLog extends React.Component{
                                 thisDayToDos:thisDayToDos
                             }
                         });
-                        
                     });
-                })
+                });
             });
         }
     }
 
     ifDone(e){
-        // console.log(this.state.year,this.state.month,this.state.date);
         let index = e.currentTarget.getAttribute("data-index");
         let title = e.currentTarget.getAttribute("data-title");
         let id = e.currentTarget.getAttribute("data-id");
@@ -557,7 +441,6 @@ class RenderDayLog extends React.Component{
             newStatus = !thisDayToDos[index].ifDone;
             thisDayToDos[index].ifDone = newStatus;
         });
-        let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",title)
             .get().then(querySnapshot=>{
@@ -571,23 +454,15 @@ class RenderDayLog extends React.Component{
 
     overdueIfDone(e){
         let id = e.currentTarget.getAttribute("data-id");
-        // console.log(id);
         let index = e.currentTarget.getAttribute("data-index");
         let newStatus;
-        // console.log(this.state.overdue);
         
         this.setState(preState=>{
             let overdue = preState.overdue;
             console.log(overdue[index].ifDone,!overdue[index].ifDone);
             newStatus = !overdue[index].ifDone;
             overdue[index].ifDone = newStatus;
-            let db = firebase.firestore();
             let ref = db.collection("members").doc(this.props.uid).collection("todos").doc(id);
-            // ref.get().then(querySnapshot=>{
-            //             console.log(querySnapshot.data());
-            //             querySnapshot.data().ref.update({isDone:newStatus})
-                    
-            //     })
             ref.update({isDone:newStatus}).then(()=>{
                 console.log('成功修改');
             });
@@ -596,14 +471,11 @@ class RenderDayLog extends React.Component{
     }
 
     getDBdataInState(month,year,date){
-        let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         let thisDayToDos = [];
-        // console.log(month,year,date);
         ref.where("year","==",year).where("month","==",month).where("date","==",date).where('isDone','==',false)
             .get().then(querySnapshot => {
                 querySnapshot.forEach(doc=>{
-                    // console.log(doc.data());
                     thisDayToDos.push({
                         id:doc.id,
                         title: doc.data().title,
@@ -630,13 +502,11 @@ class RenderDayLog extends React.Component{
         if(preProps.btToday !== this.props.btToday){
             this.backToTodayBtn();
         }
-        
     }
 
     
 
     addToDB(title,year,month,date){
-        let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
         ref.set({
             title: title,
@@ -655,19 +525,14 @@ class RenderDayLog extends React.Component{
         this.setState({
             note:e.currentTarget.value
         });
-        // console.log(e.currentTarget.value);
     }
 
     addThisDayToDos(){
         if(handleValidation(this.state.note)==true){
             // alert("Form submitted");
             this.setState(preState=>{
+                let {thisDayToDos, ifInput, year, month, date} = preState;
                 let thing = preState.note;
-                let thisDayToDos = preState.thisDayToDos;
-                let ifInput = preState.ifInput;
-                let {year} = preState;
-                let {month} = preState;
-                let date = preState.date;
                 this.addToDB(thing,year,month,date);
                 thisDayToDos.push({"title":thing,"index":thisDayToDos.length,"ifDone":false});
                 // console.log(list);
@@ -683,19 +548,12 @@ class RenderDayLog extends React.Component{
             alert("Please Input Task")
             return;
         }
-        // console.log('yo');
-        
-        
     }
 
     toggleIfInput(){
-        // console.log(this.state.ifInput);
         this.setState(preState=>{
-            let ifInput = preState.ifInput;
-            ifInput = !ifInput;
-            console.log(ifInput);
             return{
-                ifInput: ifInput
+                ifInput: !preState.ifInput
             }
         });
     }
@@ -741,9 +599,7 @@ class RenderDayLog extends React.Component{
     }
     handleDateBackward(){
         this.setState(preState=>{
-            let year = preState.year;
-            let month = preState.month;
-            let date = preState.date;
+            let {year, month, date} = preState;
             let newdate = new Date(`${year}-${month+1}-${date}`);
             newdate = newdate.setDate(newdate.getDate()-1);
             newdate = new Date(newdate);

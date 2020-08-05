@@ -96,9 +96,6 @@ class Login extends React.Component{
                             <div className="hpIntroTitle">PLAN YOUR DAY,</div>
                             <div className="hpIntroTitle">WEEK AND MONTH.</div>
                             <div className="hpIntroTitle">QUICKLY.</div>
-                            {/* <div className="hpIntroContent">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div> */}
                             <div className="hpIntroContent">
                                 <div>Task management for busy people</div>
                                 <div>Free up your mental space</div>
@@ -119,29 +116,9 @@ class Login extends React.Component{
                         </div>
                     </div>
                     <div className="bPart">
-                        
-                        
                         {this.state.isloading?loader:loginBoard}
-                        
                     </div>
                 </div>
-                {/* <div className="visual">
-                    <div className="login_board">
-                        <div className="login_title">Login</div>
-                        <div>
-                            <div className="login_account"><input  type="text" placeholder="Email Address" onChange={this.handleMailKeyInValue}></input></div>
-                            <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue}></input></div>
-                            <div className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email,this.state.password)}}>LOGIN</div>
-                            
-
-                            <div className="forget">Forget Password?</div>
-                            <div className="signUp">New User?</div>
-                            
-                            <div className="signUp_btn" onClick={()=>this.props.handleSignUp(this.state.email,this.state.password)}>Create Account</div>
-
-                        </div>
-                    </div>
-                </div> */}
             </main>
         </div>
     }
