@@ -3,6 +3,10 @@ import db from "./firebase.js";
 import Calendar from "./calendar";
 import ChangeWeekCal from "./changeWeekCal.js";
 import {countWeekNum,handleValidation} from './util.js';
+
+import EachDayToDos from "./renderWeekLog/eachDayToDos.js";
+import ThisWeekToDos from "./renderWeekLog/thisWeekTodos.js";
+import LogTitle from "./renderWeekLog/weekLogTitle.js";
 class RenderWeekLog extends React.Component{
     constructor(props){
         super(props);
@@ -688,7 +692,6 @@ class RenderWeekLog extends React.Component{
         this.setState(preState=>{
             let ifInput = preState.ifInput;
             ifInput = !ifInput;
-            // console.log(ifInput);
             return{
                 ifInput: ifInput
             }
@@ -746,7 +749,6 @@ class RenderWeekLog extends React.Component{
             let year = preState.year;
             let month = preState.month;
             let date = preState.date;
-            let {eachDayToDos} = preState.eachDayToDos;
             if(month<10){
                 month="0"+(month+1);
             }
@@ -779,7 +781,6 @@ class RenderWeekLog extends React.Component{
             if(date<10){
                 date="0"+date;
             }
-            let {eachDayToDos} = preState.eachDayToDos;
             let newdate = new Date(`${year}-${month}-${date}`);
             newdate = newdate.setDate(newdate.getDate()-7);
             newdate = new Date(newdate);
@@ -827,68 +828,13 @@ class RenderWeekLog extends React.Component{
         }  
     }
     render(){
-        let theme = this.state.theme;
-        // 此週待辦
-        let renderThisWeekTodos = this.state.thisWeekToDos.map((todo,index)=>
-            <div className="month_todo" key={index}>
-                <span>
-                    {/* <input className="checkbox" type="checkbox" data-week={this.state.weekNum} data-index={index} data-title={todo.title} onChange={this.ifDone}></input> */}
-                    {todo.title}
-                </span>
-                <span className={`month_todo_feacture mf2_${theme}`}>
-                    {/* <span><i className="fas fa-angle-double-right" ></i></span> */}
-                    <span><i className="fas fa-pen" data-id={todo.id} data-index={index} data-title={todo.title} onClick={this.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-check" data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.deleteInDB}></i></span>
-                </span>
-            </div>);
-        let dayName = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-        // 每日待辦
-        let renderEachDayTodos = this.state.eachDayToDos.map((eachday,index)=>{
-            // console.log(eachday.month,new Date().getMonth(),eachday.date,new Date().getDate())
-            return <div className={eachday.month== new Date().getMonth()&&eachday.date==new Date().getDate()?"week_day week_day_today":"week_day weekday_dk"} key={index}>
-                <div className="week_day_a">
-                    <span className={`week_day_title week_day_title_${theme}`}>{eachday.month+1}月{eachday.date}日</span>
-                    <span className={`week_day_title week_day_title_${theme}`}>{dayName[index]}</span>
-                    <span className={`w_add_bt w_add_bt_${theme}`} data-addindex={index} data-month={eachday.month} data-date={eachday.date} onClick={this.toggleEachDayIfInput}>+</span>
-                </div>
-                {/* 每日新增todo */}
-                {eachday.ifInput? this.showEachDayInput(index) : ''}
-
-                {eachday.todos.map((todo,innerindex)=>
-                    <div className="month_todo" key={innerindex}>
-                        <span key={innerindex}>
-                            {/* <input className="checkbox" type="checkbox" data-title={todo.title} data-inner-index={innerindex} data-outer-index={index} data-month={eachday.month} data-date={eachday.date} onChange={this.ifDone}></input> */}
-                        {todo.title}</span>
-                        <span className={`month_todo_feacture mf3_${theme}`}>
-                            <span><i className="fas fa-pen" data-id={todo.id} data-title={todo.title} data-index={index} data-month={eachday.month} data-date={eachday.date} data-innerindex={innerindex} onClick={this.toggleIfShowMore} ></i></span>
-                            <span><i className="fas fa-check" data-id={todo.id} data-inner-index={innerindex} data-outer-index={index} data-title={todo.title} onClick={this.deleteEachDay}></i></span>
-                        </span>
-                    </div>)}
-                </div>});
-        let hint = <div className={`hint hint_${theme}`}>hint：點擊右上+按鈕，新增此週待辦事項！</div>
-
-        // console.log(this.state.eachDayToDos);
+        let {weekNum, thisWeekToDos,eachDayToDos, theme, ifInput} = this.state;
         return <div id="week" className={`left_board left_board_${theme}`}>
             {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
             {this.state.ifChangeWeek?<ChangeWeekCal changeWeek={this.changeWeek.bind(this)} weekNum={this.state.weekNum}/>:''}
-            <div className={`month_title month_title_${theme}`}>
-                <span className="title_month">Week {this.state.weekNum}</span>
-                <span className="title_right">
-                    <span className={`icon_hover_span popUp icon_hover_span_${theme}`}><i className="fas fa-calendar popUp" onClick={this.ifChangeWeek}></i></span>
-                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-left" onClick={this.handleWeekBackward}></i></span>
-                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-right" onClick={this.handleWeekForward}></i></span>
-                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
-                </span>
-            </div>
-            <div className="month_todos">
-                {this.state.ifInput? this.showInput() : ''}
-                {renderThisWeekTodos==''?hint:''}
-                {/* <div>{renderAddThing}</div> */}
-                {renderThisWeekTodos}
-            </div>
-            <div className="week_log">
-                {renderEachDayTodos}               
-            </div> 
+            <LogTitle theme={theme} weekNum={weekNum} ifChangeWeek={this.ifChangeWeek.bind(this)} handleWeekBackward={this.handleWeekBackward.bind(this)} handleWeekForward={this.handleWeekForward.bind(this)} toggleIfInput={this.toggleIfInput.bind(this)}/>
+            <ThisWeekToDos theme={theme} ifInput={ifInput} thisWeekToDos={thisWeekToDos} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteInDB={this.deleteInDB.bind(this)} showInput={this.showInput.bind(this)}/>
+            <EachDayToDos theme={theme} eachDayToDos={eachDayToDos} toggleEachDayIfInput={this.toggleEachDayIfInput.bind(this)} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteEachDay={this.deleteEachDay.bind(this)} showEachDayInput={this.showEachDayInput.bind(this)}/>
             <div className="wbgc"></div>
             {/* 單一事件控制面板 */}
             {this.state.ifShowMore? this.showMoreInfo(): ''}

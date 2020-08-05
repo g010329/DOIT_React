@@ -3,6 +3,8 @@ import db from "./firebase.js";
 import Calendar from "./calendar";
 import ChangeDateCal from "./changeDateCal";
 import {countWeekNum,handleValidation} from './util.js';
+
+import LogTitle from "./renderDayLog/dayLogTitle.js";
 class RenderDayLog extends React.Component{
     constructor(props){
         super(props);
@@ -618,7 +620,7 @@ class RenderDayLog extends React.Component{
         document.addEventListener('click', this.handleClickOutside, false);
     }
     render(){
-        let theme = this.state.theme;
+        let {year, month, date, theme} = this.state;
         let renderThisDayTodos = this.state.thisDayToDos.map((todo,index)=>
             <div className="month_todo" key={index}>
                 <span>
@@ -649,30 +651,11 @@ class RenderDayLog extends React.Component{
                     {overdue}
                 </div>
             </div>  
-        let todayHint = <span className="onlyShowToday">Today </span>
-        let yearHint = <span className="showYear">{this.state.year}</span>
         return <div className={`right_board right_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className={`today_board today_board_${theme}`}>
-            <div className={`month_title month_title_${theme}`}>
-                <div>
-                    {this.state.date==new Date().getDate()&&this.state.month==new Date().getMonth()?todayHint:''}
-                    <span className="title_month">
-                        {this.state.month+1}/{this.state.date}
-                    </span>
-                    {this.state.date==new Date().getDate()&&this.state.month==new Date().getMonth()?'':yearHint}
-                    
-                </div>
-                
-                <span className="title_right">
-                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-calendar popUp" onClick={this.ifChangeDate}></i></span>
-                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-left"  onClick={this.handleDateBackward}></i></span>
-                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-angle-right" onClick={this.handleDateForward}></i></span>
-                    <span className={`icon_hover_span icon_hover_span_${theme}`}><i className="fas fa-plus" onClick={this.toggleIfInput}></i></span>
-                </span>
-            </div>
-            
+            <LogTitle year={year} month={month} date={date} theme={theme} ifChangeDate={this.ifChangeDate.bind(this)} handleDateBackward={this.handleDateBackward.bind(this)} handleDateForward={this.handleDateForward.bind(this)} toggleIfInput={this.toggleIfInput.bind(this)}/>
             <div className="month_todos">
                 {this.state.ifInput? this.showInput() : ''}
                 {renderThisDayTodos==''?hint:''}
