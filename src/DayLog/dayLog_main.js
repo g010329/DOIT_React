@@ -112,14 +112,13 @@ class RenderDayLog extends React.Component{
         if(date>new Date(year,month+1,0).getDate()){
             return;
         }else{
-            this.setState(preState=>{
+            this.setState({
+                year:year,
+                month:month,
+                date:date,
+                ifChangeDate:false
+            }, ()=>{
                 this.getDBdataInState(month,year,date);
-                return{
-                    year:year,
-                    month:month,
-                    date:date,
-                    ifChangeDate:false
-                }
             });
         }
     }
@@ -175,14 +174,13 @@ class RenderDayLog extends React.Component{
 
     backToTodayBtn(){
         // console.log('回到今天');
-        this.setState(preState=>{
-            return{
-                year: new Date().getFullYear(), 
-                month: new Date().getMonth(), 
-                date: new Date().getDate(),
-            }
+        this.setState({
+            year: new Date().getFullYear(), 
+            month: new Date().getMonth(), 
+            date: new Date().getDate(),
+        }, ()=>{
+            this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),new Date().getDate());
         })
-        this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),new Date().getDate());
     }
     getOverdueFromDB(){
         let createOverdueObj=(doc)=>{
@@ -193,7 +191,7 @@ class RenderDayLog extends React.Component{
                 year: doc.data().year,
                 month: doc.data().month,
                 date: doc.data().date,
-                week: null,
+                week: doc.data().week,
                 timer: doc.data().timer,
                 list: doc.data().list
             }
@@ -311,7 +309,7 @@ class RenderDayLog extends React.Component{
                                 <span className="addList popUp">Change Time</span>
                             </div>
                             <div className="infoLi2 popUp">
-                                {iDate==0&&iWeek==null&&iMonth>=0? showScheTime1:''}
+                                {iDate==0&&iWeek==0&&iMonth>=0? showScheTime1:''}
                                 {iWeek!=null && this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
                                 {((iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
                             </div>
@@ -539,31 +537,35 @@ class RenderDayLog extends React.Component{
     }
 
     handleDateForward(){
+        let newdate;
         this.setState(preState=>{
             let {year, month, date} = preState;
-            let newdate = new Date(`${year}-${month+1}-${date}`);
+            newdate = new Date(`${year}-${month+1}-${date}`);
             newdate = newdate.setDate(newdate.getDate()+1);
             newdate = new Date(newdate);
-            this.getDBdataInState(newdate.getMonth(),newdate.getFullYear(),newdate.getDate());
             return{
                 year: newdate.getFullYear(),
                 month: newdate.getMonth(),
                 date: newdate.getDate()
             }
+        }, ()=>{
+            this.getDBdataInState(newdate.getMonth(),newdate.getFullYear(),newdate.getDate());
         });
     }
     handleDateBackward(){
+        let newdate;
         this.setState(preState=>{
             let {year, month, date} = preState;
-            let newdate = new Date(`${year}-${month+1}-${date}`);
+            newdate = new Date(`${year}-${month+1}-${date}`);
             newdate = newdate.setDate(newdate.getDate()-1);
             newdate = new Date(newdate);
-            this.getDBdataInState(newdate.getMonth(),newdate.getFullYear(),newdate.getDate());
             return{
                 year: newdate.getFullYear(),
                 month: newdate.getMonth(),
                 date: newdate.getDate()
             }
+        }, ()=>{
+            this.getDBdataInState(newdate.getMonth(),newdate.getFullYear(),newdate.getDate());
         });
     }
     componentDidMount(){
@@ -573,6 +575,21 @@ class RenderDayLog extends React.Component{
         document.addEventListener('click', this.handleClickOutside, false);
     }
     render(){
+        // let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
+        // let data = {
+        //     state:{
+        //         year, month, date, theme, thisDayToDos, ifInput, overdue
+        //     },
+        //     method:{
+        //         ifChangeDate: this.ifChangeDate,
+        //         handleDateBackward: this.handleDateBackward,
+        //         handleDateForward: this.handleDateForward,
+        //         toggleIfInput: this.toggleIfInput,
+        //         toggleIfShowMore: this.toggleIfShowMore,
+        //         deleteInDB: this.deleteInDB,
+        //         showInput: this.showInput
+        //     }
+        // }
         let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
         return <div className={`right_board right_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={year} month={month} date={date}/>:''}

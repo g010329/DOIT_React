@@ -127,14 +127,14 @@ class RenderWeekLog extends React.Component{
                     year:year,
                     month:month,
                     date:date,
-                    weekNum:countWeekNum(new Date(`${year}-${month+1}-${date}`.replace(/\s/, 'T'))),
+                    weekNum:countWeekNum(new Date(`${year}-${month+1}-${date}`)),
                     ifChangeWeek:false
                 }
+            }, ()=>{
+                this.getDBdataInState(countWeekNum(new Date(`${year}-${month+1}-${date}`)),year,0);
+                this.updateEachDayToDosOfWeek();
             });
-            this.getDBdataInState(countWeekNum(new Date(`${year}-${month+1}-${date}`.replace(/\s/, 'T'))),year,0);
-            this.updateEachDayToDosOfWeek();
         }
-        
     }
     showCalen(){
         this.setState(preState=>{
@@ -479,6 +479,7 @@ class RenderWeekLog extends React.Component{
                     querySnapshot.forEach(doc=>{
                         this.setState(preState=>{
                             let {eachDayToDos} = preState;
+                            eachDayToDos[day].todos = [];
                             eachDayToDos[day].todos.push(createDBObj(doc));
                             return{
                                 eachDayToDos: eachDayToDos
@@ -500,8 +501,16 @@ class RenderWeekLog extends React.Component{
                 date="0"+date;
             }
             // 將該週未安排事件放入state
-            this.getDBdataInState(countWeekNum(new Date(`${year}-${month}-${date}`)),this.state.year,0);
             return {weekNum:countWeekNum(new Date(`${year}-${month}-${date}`))}
+        }, ()=>{
+            let {year, month, date} = this.state;
+            if(month<10){
+                month="0"+(month+1);
+            }
+            if(date<10){
+                date="0"+date;
+            }
+            this.getDBdataInState(countWeekNum(new Date(`${year}-${month}-${date}`)),year,0);
         })
     }
 
@@ -533,7 +542,7 @@ class RenderWeekLog extends React.Component{
         //根據今日算出這一週的第一天是幾月幾號
         //setState 將月/日/空todo存入陣列 生成週曆
         this.setState(preState=>{
-            let {year, month, date, weekNum} = preState;
+            let {year, month, date} = preState;
             if(month<10){
                 month="0"+(month+1);
             }
@@ -553,9 +562,23 @@ class RenderWeekLog extends React.Component{
                     todos:[],
                     ifInput:false
                 });
-                this.getDBdataInState(weekNum,year,firstday.getDate(),i,firstday.getMonth());
             }
             return{eachDayToDos:eachDayToDos}
+        }, ()=>{
+            let {year, month, date, weekNum} = this.state;
+            if(month<10){
+                month="0"+(month+1);
+            }
+            if(date<10){
+                date="0"+date;
+            }
+            for (let i=0; i<7; i++){
+                let curr = new Date(`${year}-${month}-${date}`);
+                let first = curr.getDate() - curr.getDay()+1;
+                let firstday = new Date(curr.setDate(first));
+                firstday.setDate(firstday.getDate()+i);
+                this.getDBdataInState(weekNum,year,firstday.getDate(),i,firstday.getMonth());
+            }
         });    
     }
 
@@ -647,9 +670,10 @@ class RenderWeekLog extends React.Component{
                 date: newdate.getDate(),
                 eachDayToDos:[] //清空
             }
+        }, ()=>{
+            this.setWeekNum();
+            this.updateEachDayToDosOfWeek();
         });
-        this.setWeekNum();
-        this.updateEachDayToDosOfWeek();
     }
     handleWeekBackward(){
         this.setState(preState=>{
@@ -669,9 +693,10 @@ class RenderWeekLog extends React.Component{
                 date: newdate.getDate(),
                 eachDayToDos:[] //清空
             }
+        }, ()=>{
+            this.setWeekNum();
+            this.updateEachDayToDosOfWeek();
         });
-        this.setWeekNum();
-        this.updateEachDayToDosOfWeek();
     }
 
 

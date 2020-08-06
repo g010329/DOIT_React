@@ -95,7 +95,7 @@ class RenderMonthLog extends React.Component{
         // console.log(year,month);
         this.setState(preState=>{
             let eachDayToDos = [];
-            this.getDBdataInState(month,year,0);
+            // this.getDBdataInState(month,year,0);
             for (let i=0; i<new Date(year,month+1,0).getDate(); i++){
                 eachDayToDos.push({
                     date:i,
@@ -114,8 +114,12 @@ class RenderMonthLog extends React.Component{
                 ifChangeMonth:false
                 
             }
+        }, ()=>{
+            this.getDBdataInState(month,year,0);
+            for (let i=0; i<new Date(year,month+1,0).getDate(); i++){
+                this.getDBdataInState(month,year,i+1);
+            }
         });
-        
     }
     ifChangeMonth(){
         this.setState(preState=>{
@@ -205,7 +209,6 @@ class RenderMonthLog extends React.Component{
                     list: this.state.moreInfoBoard.list
                 });
             }
-            alert('確認修改?');
             this.props.reRenderLog();
         }else{ //該月每天
             // console.log('adjust day to do');
@@ -461,6 +464,7 @@ class RenderMonthLog extends React.Component{
                     querySnapshot.forEach(doc=>{
                         this.setState(preState=>{
                             let eachDayToDos = preState.eachDayToDos;
+                            eachDayToDos[doc.data().date-1].todos=[];
                             eachDayToDos[doc.data().date-1].todos.push({
                                 title:doc.data().title,
                                 id:doc.id,
@@ -477,6 +481,7 @@ class RenderMonthLog extends React.Component{
                 querySnapshot.forEach(doc=>{
                     this.setState(preState=>{
                         let eachDayToDos = preState.eachDayToDos;
+                        eachDayToDos[doc.data().date-1].todos=[];
                         eachDayToDos[doc.data().date-1].todos.push({
                             title:doc.data().title,
                             id:doc.id,
@@ -552,7 +557,6 @@ class RenderMonthLog extends React.Component{
     updateEachDayToDos(){
         this.setState(preState=>{
             let {year, month, daysOfMonth} = preState;
-            // 畫面會有瞬間清空bug
             let eachDayToDos =[];
             for (let i=0; i<daysOfMonth; i++){
                 eachDayToDos.push({
@@ -561,9 +565,14 @@ class RenderMonthLog extends React.Component{
                     todos:[],
                     ifInput: false
                 });
-                this.getDBdataInState(month,year,i+1);
+                
             }
             return{eachDayToDos:eachDayToDos}
+        }, ()=>{
+            let {year, month, daysOfMonth} = this.state;
+            for (let i=0; i<daysOfMonth; i++){
+                this.getDBdataInState(month,year,i+1);
+            }
         });
     }
     
@@ -606,16 +615,14 @@ class RenderMonthLog extends React.Component{
 
     handleMonthForward(){
         this.setState(preState=>{
-            let {year, month} = this.state;
+            let {year, month} = preState;
             if(month<11){
-                this.getDBdataInState(this.state.month+1,this.state.year,0);
                 return{
                     month: month+1,
                     daysOfMonth: new Date(year,month+2,0).getDate(),
                     eachDayToDos:[] //清空
                 }
             }else{
-                this.getDBdataInState(0,this.state.year+1,0);
                 return{
                     year: year+1,
                     month: 0,
@@ -623,14 +630,16 @@ class RenderMonthLog extends React.Component{
                     eachDayToDos:[] //清空
                 }
             }
+        }, ()=>{
+            let {year, month} = this.state;
+            this.getDBdataInState(month,year,0);
+            this.updateEachDayToDos();
         });
-        this.updateEachDayToDos();
     }
     handleMonthBackward(){
         this.setState(preState=>{
             let {year, month} = this.state;
             if(month==0){
-                this.getDBdataInState(11,this.state.year-1,0);
                 return{
                     year: year-1,
                     month: 11,
@@ -638,16 +647,17 @@ class RenderMonthLog extends React.Component{
                     eachDayToDos:[] //清空
                 }
             }else{
-                this.getDBdataInState(this.state.month-1,this.state.year,0);
                 return{
                     month: month-1,
                     daysOfMonth: new Date(year,month,0).getDate(),
                     eachDayToDos:[] //清空
                 }
             }
-            
+        }, ()=>{
+            let {year, month} = this.state;
+            this.getDBdataInState(month,year,0);
+            this.updateEachDayToDos();
         });
-        this.updateEachDayToDos();
     }
     componentDidUpdate(preProps){
         if(preProps.reRender !== this.props.reRender){
