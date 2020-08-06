@@ -50,7 +50,7 @@ class Login extends React.Component{
                 <div id="start" className="login_board" data-type={'login'} onKeyDown={this.enterLogin}>
                     <div className="login_title">Log in</div>
                     <div>
-                        <div className="login_account"><input  type="email" placeholder="Email Address" onChange={this.handleMailKeyInValue}></input></div>
+                        <div className="login_account"><input type="email" placeholder="Email Address" onChange={this.handleMailKeyInValue}></input></div>
                         <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue}></input></div>
                         <div id="input1" className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email,this.state.password);this.setState({isloading:true})}}>LOG IN</div>
                         

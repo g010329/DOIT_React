@@ -1,12 +1,12 @@
 import React from "react";
-import db from "./firebase.js";
-import Calendar from "./calendar";
-import ChangeDateCal from "./changeDateCal";
-import {countWeekNum,handleValidation} from './util.js';
+import db from "../firebase.js";
+import Calendar from "../Calendars/calendar";
+import ChangeDateCal from "../Calendars/changeDateCal";
+import {countWeekNum,handleValidation} from '../util.js';
 
-import LogTitle from "./renderDayLog/dayLogTitle.js";
-import ThisDayToDos from "./renderDayLog/thisDayToDos.js";
-import Overdue from "./renderDayLog/overdue.js"
+import LogTitle from "./dayLogTitle.js";
+import ThisDayToDos from "./thisDayToDos.js";
+import Overdue from "./overdue.js"
 class RenderDayLog extends React.Component{
     constructor(props){
         super(props);
@@ -51,8 +51,6 @@ class RenderDayLog extends React.Component{
         this.addToDB = this.addToDB.bind(this);
         this.getDBdataInState = this.getDBdataInState.bind(this);
         this.deleteInDB = this.deleteInDB.bind(this);
-        //ifDone
-        this.ifDone = this.ifDone.bind(this);
         // adjust
         this.toggleIfShowMore = this.toggleIfShowMore.bind(this);
         this.showMoreInfo = this.showMoreInfo.bind(this);
@@ -68,8 +66,6 @@ class RenderDayLog extends React.Component{
         this.setWeekNum = this.setWeekNum.bind(this);
         this.ifChangeDate = this.ifChangeDate.bind(this);
         this.changeDate= this.changeDate.bind(this);
-        //overdue done
-        this.overdueIfDone = this.overdueIfDone.bind(this);
         //timer
         this.timer = this.timer.bind(this); 
         this.chooseList = this.chooseList.bind(this);  
@@ -323,7 +319,6 @@ class RenderDayLog extends React.Component{
                         <div className="info">
                             <div className="infoLi">
                                 <i className="fas fa-list-ul"></i>
-                                
                                 <span className="addList">{this.state.moreInfoBoard.list==null?'Add To List':list}</span>
                             </div>
                             <div className="infoLi2">
@@ -434,46 +429,6 @@ class RenderDayLog extends React.Component{
         }
     }
 
-    ifDone(e){
-        let index = e.currentTarget.getAttribute("data-index");
-        let title = e.currentTarget.getAttribute("data-title");
-        let id = e.currentTarget.getAttribute("data-id");
-        let newStatus;
-        // console.log(index,title,id);
-        this.setState(preState=>{
-            let thisDayToDos = preState.thisDayToDos;
-            newStatus = !thisDayToDos[index].ifDone;
-            thisDayToDos[index].ifDone = newStatus;
-        });
-        let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",title)
-            .get().then(querySnapshot=>{
-                querySnapshot.forEach(doc=>{
-                    // console.log(doc.data());
-                    doc.ref.update({isDone:newStatus})
-                })
-            })
-        
-    }
-
-    overdueIfDone(e){
-        let id = e.currentTarget.getAttribute("data-id");
-        let index = e.currentTarget.getAttribute("data-index");
-        let newStatus;
-        
-        this.setState(preState=>{
-            let overdue = preState.overdue;
-            console.log(overdue[index].ifDone,!overdue[index].ifDone);
-            newStatus = !overdue[index].ifDone;
-            overdue[index].ifDone = newStatus;
-            let ref = db.collection("members").doc(this.props.uid).collection("todos").doc(id);
-            ref.update({isDone:newStatus}).then(()=>{
-                console.log('成功修改');
-            });
-        });
-        
-    }
-
     getDBdataInState(month,year,date){
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         let thisDayToDos = [];
@@ -507,8 +462,6 @@ class RenderDayLog extends React.Component{
             this.backToTodayBtn();
         }
     }
-
-    
 
     addToDB(title,year,month,date){
         let ref = db.collection("members").doc(this.props.uid).collection("todos").doc();
@@ -587,9 +540,7 @@ class RenderDayLog extends React.Component{
 
     handleDateForward(){
         this.setState(preState=>{
-            let year = preState.year;
-            let month = preState.month;
-            let date = preState.date;
+            let {year, month, date} = preState;
             let newdate = new Date(`${year}-${month+1}-${date}`);
             newdate = newdate.setDate(newdate.getDate()+1);
             newdate = new Date(newdate);
@@ -624,7 +575,7 @@ class RenderDayLog extends React.Component{
     render(){
         let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
         return <div className={`right_board right_board_${theme}`}>
-        {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
+        {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={year} month={month} date={date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className={`today_board today_board_${theme}`}>
             <LogTitle year={year} month={month} date={date} theme={theme} ifChangeDate={this.ifChangeDate.bind(this)} handleDateBackward={this.handleDateBackward.bind(this)} handleDateForward={this.handleDateForward.bind(this)} toggleIfInput={this.toggleIfInput.bind(this)}/>

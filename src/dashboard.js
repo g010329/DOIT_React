@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import RenderMonthLog from "./month_log";
-import RenderWeekLog from "./week_log";
-import RenderDayLog from "./day_log";
+import RenderMonthLog from "./MonthLog/monthLog_main";
+import RenderWeekLog from "./WeekLog/weekLog_main";
+import RenderDayLog from "./DayLog/dayLog_main";
 import List from "./list";
 import * as firebase from "firebase";
 import 'firebase/auth';

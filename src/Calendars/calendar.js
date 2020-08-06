@@ -1,5 +1,6 @@
 import React from "react";
 import * as firebase from "firebase";
+import {countWeekNum,handleValidation} from '../util.js';
 import 'firebase/auth';
 import 'firebase/database';
 class Calendar extends React.Component{
@@ -17,8 +18,6 @@ class Calendar extends React.Component{
             //週曆
             wCalYear: new Date().getFullYear(),
             wCalMonth: new Date().getMonth(),
-            // wCalDate:15,
-            // wCalWeek:28,
         };
         // ----
         this.calMonthForward = this.calMonthForward.bind(this);
@@ -30,9 +29,6 @@ class Calendar extends React.Component{
         this.changeDate = this.changeDate.bind(this);
         //
         this.setCalenType = this.setCalenType.bind(this);
-        this.getWeekNumber= this.getWeekNumber.bind(this);
-        //
-        this.countWeekNum = this.countWeekNum.bind(this);
     }
     yCalYearForward(){
         this.setState(preState=>{
@@ -52,18 +48,14 @@ class Calendar extends React.Component{
     }
     calMonthForward(){
         this.setState(preState=>{
-            let calMonth = preState.calMonth;
-            let calYear = preState.calYear;
+            let {calYear, calMonth} = preState;
             if (calMonth<11){
-                // console.log(calYear,calMonth+1,new Date(calYear,calMonth+1,0).getDate());
                 return{
                     calMonth: calMonth+1,
                     calDatesOfMonth: new Date(calYear,calMonth+2,0).getDate(),
                     calFirstDateDay: new Date(`${calYear}-${calMonth+2}-1`).getDay()
-
                 }
             }else{
-                // console.log(calYear+1,0, new Date(calYear+1,0,0).getDate());
                 return{
                     calYear: calYear+1,
                     calMonth: 0,
@@ -73,20 +65,11 @@ class Calendar extends React.Component{
             }
         })
     }
-    countWeekNum(d){
-        //算出今日是第幾週 d=new Date("2020-05-02")
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-        return weekNo;
-    }
+
     calMonthBackward(){
         this.setState(preState=>{
-            let calMonth = preState.calMonth;
-            let calYear = preState.calYear;
+            let {calYear, calMonth} = preState;
             if(calMonth==0){
-                // console.log(calYear-1,11,new Date(calYear-1,0,0).getDate());
                 return{
                     calYear: calYear-1,
                     calMonth: 11,
@@ -94,7 +77,6 @@ class Calendar extends React.Component{
                     calFirstDateDay: new Date(`${calYear-1}-1-1`).getDay()
                 }
             }else{
-                // console.log(calYear,calMonth-1,new Date(calYear,calMonth-1,0).getDate());
                 return{
                     calMonth: calMonth-1,
                     calDatesOfMonth: new Date(calYear,calMonth,0).getDate(),
@@ -105,31 +87,24 @@ class Calendar extends React.Component{
     }
     calWeekForward(){
         this.setState(preState=>{
-            let calMonth = preState.calMonth;
-            let calYear = preState.calYear;
+            let {calYear, calMonth} = preState;
             if (calMonth<11){
-                // console.log(calYear,calMonth+1,new Date(calYear,calMonth+1,0).getDate());
                 return{
                     wCalMonth: wCalMonth+1,
                     wCalDatesOfMonth: new Date(wCalYear,wCalMonth+2,0).getDate(),
                     wCalFirstDateDay: new Date(`${wCalYear}-${wCalMonth+2}-1`).getDay()
-
                 }
             }else{
-                // console.log(calYear+1,0, new Date(calYear+1,0,0).getDate());
                 return{
                     wCalYear: wCalYear+1,
-                    wCalMonth: 0,
-                    // wCalDatesOfMonth: new Date(wCalYear+1,1,0).getDate(),
-                    // wCalFirstDateDay: new Date(`${wCalYear+1}-1-1`).getDay(),
+                    wCalMonth: 0
                 }
             }
         })
     }
     calWeekBackward(){
         this.setState(preState=>{
-            let wCalMonth = preState.wCalMonth;
-            let wCalYear = preState.wCalYear;
+            let {calYear, calMonth} = preState;
             if(wCalMonth==0){
                 // console.log(calYear-1,11,new Date(calYear-1,0,0).getDate());
                 return{
@@ -151,53 +126,38 @@ class Calendar extends React.Component{
     changeMonth(e){
         let {yCalYear} = this.state;
         let newMonth = parseInt(e.currentTarget.getAttribute("data-monthval"));
-        console.log(yCalYear,newMonth);
     }
     changeDate(e){
-        let calYear = this.state.calYear;
-        let calMonth = this.state.calMonth;
-        let calDatesOfMonth = this.state.calDatesOfMonth;
+        let {calYear, calMonth, calDatesOfMonth} = this.state;
         let newDate = parseInt(e.currentTarget.getAttribute("data-value"));
         //擋掉日期<0跟>天數
         if( 0<newDate && newDate<=calDatesOfMonth ){
-            console.log(calYear,calMonth,newDate);
+            return;
         }
         
     }
-    // changeWeek(e){
-    //     let wCalYear = this.state.wCalYear;
-    //     let wCalMonth = this.state.wCalMonth;
-    //     let wCalDate = this.state.wCalDate;
-    //     let wCalWeek =this.state.wCalWeek;
-    //     console.log(wCalYear,wCalMonth,wCalDate);
-    // }
+
     setCalenType(e){
         let calenType = e.currentTarget.getAttribute("data-calenType");
-        // console.log(calenType);
         this.setState(preState=>{
-            console.log('換曆',calenType);
             return{
                 calenType:calenType
             }
         })
     }
-    getWeekNumber(d) {
-        console.log(d);
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-        var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-        return [d.getUTCFullYear(), weekNo];
-    }
+
     render(){
         let day = this.state.calFirstDateDay-1;
+        if(day==-1){
+            day=6;
+        }
         let calDatesOfMonth = this.state.calDatesOfMonth;
         let eachMonth = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        let yCalen = <div className="calentype">
-                <div className="calenTitle">
-                    <div onClick={this.yCalYearBackward}><i className="fas fa-angle-left"></i></div>
-                    <div className="calenTM">{this.state.yCalYear}</div>
-                    <div onClick={this.yCalYearForward}><i className="fas fa-angle-right"></i></div>
+        let yCalen = <div className="calentype popUp">
+                <div className="calenTitle popUp">
+                    <div className="popUp" onClick={this.yCalYearBackward}><i className="fas fa-angle-left popUp"></i></div>
+                    <div className="calenTM popUp">{this.state.yCalYear}</div>
+                    <div className="popUp" onClick={this.yCalYearForward}><i className="fas fa-angle-right popUp"></i></div>
                 </div>
                 <div className="calenBoard popUp">
                 <table className="calenMonth">
@@ -251,11 +211,11 @@ class Calendar extends React.Component{
             </div>
             </div>
         
-        let wCalen = <div className="calentype">
-                <div className="calenTitle">
-                    <div onClick={this.calMonthBackward}><i className="fas fa-angle-left"></i></div>
-                    <div className="calenTM">{eachMonth[this.state.calMonth]} {this.state.calYear} week{this.countWeekNum(new Date(`${this.props.year}-${this.props.month+1}-${this.props.date}`))}</div>
-                    <div onClick={this.calMonthForward}><i className="fas fa-angle-right"></i></div>
+        let wCalen = <div className="calentype popUp">
+                <div className="calenTitle popUp">
+                    <div className="popUp" onClick={this.calMonthBackward}><i className="fas fa-angle-left popUp"></i></div>
+                    <div className="calenTM popUp">{eachMonth[this.state.calMonth]} {this.state.calYear} week{countWeekNum(new Date(`${this.props.year}-${this.props.month+1}-${this.props.date}`))}</div>
+                    <div className="popUp" onClick={this.calMonthForward}><i className="fas fa-angle-right popUp" ></i></div>
                 </div>
                 <div className="calenBoard popUp">
                     <table>
