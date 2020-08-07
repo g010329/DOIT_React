@@ -1,15 +1,18 @@
 import React from "react";
 class Overdue extends React.Component{
     render(){
-        let {theme} = this.props;
-        let overdue = this.props.overdue.map((todo,index)=>
+        let data = this.props.data;
+        let {theme, overdue} = data.state;
+        let {deleteInDB, toggleIfShowMore} = data.method;
+        
+        let overdueBoard = overdue.map((todo,index)=>
             <div className="month_todo"  key={index}>
                 <span>
                     {todo.title}
                 </span>
                 <span className={`month_todo_feacture mf2_${theme}`}>
-                    <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={this.props.toggleIfShowMore}></i></span>
-                    <span><i className="fas fa-check" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={this.props.deleteInDB}></i></span>
+                    <span ><i className="fas fa-pen" data-list={todo.list} data-timer={todo.timer} data-type={'overdue'} data-id={todo.id} data-year={todo.year} data-month={todo.month} data-week={todo.week} data-date={todo.date} data-index={index} data-title={todo.title} onClick={(e)=>toggleIfShowMore(e)}></i></span>
+                    <span><i className="fas fa-check" data-type={'overdue'} data-id={todo.id} data-delete-index={index} data-title={todo.title} onClick={(e)=>deleteInDB(e)}></i></span>
                 </span>
             </div>
         );
@@ -19,7 +22,7 @@ class Overdue extends React.Component{
             <span className="title_month">Overdue</span>
         </div>
         <div className="month_todos">
-            {overdue}
+            {overdueBoard}
         </div>
     </div>  
     }

@@ -143,18 +143,19 @@ class RenderDayLog extends React.Component{
                 moreInfoBoard.iYear = year;
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
+                moreInfoBoard.iWeek = null;
                 console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
                     week = countWeekNum(new Date(`${year}-${month+1}-${date}`));
                     console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = week;
-                }
-                if(date==999){
+                }else if(date==999){
                     console.log('表示在選擇月份')
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = null
                 }
+                
                 console.log('calenUpdateTime',moreInfoBoard);
                 return{
                     moreInfoBoard:moreInfoBoard,
@@ -309,7 +310,7 @@ class RenderDayLog extends React.Component{
                                 <span className="addList popUp">Change Time</span>
                             </div>
                             <div className="infoLi2 popUp">
-                                {iDate==0&&iWeek==0&&iMonth>=0? showScheTime1:''}
+                                {(iDate==0&&iMonth>=0)&&(iWeek==null||iWeek==="0")? showScheTime1:''}
                                 {iWeek!=null && this.state.moreInfoBoard.iWeek!=0 && this.state.moreInfoBoard.iDate==0? showScheTime2:''}
                                 {((iWeek==0 || this.state.moreInfoBoard.iWeek==undefined) && this.state.moreInfoBoard.iDate>0)? showScheTime3:''}
                             </div>
@@ -575,31 +576,30 @@ class RenderDayLog extends React.Component{
         document.addEventListener('click', this.handleClickOutside, false);
     }
     render(){
-        // let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
-        // let data = {
-        //     state:{
-        //         year, month, date, theme, thisDayToDos, ifInput, overdue
-        //     },
-        //     method:{
-        //         ifChangeDate: this.ifChangeDate,
-        //         handleDateBackward: this.handleDateBackward,
-        //         handleDateForward: this.handleDateForward,
-        //         toggleIfInput: this.toggleIfInput,
-        //         toggleIfShowMore: this.toggleIfShowMore,
-        //         deleteInDB: this.deleteInDB,
-        //         showInput: this.showInput
-        //     }
-        // }
         let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
+        let data = {
+            state:{
+                year, month, date, theme, thisDayToDos, ifInput, overdue
+            },
+            method:{
+                ifChangeDate: this.ifChangeDate,
+                handleDateBackward: this.handleDateBackward,
+                handleDateForward: this.handleDateForward,
+                toggleIfInput: this.toggleIfInput,
+                toggleIfShowMore: this.toggleIfShowMore,
+                deleteInDB: this.deleteInDB,
+                showInput: this.showInput
+            }
+        }
+        // let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
         return <div className={`right_board right_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={year} month={month} date={date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
         <div id="today" className={`today_board today_board_${theme}`}>
-            <LogTitle year={year} month={month} date={date} theme={theme} ifChangeDate={this.ifChangeDate.bind(this)} handleDateBackward={this.handleDateBackward.bind(this)} handleDateForward={this.handleDateForward.bind(this)} toggleIfInput={this.toggleIfInput.bind(this)}/>
-            <ThisDayToDos theme={theme} thisDayToDos={thisDayToDos} ifInput={ifInput} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteInDB={this.deleteInDB.bind(this)} showInput={this.showInput.bind(this)}/>
+            <LogTitle data={data}/>
+            <ThisDayToDos data={data}/>
         </div>
-        
-        {this.state.overdue==''?'':<Overdue theme={theme} overdue={overdue} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteInDB={this.deleteInDB.bind(this)}/>}
+        {this.state.overdue==''? '':<Overdue data={data}/>}
         {/* 單一事件控制面板 */}
         {this.state.ifShowMore? this.showMoreInfo(): ''} 
     </div>

@@ -464,7 +464,7 @@ class RenderMonthLog extends React.Component{
                     querySnapshot.forEach(doc=>{
                         this.setState(preState=>{
                             let eachDayToDos = preState.eachDayToDos;
-                            eachDayToDos[doc.data().date-1].todos=[];
+                            // eachDayToDos[doc.data().date-1].todos=[];
                             eachDayToDos[doc.data().date-1].todos.push({
                                 title:doc.data().title,
                                 id:doc.id,
@@ -481,7 +481,7 @@ class RenderMonthLog extends React.Component{
                 querySnapshot.forEach(doc=>{
                     this.setState(preState=>{
                         let eachDayToDos = preState.eachDayToDos;
-                        eachDayToDos[doc.data().date-1].todos=[];
+                        // eachDayToDos[doc.data().date-1].todos=[];
                         eachDayToDos[doc.data().date-1].todos.push({
                             title:doc.data().title,
                             id:doc.id,
@@ -720,17 +720,33 @@ class RenderMonthLog extends React.Component{
     }
     render(){
         let {year, month, date, theme, thisMonthToDos, eachDayToDos, ifInput, ifShowMore, calenIfShow, ifChangeMonth} = this.state;
+        let data = {
+            state:{ year, month, date, theme, thisMonthToDos, eachDayToDos, ifInput, ifShowMore, calenIfShow, ifChangeMonth },
+            method:{
+                ifChangeMonth: this.ifChangeMonth,
+                // changeMonth: this.changeMonth,
+                handleMonthBackward: this.handleMonthBackward,
+                handleMonthForward: this.handleMonthForward,
+                toggleIfInput: this.toggleIfInput,
+                showInput: this.showInput,
+                toggleEachDateIfInput: this.toggleEachDateIfInput,
+                showEachDateInput: this.showEachDateInput,
+                toggleIfShowMore: this.toggleIfShowMore,
+                deleteInDB: this.deleteInDB,
+                // calenUpdateTime: this.calenUpdateTime
+            }
+        }
         return <div id="month" className={`left_board left_board_${theme}`}>
             {/* 事件移動日期日曆 */}
             {calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={year} month={month} date={date}/>:''}
             {/* 切換月份日曆 */}
             {ifChangeMonth?<ChangeMonthCal changeMonth={this.changeMonth.bind(this)}/>:''}
             {/* 月-標題 */}
-            <LogTitle year={year} month={month} theme={theme} ifChangeMonth={this.ifChangeMonth.bind(this)} handleMonthBackward={this.handleMonthBackward.bind(this)} handleMonthForward={this.handleMonthForward.bind(this)} toggleIfInput={this.toggleIfInput.bind(this)}/>
+            <LogTitle data={data}/>
             {/* 月-未安排事項 */}
-            <ThisMonthToDos thisMonthToDos={thisMonthToDos} theme={theme} ifInput={ifInput} toggleIfShowMore={this.toggleIfShowMore.bind(this)} showInput={this.showInput.bind(this)} deleteInDB={this.deleteInDB.bind(this)}/>
+            <ThisMonthToDos data={data}/>
             {/* 月-30天月曆 */}
-            <EachDayToDos eachDayToDos={eachDayToDos} month={month} date={date} theme={theme} toggleEachDateIfInput={this.toggleEachDateIfInput.bind(this)} showEachDateInput={this.showEachDateInput.bind(this)} toggleIfShowMore={this.toggleIfShowMore.bind(this)}/>
+            <EachDayToDos data={data}/>
             <div className="wbgc"></div>
             {/* 單一事件控制面板 */}
             {ifShowMore? this.showMoreInfo(): ''}

@@ -732,13 +732,30 @@ class RenderWeekLog extends React.Component{
         }  
     }
     render(){
-        let {weekNum, thisWeekToDos,eachDayToDos, theme, ifInput} = this.state;
+        let { weekNum, thisWeekToDos,eachDayToDos, theme, ifInput } = this.state;
+        let data = {
+            state: {weekNum, thisWeekToDos,eachDayToDos, theme, ifInput},
+            method: {
+                ifChangeWeek: this.ifChangeWeek,
+                handleWeekBackward: this.handleWeekBackward,
+                handleWeekForward: this.handleWeekForward,
+                toggleIfInput: this.toggleIfInput,
+                toggleIfShowMore: this.toggleIfShowMore,
+                deleteInDB: this.deleteInDB,
+                showInput: this.showInput,
+                toggleEachDayIfInput: this.toggleEachDayIfInput,
+                deleteEachDay: this.deleteEachDay,
+                showEachDayInput: this.showEachDayInput
+            }
+        }
+        
         return <div id="week" className={`left_board left_board_${theme}`}>
             {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={this.state.year} month={this.state.month} date={this.state.date}/>:''}
             {this.state.ifChangeWeek?<ChangeWeekCal changeWeek={this.changeWeek.bind(this)} weekNum={this.state.weekNum}/>:''}
-            <LogTitle theme={theme} weekNum={weekNum} ifChangeWeek={this.ifChangeWeek.bind(this)} handleWeekBackward={this.handleWeekBackward.bind(this)} handleWeekForward={this.handleWeekForward.bind(this)} toggleIfInput={this.toggleIfInput.bind(this)}/>
-            <ThisWeekToDos theme={theme} ifInput={ifInput} thisWeekToDos={thisWeekToDos} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteInDB={this.deleteInDB.bind(this)} showInput={this.showInput.bind(this)}/>
-            <EachDayToDos theme={theme} eachDayToDos={eachDayToDos} toggleEachDayIfInput={this.toggleEachDayIfInput.bind(this)} toggleIfShowMore={this.toggleIfShowMore.bind(this)} deleteEachDay={this.deleteEachDay.bind(this)} showEachDayInput={this.showEachDayInput.bind(this)}/>
+            
+            <LogTitle data={data}/>
+            <ThisWeekToDos data={data}/>
+            <EachDayToDos data={data}/>
             <div className="wbgc"></div>
             {/* 單一事件控制面板 */}
             {this.state.ifShowMore? this.showMoreInfo(): ''}
