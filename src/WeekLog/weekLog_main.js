@@ -2,14 +2,15 @@ import React from "react";
 import db from "../firebase.js";
 import Calendar from "../Calendars/calendar";
 import ChangeWeekCal from "../Calendars/changeWeekCal.js";
-import {countWeekNum,handleValidation} from '../util.js';
+import {countWeekNum,handleValidation,format} from '../util.js';
 
 import EachDayToDos from "./eachDayToDos.js";
 import ThisWeekToDos from "./thisWeekTodos.js";
 import LogTitle from "./weekLogTitle.js";
-class RenderWeekLog extends React.Component{
+class WeekLog extends React.Component{
     constructor(props){
         super(props);
+        this.testHeight = React.createRef();
         this.state={
             year: new Date().getFullYear(), //2020
             month: new Date().getMonth(), //7
@@ -232,7 +233,7 @@ class RenderWeekLog extends React.Component{
         })
     }
     autoHeight(){
-        let x = document.getElementById("testHeight");
+        let x = this.testHeight.current;
         x.style.height = 'auto';
         x.style.height = x.scrollHeight + "px";
     }
@@ -246,7 +247,7 @@ class RenderWeekLog extends React.Component{
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
                     <div className="info1">
-                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
+                        <textarea  ref={this.testHeight} className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
                     </div>
                     <div className="info popUp" onClick={this.showCalen}>
                         <div className="infoLi popUp">
@@ -494,22 +495,28 @@ class RenderWeekLog extends React.Component{
     setWeekNum(){
         this.setState(preState=>{
             let {year, month, date} = preState;
-            if(month<10){
-                month="0"+(month+1);
-            }
-            if(date<10){
-                date="0"+date;
-            }
+            month = format(month+1);
+            date = format(date);
+            // if(month<10){
+            //     month="0"+(month+1);
+            // }
+            // if(date<10){
+            //     date="0"+date;
+                
+            // }
+            console.log(month,date);
             // 將該週未安排事件放入state
             return {weekNum:countWeekNum(new Date(`${year}-${month}-${date}`))}
         }, ()=>{
             let {year, month, date} = this.state;
-            if(month<10){
-                month="0"+(month+1);
-            }
-            if(date<10){
-                date="0"+date;
-            }
+            month = format(month+1);
+            date = format(date);
+            // if(month<10){
+            //     month="0"+(month+1);
+            // }
+            // if(date<10){
+            //     date="0"+date;
+            // }
             this.getDBdataInState(countWeekNum(new Date(`${year}-${month}-${date}`)),year,0);
         })
     }
@@ -543,12 +550,14 @@ class RenderWeekLog extends React.Component{
         //setState 將月/日/空todo存入陣列 生成週曆
         this.setState(preState=>{
             let {year, month, date} = preState;
-            if(month<10){
-                month="0"+(month+1);
-            }
-            if(date<10){
-                date="0"+date;
-            }
+            // if(month<10){
+            //     month="0"+(month+1);
+            // }
+            // if(date<10){
+            //     date="0"+date;
+            // }
+            month = format(month+1);
+            date = format(date);
             let eachDayToDos = [];
             for (let i=0; i<7; i++){
                 let curr = new Date(`${year}-${month}-${date}`);
@@ -566,12 +575,14 @@ class RenderWeekLog extends React.Component{
             return{eachDayToDos:eachDayToDos}
         }, ()=>{
             let {year, month, date, weekNum} = this.state;
-            if(month<10){
-                month="0"+(month+1);
-            }
-            if(date<10){
-                date="0"+date;
-            }
+            // if(month<10){
+            //     month="0"+(month+1);
+            // }
+            // if(date<10){
+            //     date="0"+date;
+            // }
+            month = format(month+1);
+            date = format(date);
             for (let i=0; i<7; i++){
                 let curr = new Date(`${year}-${month}-${date}`);
                 let first = curr.getDate() - curr.getDay()+1;
@@ -655,12 +666,14 @@ class RenderWeekLog extends React.Component{
     handleWeekForward(){
         this.setState(preState=>{
             let {year, month, date} = preState;
-            if(month<10){
-                month="0"+(month+1);
-            }
-            if(date<10){
-                date="0"+date;
-            }
+            // if(month<10){
+            //     month="0"+(month+1);
+            // }
+            // if(date<10){
+            //     date="0"+date;
+            // }
+            month = format(month+1);
+            date = format(date);
             let newdate = new Date(`${year}-${month}-${date}`);
             newdate = newdate.setDate(newdate.getDate()+7);
             newdate = new Date(newdate);
@@ -678,12 +691,14 @@ class RenderWeekLog extends React.Component{
     handleWeekBackward(){
         this.setState(preState=>{
             let {year, month, date} = preState;
-            if(month<10){
-                month="0"+(month+1);
-            }
-            if(date<10){
-                date="0"+date;
-            }
+            // if(month<10){
+            //     month="0"+(month+1);
+            // }
+            // if(date<10){
+            //     date="0"+date;
+            // }
+            month = format(month+1);
+            date = format(date);
             let newdate = new Date(`${year}-${month}-${date}`);
             newdate = newdate.setDate(newdate.getDate()-7);
             newdate = new Date(newdate);
@@ -764,4 +779,4 @@ class RenderWeekLog extends React.Component{
 }
 
 
-export default RenderWeekLog;
+export default WeekLog;

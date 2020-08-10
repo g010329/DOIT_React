@@ -7,11 +7,14 @@ import {countWeekNum,handleValidation} from '../util.js';
 import LogTitle from "./dayLogTitle.js";
 import ThisDayToDos from "./thisDayToDos.js";
 import Overdue from "./overdue.js"
-class RenderDayLog extends React.Component{
+class DayLog extends React.Component{
     constructor(props){
         super(props);
+        this.testHeight = React.createRef();
+        this.inputDay = React.createRef();
+        this.saveMoreInfo = React.createRef();
         this.state={
-            today:{y:new Date().getFullYear(),m:new Date().getMonth(),d:new Date().getDate()},
+            // today:{y:new Date().getFullYear(),m:new Date().getMonth(),d:new Date().getDate()},
             year: new Date().getFullYear(), //2020
             month: new Date().getMonth(), //7
             date: new Date().getDate(), //3
@@ -71,7 +74,8 @@ class RenderDayLog extends React.Component{
         this.chooseList = this.chooseList.bind(this);  
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
-        
+        this.autoHeight = this.autoHeight.bind(this);
+        this.enterClick = this.enterClick.bind(this);
     }
     componentWillUnmount() {
         document.removeEventListener('click', this.handleClickOutside, false);
@@ -87,7 +91,6 @@ class RenderDayLog extends React.Component{
                 ifChangeDate:false
             })
         }
-        
     }
 
     timer(e){
@@ -285,7 +288,7 @@ class RenderDayLog extends React.Component{
         })
     }
     autoHeight(){
-        let x = document.getElementById("testHeight");
+        let x = this.testHeight.current;
         x.style.height = 'auto';
         x.style.height = x.scrollHeight + "px";
     }
@@ -301,7 +304,7 @@ class RenderDayLog extends React.Component{
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
                     <div className="info1">
-                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus required></textarea>
+                        <textarea ref={this.testHeight} className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus required></textarea>
                     </div>
                     <div>
                         <div className="info popUp" onClick={this.showCalen}>
@@ -343,15 +346,13 @@ class RenderDayLog extends React.Component{
                 </div>
                 <div className="infoBtns">
                     <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>Cancel</span>
-                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>Save</span>
+                    <span className="infoSaveBtn" ref={this.saveMoreInfo} onClick={this.adjustTodo}>Save</span>
                 </div>
             </div>
         )
     }
     adjustTodo(){
-        let note;
         this.setState(preState=>{
-            note = preState.note;
             let {moreInfoBoard, thisDayToDos, ifShowMore} = preState;
             console.log(moreInfoBoard);
             if(moreInfoBoard.iDate!=this.state.date){
@@ -517,10 +518,10 @@ class RenderDayLog extends React.Component{
     enterClick(e){
         let btntype = e.currentTarget.getAttribute("data-enter");
         if (event.keyCode==13 && btntype=='day'){
-            document.getElementById("inputDay").click(); //觸動按鈕的點擊
+            this.inputDay.current.click(); //觸動按鈕的點擊
         } 
         if (event.keyCode==13 && btntype=='info'){
-            document.getElementById("saveMoreInfo").click(); //觸動按鈕的點擊
+            this.saveMoreInfo.current.click();//觸動按鈕的點擊
         } 
     }
     showInput(){
@@ -531,7 +532,7 @@ class RenderDayLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
-                    <span className="add" id="inputDay" onClick={this.addThisDayToDos}>Add</span>
+                    <span className="add" ref={this.inputDay} onClick={this.addThisDayToDos}>Add</span>
                 </span>
             </div>
         )
@@ -591,7 +592,6 @@ class RenderDayLog extends React.Component{
                 showInput: this.showInput
             }
         }
-        // let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
         return <div className={`right_board right_board_${theme}`}>
         {this.state.calenIfShow?<Calendar calenUpdateTime={this.calenUpdateTime.bind(this)} year={year} month={month} date={date}/>:''}
         {this.state.ifChangeDate?<ChangeDateCal changeDate={this.changeDate.bind(this)}/>:''}
@@ -605,4 +605,4 @@ class RenderDayLog extends React.Component{
     </div>
     }
 }
-export default RenderDayLog;
+export default DayLog;

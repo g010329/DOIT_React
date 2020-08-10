@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, animateScroll as scroll } from "react-scroll";
-// let currentUserData;
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
+
 class Login extends React.Component{
     constructor(props){
         super(props);

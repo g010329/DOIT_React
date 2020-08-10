@@ -57,11 +57,14 @@ class ChangeWeekCal extends React.Component{
         })
     }
 
+
     render(){
+        console.log(this.state.wCalMonth);
         let day = this.state.calFirstDateDay-1;
         if(day==-1){
             day=6;
         }
+        console.log(day);
         let calDatesOfMonth = this.state.calDatesOfMonth;
         let eachMonth = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         let wCalen = <div className="calentype popUp">

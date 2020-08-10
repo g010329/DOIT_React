@@ -1,13 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import RenderMonthLog from "./MonthLog/monthLog_main";
-import RenderWeekLog from "./WeekLog/weekLog_main";
-import RenderDayLog from "./DayLog/dayLog_main";
+import MonthLog from "./MonthLog/monthLog_main";
+import WeekLog from "./WeekLog/weekLog_main";
+import DayLog from "./DayLog/dayLog_main";
 import List from "./list";
-import * as firebase from "firebase";
-import 'firebase/auth';
-import 'firebase/database';
-import PropTypes from 'prop-types';
+import db from "./firebase.js";
+
 // 此頁有 dashboard 的 sidebar和top nav
 // 有使用者的uid: this.props.uid
 class Dashboard extends React.Component{
@@ -61,7 +59,7 @@ class Dashboard extends React.Component{
         })
     }
     getListFromDB(){
-        let db = firebase.firestore();
+        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("lists");
         let listItems = [];
         ref.orderBy('createdAt','asc').get().then(querySnapshot=>{
@@ -75,7 +73,7 @@ class Dashboard extends React.Component{
         })
     }
     listenLists(){
-        let db = firebase.firestore();
+        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("lists");
         ref.orderBy('createdAt','desc').limit(1).onSnapshot(querySnapshot=>{
             querySnapshot.forEach(doc=>{
@@ -157,7 +155,7 @@ class Dashboard extends React.Component{
             }
         })
         // console.log(this.state.note);
-        let db = firebase.firestore();
+        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("lists").doc();
         ref.set({
             title: this.state.note,
@@ -215,9 +213,9 @@ class Dashboard extends React.Component{
                 <span id="dbtn" className={`top_nav_btn tnb2_${theme}`} data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
             </div>
             <div className="inner_board">
-                <RenderMonthLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
-                <RenderWeekLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
-                <RenderDayLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <MonthLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <WeekLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <DayLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
             </div>
         </div>
         // console.log(this.props.uid);

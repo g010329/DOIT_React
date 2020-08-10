@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test LogTitle Component 1`] = `
+<div
+  className="month_title month_title_dk"
+>
+  <div>
+    <span
+      className="onlyShowToday"
+    >
+      Today 
+    </span>
+    <span
+      className="title_month"
+    >
+      8
+      /
+      10
+    </span>
+    
+  </div>
+  <span
+    className="title_right"
+  >
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-calendar popUp"
+        onClick={[Function]}
+      />
+    </span>
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-angle-left"
+        onClick={[Function]}
+      />
+    </span>
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-angle-right"
+        onClick={[Function]}
+      />
+    </span>
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-plus"
+        onClick={[Function]}
+      />
+    </span>
+  </span>
+</div>
+`;
+
+exports[`Test LogTitle Component 2`] = `
+<div
+  className="month_title month_title_dk"
+>
+  <div>
+    
+    <span
+      className="title_month"
+    >
+      9
+      /
+      1
+    </span>
+    <span
+      className="showYear"
+    >
+      2020
+    </span>
+  </div>
+  <span
+    className="title_right"
+  >
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-calendar popUp"
+        onClick={[Function]}
+      />
+    </span>
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-angle-left"
+        onClick={[Function]}
+      />
+    </span>
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-angle-right"
+        onClick={[Function]}
+      />
+    </span>
+    <span
+      className="icon_hover_span icon_hover_span_dk"
+    >
+      <i
+        className="fas fa-plus"
+        onClick={[Function]}
+      />
+    </span>
+  </span>
+</div>
+`;

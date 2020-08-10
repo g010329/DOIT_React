@@ -16,7 +16,6 @@ class Overdue extends React.Component{
                 </span>
             </div>
         );
-        
         return <div id="overdue" className={`overdue_board overdue_board_${theme}`}>
         <div className={`month_title month_title_${theme}`}>
             <span className="title_month">Overdue</span>

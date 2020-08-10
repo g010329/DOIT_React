@@ -63,8 +63,8 @@ class App extends React.Component {
                 });
             })
             .catch(function(error) {
-                var errorCode = error.code;
-                var errorMessage = error.message;
+                let errorCode = error.code;
+                let errorMessage = error.message;
                 if (errorCode == 'auth/weak-password') {
                     alert('The password is too weak.');
                 } else {
@@ -92,10 +92,10 @@ class App extends React.Component {
                             uid:user.uid
                         })
                     console.log('第一次sign in,登入狀態');
-                    let ref = db.collection('members').doc(`${user.uid}`);
-                    ref.get().then(doc => {
-                        // currentUserData = doc.data();
-                    }); 
+                    // let ref = db.collection('members').doc(`${user.uid}`);
+                    // ref.get().then(doc => {
+                    //     // currentUserData = doc.data();
+                    // }); 
                     // state狀態的改變在這裡做
                     this.setState({
                         isLogin: true,

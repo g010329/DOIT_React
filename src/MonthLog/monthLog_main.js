@@ -9,9 +9,10 @@ import ThisMonthToDos from "./thisMonthTodos.js";
 import LogTitle from "./monthLogTitle.js";
 // 有使用者的uid: this.props.uid
 
-class RenderMonthLog extends React.Component{
+class MonthLog extends React.Component{
     constructor(props){
         super(props);
+        this.testHeight = React.createRef();
         this.state={
             year: new Date().getFullYear(), //2020
             month: new Date().getMonth(), //7
@@ -323,7 +324,7 @@ class RenderMonthLog extends React.Component{
             <div id="moreInfo" className="bt_moreInfo_board" data-enter={'info'} onKeyDown={this.enterClick}>
                 <div className="infoflex">
                     <div className="info1">
-                        <textarea  id="testHeight" className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
+                        <textarea  ref={this.testHeight} className="info_titleInput" onChange={this.handleNoteChange} onInput={this.autoHeight} cols="15" rows="1" placeholder="Title"  defaultValue={this.state.moreInfoBoard.oldTitle} autoFocus></textarea>
                     </div>
                     <div className="info popUp" onClick={this.showCalen}>
                         <div className="infoLi popUp">
@@ -702,7 +703,7 @@ class RenderMonthLog extends React.Component{
     
 
     autoHeight(){
-        let x = document.getElementById("testHeight");
+        let x = this.testHeight.current;
         x.style.height = 'auto';
         x.style.height = x.scrollHeight + "px";
     }
@@ -756,4 +757,4 @@ class RenderMonthLog extends React.Component{
 
 
 
-export default RenderMonthLog;
+export default MonthLog;

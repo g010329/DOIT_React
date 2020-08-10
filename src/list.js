@@ -11,6 +11,7 @@ import { Chart } from "react-google-charts";
 class List extends React.Component{
     constructor(props){
         super(props);
+        this.testHeight = React.createRef();
         this.state={
             createdAt:{
                 year: 2020,
@@ -175,7 +176,7 @@ class List extends React.Component{
         })
     }
     autoHeight(){
-        let x = document.getElementById("inputTitle");
+        let x = this.testHeight.current;
         x.style.height = 'auto';
         x.style.height = x.scrollHeight + "px";
     }
@@ -273,7 +274,7 @@ class List extends React.Component{
         let listBoard = <div className="listBoard">
                 <div className="listTitle">
                     {/* <span className="listTitleName">{this.props.showWhichList}</span> */}
-                    <textarea id="inputTitle" rows="1" onInput={this.autoHeight} className="listTitleName" defaultValue={this.state.listTitle} onChange={this.handleNoteChange}/>
+                    <textarea ref={this.testHeight} rows="1" onInput={this.autoHeight} className="listTitleName" defaultValue={this.state.listTitle} onChange={this.handleNoteChange}/>
                     <span className="listTitleIcon" data-enter="titleName" onKeyDown={this.enterClick}>
                         <span id="adjsutList" onClick={this.adjsutListTitleInDB}><i className="fas fa-pen"></i></span>
                         <span onClick={this.deleteListInDB}><i className="fas fa-trash"></i></span>
