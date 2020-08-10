@@ -2,7 +2,6 @@
 
 const countWeekNum=(d)=>{
     //算出今日是第幾週 d=new Date("2020-05-02")
-    console.log(new Date("2020-08-10"));
     d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
     let yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));

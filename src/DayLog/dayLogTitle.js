@@ -4,7 +4,6 @@ class LogTitle extends React.Component{
         let data = this.props.data;
         let {year, month, date, theme} = data.state;
         let {ifChangeDate, handleDateBackward, handleDateForward, toggleIfInput} = data.method;
-        console.log(ifChangeDate);
         let today = new Date();
         let isToday = date==today.getDate() && month==today.getMonth();
         let todayHint = <span className="onlyShowToday">Today </span>

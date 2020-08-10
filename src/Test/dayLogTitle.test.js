@@ -1,5 +1,5 @@
 import React from "react";
-import LogTitle from "./dayLogTitle.js";
+import LogTitle from "../DayLog/dayLogTitle.js";
 import renderer from 'react-test-renderer';
 
 test("Test LogTitle Component", ()=>{
