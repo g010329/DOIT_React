@@ -55,7 +55,6 @@ class App extends React.Component {
     handleSignUp(email,password) {
         firebase.auth().createUserWithEmailAndPassword(email, password)
             .then((cred)=>{
-                alert('Sign Up Successfully!');
                 this.setState(preState=>{
                     return{
                         isNewUser : cred.additionalUserInfo.isNewUser

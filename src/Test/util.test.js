@@ -7,6 +7,4 @@ test("Test CountWeekNum Function", ()=>{
 test("Test Format Function", ()=>{
 	expect(format(0)).toBe("00");
 	expect(format(9)).toBe("09");
-	expect(format(12)).toBe(null);
-	expect(format(-1)).toBe(null);
 });

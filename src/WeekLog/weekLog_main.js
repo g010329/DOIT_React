@@ -10,7 +10,10 @@ import LogTitle from "./weekLogTitle.js";
 class WeekLog extends React.Component{
     constructor(props){
         super(props);
+        this.inputWeek = React.createRef();
         this.testHeight = React.createRef();
+        this.inputWeekDay = React.createRef();
+        
         this.state={
             year: new Date().getFullYear(), //2020
             month: new Date().getMonth(), //7
@@ -84,6 +87,7 @@ class WeekLog extends React.Component{
         // this.handleValidation = this.handleValidation.bind(this);
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.enterClick = this.enterClick.bind(this);
     }
 
     componentWillUnmount() {
@@ -453,7 +457,6 @@ class WeekLog extends React.Component{
     }
 
     getDBdataInState(week,year,date,day,month){
-        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         let thisWeekToDos = [];
         let createDBObj = (doc) =>{
@@ -480,7 +483,7 @@ class WeekLog extends React.Component{
                     querySnapshot.forEach(doc=>{
                         this.setState(preState=>{
                             let {eachDayToDos} = preState;
-                            eachDayToDos[day].todos = [];
+                            // eachDayToDos[day].todos = [];
                             eachDayToDos[day].todos.push(createDBObj(doc));
                             return{
                                 eachDayToDos: eachDayToDos
@@ -626,7 +629,7 @@ class WeekLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
-                    <span className="add" id="inputWeek" onClick={this.addThisWeekToDos}>Add</span>
+                    <span className="add" ref={this.inputWeek} onClick={this.addThisWeekToDos}>Add</span>
                 </span>
             </div>
         )
@@ -640,7 +643,7 @@ class WeekLog extends React.Component{
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.turnOffEachDayIfInput}>Cancel</span>
-                    <span className="add" id="inputWeekDay" data-addday={i} onClick={this.addThisDayToDos}>Add</span>
+                    <span className="add" ref={this.inputWeekDay} data-addday={i} onClick={this.addThisDayToDos}>Add</span>
                 </span>
             </div>
         )
@@ -737,13 +740,13 @@ class WeekLog extends React.Component{
     enterClick(e){
         let btntype = e.currentTarget.getAttribute("data-enter");
         if (event.keyCode==13 && btntype=='week-day'){
-            document.getElementById("inputWeekDay").click(); //觸動按鈕的點擊
+            this.inputWeekDay.current.click(); 
         } 
         if (event.keyCode==13 && btntype=='week'){
-            document.getElementById("inputWeek").click(); //觸動按鈕的點擊
+            this.inputWeek.current.click();
         }
         if (event.keyCode==13 && btntype=='info'){
-            document.getElementById("saveMoreInfo").click(); //觸動按鈕的點擊
+            this.saveMoreInfo.current.click();
         }  
     }
     render(){

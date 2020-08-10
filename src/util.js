@@ -20,10 +20,10 @@ const handleValidation=(field)=>{
 }
 
 const format = (number)=>{
-    if(number > 11 || number<0){
-        console.log('month does not exist');
-        return null;
-    }else if(number<10){
+    // if(number > 11 || number<0){
+    //     console.log('month does not exist');
+    //     return null;
+    if(number<10){
 		return "0" + number;
 	}else{
 		return "" + number;

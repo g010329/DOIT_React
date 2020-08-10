@@ -13,6 +13,9 @@ class MonthLog extends React.Component{
     constructor(props){
         super(props);
         this.testHeight = React.createRef();
+        this.inputMonthDate = React.createRef();
+        this.inputMonth = React.createRef();
+        this.saveMoreInfo = React.createRef();
         this.state={
             year: new Date().getFullYear(), //2020
             month: new Date().getMonth(), //7
@@ -86,9 +89,9 @@ class MonthLog extends React.Component{
         this.backToTodayBtn = this.backToTodayBtn.bind(this);
         //list
         this.chooseList = this.chooseList.bind(this);  
-        // input required
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.enterClick = this.enterClick.bind(this);
     }
     
     
@@ -354,7 +357,7 @@ class MonthLog extends React.Component{
                 </div>
                 <div className="infoBtns">
                     <span className="infoCancelBtn" onClick={this.toggleIfShowMore}>Cancel</span>
-                    <span className="infoSaveBtn" id="saveMoreInfo" onClick={this.adjustTodo}>Save</span>
+                    <span className="infoSaveBtn" ref={this.saveMoreInfo} onClick={this.adjustTodo}>Save</span>
                 </div>
             </div>
         )
@@ -594,7 +597,7 @@ class MonthLog extends React.Component{
             </span>
             <span className="month_todo_feacture2">
                 <span className="cancel" onClick={this.turnOffEachDayIfInput}>Cancel</span>
-                <span className="add" id="inputMonthDate" data-addday={i} onClick={this.addThisDayToDos} >Add</span>
+                <span className="add" ref={this.inputMonthDate} data-addday={i} onClick={this.addThisDayToDos} >Add</span>
             </span>
         </div>
         )
@@ -694,7 +697,7 @@ class MonthLog extends React.Component{
             </span>
             <span className="month_todo_feacture2">
                 <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
-                <span className="add" id="inputMonth" onClick={this.addThisMonthToDos}>Add</span>
+                <span className="add" ref={this.inputMonth} onClick={this.addThisMonthToDos}>Add</span>
             </span>
         </div>
         )
@@ -710,13 +713,13 @@ class MonthLog extends React.Component{
     enterClick(e){
         let btntype = e.currentTarget.getAttribute("data-enter");
         if (event.keyCode==13 && btntype=='month-date'){
-            document.getElementById("inputMonthDate").click(); //觸動按鈕的點擊
+            this.inputMonthDate.current.click();
         } 
         if (event.keyCode==13 && btntype=='month'){
-            document.getElementById("inputMonth").click(); //觸動按鈕的點擊
+            this.inputMonth.current.click();
         } 
         if (event.keyCode==13 && btntype=='info'){
-            document.getElementById("saveMoreInfo").click(); //觸動按鈕的點擊
+            this.saveMoreInfo.current.click();
         } 
     }
     render(){

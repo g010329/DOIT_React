@@ -5,12 +5,16 @@ import WeekLog from "./WeekLog/weekLog_main";
 import DayLog from "./DayLog/dayLog_main";
 import List from "./list";
 import db from "./firebase.js";
+import * as firebase from "firebase";
 
 // 此頁有 dashboard 的 sidebar和top nav
 // 有使用者的uid: this.props.uid
 class Dashboard extends React.Component{
     constructor(props){
         super(props);
+        this.mbtn = React.createRef();
+        this.wbtn = React.createRef();
+        this.inputList =React.createRef();
         this.state={
             reRender: false,
             btToday: false,
@@ -23,7 +27,8 @@ class Dashboard extends React.Component{
                 // {title:'課程影片'}
             ],
             note:'',
-            theme: this.props.theme
+            theme: this.props.theme,
+            showWhichLog: 'week'
 
         };
         this.toggleNav = this.toggleNav.bind(this);
@@ -37,10 +42,10 @@ class Dashboard extends React.Component{
         this.enterClick = this.enterClick.bind(this);
         this.ListFromDb = this.getListFromDB.bind(this);
         this.getListFromDB = this.getListFromDB.bind(this);
-        this.listenLists = this.listenLists.bind(this);
         this.showList = this.showList.bind(this);
         //outside
         this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.toggleBtn = this.toggleBtn.bind(this);
     }
     handleNoteChange(e){
         this.setState({
@@ -59,7 +64,6 @@ class Dashboard extends React.Component{
         })
     }
     getListFromDB(){
-        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("lists");
         let listItems = [];
         ref.orderBy('createdAt','asc').get().then(querySnapshot=>{
@@ -72,15 +76,7 @@ class Dashboard extends React.Component{
             this.setState({listItems:listItems});
         })
     }
-    listenLists(){
-        // let db = firebase.firestore();
-        let ref = db.collection("members").doc(this.props.uid).collection("lists");
-        ref.orderBy('createdAt','desc').limit(1).onSnapshot(querySnapshot=>{
-            querySnapshot.forEach(doc=>{
-                // console.log(doc.data());
-            })
-        })
-    }
+
     toggleBackToToday(){
         // console.log('toggleBackToToday');
         this.setState(preState=>{
@@ -92,7 +88,6 @@ class Dashboard extends React.Component{
     }
     componentDidMount(){
         this.getListFromDB();
-        this.listenLists();
         document.addEventListener('click', this.handleClickOutside, false);
     }
     componentWillUnmount() {
@@ -101,9 +96,7 @@ class Dashboard extends React.Component{
     
     handleClickOutside(event) {
         // 點擊sidebar外部關閉sidebar
-        // console.log(event.target.className);
         let sider = document.getElementById("sidebar");
-        // let sider = this.node.current;
         if(event.target.className=='fas fa-bars'||event.target.className=='top_nav_logo'){
             return;
         }else if(this.node.contains(event.target)){
@@ -127,22 +120,19 @@ class Dashboard extends React.Component{
         }
     }
     toggleBtn(e){
+        let {theme} = this.state;
         let logBtn = e.currentTarget.getAttribute("data-btn");
         let toggleLog = document.getElementById(`${logBtn}`);
         if (logBtn == "month"){
             toggleLog.style.display = "block";
-            document.getElementById("mbtn").style.backgroundColor='#e8e8e8';
-            document.getElementById("mbtn").style.color='#222222';
+            this.mbtn.current.className = `top_nav_btn tnb1-2_${theme}`;
             document.getElementById("week").style.display = "none";
-            document.getElementById("wbtn").style.backgroundColor='#222222';
-            document.getElementById("wbtn").style.color='#c4c1c1';
+            this.wbtn.current.className = `top_nav_btn tnb1_${theme}`;
         }else if (logBtn == "week"){
             toggleLog.style.display = "block";
             document.getElementById("month").style.display = "none";
-            document.getElementById("wbtn").style.backgroundColor='#e8e8e8';
-            document.getElementById("wbtn").style.color='#222222';
-            document.getElementById("mbtn").style.backgroundColor='#222222';
-            document.getElementById("mbtn").style.color='#c4c1c1';
+            this.mbtn.current.className = `top_nav_btn tnb1_${theme}`;
+            this.wbtn.current.className = `top_nav_btn tnb1-2_${theme}`;
         }
     }
     addListToDB(){
@@ -150,12 +140,9 @@ class Dashboard extends React.Component{
             let listItems = preState.listItems;
             listItems.push({title:this.state.note});
             return{
-                // listItems:listItems,
-                ifInput: false,
+                ifInput: false
             }
         })
-        // console.log(this.state.note);
-        // let db = firebase.firestore();
         let ref = db.collection("members").doc(this.props.uid).collection("lists").doc();
         ref.set({
             title: this.state.note,
@@ -171,7 +158,7 @@ class Dashboard extends React.Component{
     }
     enterClick(){
         if (event.keyCode==13){
-            document.getElementById("inputList").click(); //觸動按鈕的點擊
+            this.inputList.current.click();
         } 
     }
     showList(e){
@@ -200,25 +187,25 @@ class Dashboard extends React.Component{
                 </span>
                 <div className="inputCancelAdd" >
                     <span className="add" onClick={()=>{this.setState({ifInput:false})}}><i className="fas fa-times addListcancel"/></span>
-                    <span id="inputList" className="cancel" onClick={this.addListToDB}><i className="fas fa-check addListcancel" /></span>
+                    <span ref={this.inputList} className="cancel" onClick={this.addListToDB}><i className="fas fa-check addListcancel" /></span>
                 </div>
             </div>
         
         let showLogs = <div>
             <div className="top_nav">
                 <div>
-                    <span id="mbtn" className={`top_nav_btn tnb1_${theme}`} data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
-                    <span id="wbtn" className={`top_nav_btn tnb1-2_${theme}`} data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
+                    <span ref={this.mbtn} className={`top_nav_btn tnb1_${theme}`} data-btn={"month"} onClick={this.toggleBtn}>MONTH</span>
+                    <span ref={this.wbtn} className={`top_nav_btn tnb1-2_${theme}`} data-btn={"week"} onClick={this.toggleBtn}>WEEK</span>
                 </div>
-                <span id="dbtn" className={`top_nav_btn tnb2_${theme}`} data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
+                <span className={`top_nav_btn tnb2_${theme}`} data-btn={"today"} onClick={this.toggleBtn} onClick={this.toggleBackToToday}>TODAY</span>
             </div>
             <div className="inner_board">
+            
                 <MonthLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
                 <WeekLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
                 <DayLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
             </div>
         </div>
-        // console.log(this.props.uid);
         return <div>
             <div>
                 <header className={'header_'+theme}>
@@ -238,24 +225,9 @@ class Dashboard extends React.Component{
                     <div className="dashboard_visual">
                         {/* sidebar */}
                         <div id="sidebar" ref={node=>this.node=node} className={`sidebar sidebar_${theme}`}>
-                            {/* <div className="sidebar_ul">
-                                <div className="sidebar_li">
-                                    <span className="sidebar_icon">
-                                        <i className="fas fa-clipboard-list"></i>
-                                    </span> 
-                                    <span>Future Log</span>
-                                </div>
-                            </div> */}
                             <div className="sidebar_line">LIST</div>
                             {renderListItem}
                             {this.state.ifInput?showListInput:''}
-                            {/* <div className="sidebar_li">
-                                <span className="sidebar_icon">
-                                    <i className="fas fa-ellipsis-v"></i>
-                                </span> 
-                                <span>個人專案</span>
-                            </div> */}
-                            
                             <div className={`sidebar_li sidebar_li_${theme}`}  onClick={this.toggleIfInput}>
                                 <span className="sidebar_icon">
                                     <i className="fas fa-plus"></i>
@@ -288,9 +260,7 @@ class Dashboard extends React.Component{
         </div>;
     }
 }
-// Dashboard.propTypes = {
-//     children: PropTypes.element.isRequired,
-// };
+
 export default Dashboard;
 
 // 在dashboard裡面有 month,week,day不同部位，使用者點擊上方按鈕，選擇要在dashboard顯示的部位

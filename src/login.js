@@ -4,6 +4,10 @@ import { Link, animateScroll as scroll } from "react-scroll";
 class Login extends React.Component{
     constructor(props){
         super(props);
+        this.inputLogin = React.createRef();
+        this.inputSignUp = React.createRef();
+        this.loginBoard = React.createRef();
+        this.signupBoard = React.createRef();
         this.state = {
             email: '',
             password: '',
@@ -27,14 +31,10 @@ class Login extends React.Component{
     enterLogin(e){
         let btntype = e.currentTarget.getAttribute("data-type");
         if (event.keyCode==13 && btntype=='login'){
-            console.log('enter log in');
-            // console.log(e);
-            document.getElementById("input1").click(); //觸動按鈕的點擊
-        } //enter的鍵值為13
+            this.inputLogin.current.click();
+        }
         if (event.keyCode==13 && btntype=='signup'){
-            console.log('enter signup');
-            // console.log(e);
-            document.getElementById("input2").click(); //觸動按鈕的點擊
+            this.inputSignUp.current.click();
         }
     }
     
@@ -46,31 +46,31 @@ class Login extends React.Component{
         </div>
         let loginBoard = <div>
             <div className="bpartTitle">START TO DO!</div>
-                <div id="start" className="login_board" data-type={'login'} onKeyDown={this.enterLogin}>
+                <div id="start" ref={this.loginBoard} className="login_board" data-type={'login'} onKeyDown={this.enterLogin}>
                     <div className="login_title">Log in</div>
                     <div>
                         <div className="login_account"><input type="email" placeholder="Email Address" onChange={this.handleMailKeyInValue}></input></div>
                         <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue}></input></div>
-                        <div id="input1" className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email,this.state.password);this.setState({isloading:true})}}>LOG IN</div>
+                        <div ref={this.inputLogin} className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email,this.state.password);this.setState({isloading:true})}}>LOG IN</div>
                         
                         <div className="forget">
                         </div>
                         <div className="signUp">New User?</div>
-                        <div className="signUp_btn" onClick={()=>{document.getElementById("signup").style.display="block";document.getElementById("start").style.display="none"}}>Create Account</div>
+                        <div className="signUp_btn" onClick={()=>{this.signupBoard.current.style.display="block";this.loginBoard.current.style.display="none"}}>Create Account</div>
                     </div>
                 </div>
                         
-                <div id="signup" className="login_board" data-type={'signup'} onKeyDown={this.enterLogin}>
+                <div ref={this.signupBoard} className="login_board signUp_board" data-type={'signup'} onKeyDown={this.enterLogin}>
                     <div className="login_title">Sign Up</div>
                     <div>
                         <div className="login_account"><input  type="text" placeholder="Email Address" onChange={this.handleMailKeyInValue}></input></div>
                         <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue}></input></div>
-                        <div id="input2" className="login_btn" onClick={()=>{this.props.handleSignUp(this.state.email,this.state.password);this.setState({isloading:true})}}>Create Account</div>
+                        <div ref={this.inputSignUp} className="login_btn" onClick={()=>{this.props.handleSignUp(this.state.email,this.state.password);this.setState({isloading:true})}}>Create Account</div>
                         
                         <div className="forget">
                         </div>
                         <div className="signUp">Already have account?</div>
-                        <div className="signUp_btn" onClick={()=>{document.getElementById("signup").style.display="none";document.getElementById("start").style.display="block"}}>LOG IN</div>
+                        <div className="signUp_btn" onClick={()=>{this.signupBoard.current.style.display="none";this.loginBoard.current.style.display="block"}}>LOG IN</div>
                     </div>
                     
                 </div>
