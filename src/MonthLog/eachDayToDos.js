@@ -20,7 +20,7 @@ class EachDayToDos extends React.Component{
                         <div>{eachday.ifInput? showEachDateInput(index) : ''}</div>
                     </div>
                 </div>
-                {eachday.day==0?<div className="weekBorder"></div>:''}
+                {eachday.day==0?<div className={`weekBorder weekBorder_${theme}`}></div>:''}
                 
         </div>});
         return <div className="month_log">
@@ -30,17 +30,3 @@ class EachDayToDos extends React.Component{
 }
 export default EachDayToDos;
 
-// function getCollectionFromFirebase(db, collectionName, opts){
-//     let ref=db.collection(collectionName);
-//     if(opts.filter){
-//         ref=ref.filter();
-//     }
-//     return ref.get();
-// }
-// function getDocumentFromFirebase(db, collection, documentId){
-
-// }
-
-// getCollectionFromFirebase(firebase, "todos", {filter:"", order:""}).then(()=>{
-    
-// })

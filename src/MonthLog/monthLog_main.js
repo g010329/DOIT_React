@@ -7,7 +7,6 @@ import ChangeMonthCal from "../Calendars/changeMonthCal";
 import EachDayToDos from "./eachDayToDos.js";
 import ThisMonthToDos from "./thisMonthTodos.js";
 import LogTitle from "./monthLogTitle.js";
-// 有使用者的uid: this.props.uid
 
 class MonthLog extends React.Component{
     constructor(props){
@@ -16,12 +15,13 @@ class MonthLog extends React.Component{
         this.inputMonthDate = React.createRef();
         this.inputMonth = React.createRef();
         this.saveMoreInfo = React.createRef();
+        let today = new Date();
         this.state={
-            year: new Date().getFullYear(), //2020
-            month: new Date().getMonth(), //7
-            date: new Date().getDate(), //3
-            day: new Date().getDay(), //五
-            daysOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //31
+            year: today.getFullYear(), //2020
+            month: today.getMonth(), //7
+            date: today.getDate(), //3
+            day: today.getDay(), //五
+            daysOfMonth: new Date(today.getFullYear(),today.getMonth()+1,0).getDate(), //31
             thisMonthToDos:[
                 // {"title":'add somthing todo',"index":1,"ifDone":false,"content":''}
             ],
@@ -83,7 +83,6 @@ class MonthLog extends React.Component{
         this.showCalen = this.showCalen.bind(this);
         //下層的calen Component取得新時間後傳回上層
         this.calenUpdateTime = this.calenUpdateTime.bind(this);
-        this.adjustTimeInDB = this.adjustTimeInDB.bind(this);
         this.ifChangeMonth = this.ifChangeMonth.bind(this);
         //today
         this.backToTodayBtn = this.backToTodayBtn.bind(this);
@@ -96,10 +95,8 @@ class MonthLog extends React.Component{
     
     
     changeMonth(year,month){
-        // console.log(year,month);
         this.setState(preState=>{
             let eachDayToDos = [];
-            // this.getDBdataInState(month,year,0);
             for (let i=0; i<new Date(year,month+1,0).getDate(); i++){
                 eachDayToDos.push({
                     date:i,
@@ -127,41 +124,34 @@ class MonthLog extends React.Component{
     }
     ifChangeMonth(){
         this.setState(preState=>{
-            let ifChangeMonth = !preState.ifChangeMonth;
-            console.log('更換月');
             return{
-                ifChangeMonth: ifChangeMonth
+                ifChangeMonth: !preState.ifChangeMonth
             }
         })
     }
     calenUpdateTime(year,month,date,week){
-        console.log('calenUpdateTime',year,month,date,week);
         if(date<1){
             return;
         }
         if(date>new Date(year,month+1,0).getDate() && date!==999){
             return;
         }else{
-            console.log('123');
             this.setState(preState=>{
                 let moreInfoBoard = preState.moreInfoBoard;
                 moreInfoBoard.iYear = year;
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
-                console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
+                    // 表示在選擇週
                     week = countWeekNum(new Date(`${year}-${month+1}-${date}`));
-                    console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = week;
                 }
                 if(date==999){
-                    console.log('表示在選擇月份')
+                    // 表示在選擇月份
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = null
                 }
-                // moreInfoBoard.iWeek = week;
-                console.log('calenUpdateTime',moreInfoBoard);
                 return{
                     moreInfoBoard:moreInfoBoard,
                     calenIfShow:false
@@ -171,17 +161,13 @@ class MonthLog extends React.Component{
     }
 
     adjustTodo(){
-        let oldTitle = this.state.moreInfoBoard.oldTitle;
         let note;
         // 該月
         if (this.state.moreInfoBoard.innerIndex == null){
-            console.log('修改月未安排',this.state.moreInfoBoard);
             this.setState(preState=>{
                 note = preState.note;
                 let {moreInfoBoard, thisMonthToDos, eachDayToDos, ifShowMore} = preState;
                 thisMonthToDos[moreInfoBoard.index].title = note;
-                console.log('adjust month to do');
-                console.log(eachDayToDos);
                 return{
                     thisMonthToDos:thisMonthToDos,
                     ifShowMore:!ifShowMore,
@@ -189,11 +175,9 @@ class MonthLog extends React.Component{
                     eachDayToDos:eachDayToDos
                 }
             });
-            console.log(this.state.moreInfoBoard.id);
             let ref = db.collection("members").doc(this.props.uid).collection("todos");
             //沒改過時間的
             if (this.state.moreInfoBoard.iDate==null){
-                console.log('沒改時間');
                 ref.doc(this.state.moreInfoBoard.id).update({
                     title:this.state.note,
                     list: this.state.moreInfoBoard.list
@@ -203,7 +187,6 @@ class MonthLog extends React.Component{
                 })
                 
             }else{
-                console.log('改過時間','m',this.state.moreInfoBoard.iMonth,'year',this.state.moreInfoBoard.iYear,'date',this.state.moreInfoBoard.iDate,'week',this.state.moreInfoBoard.iWeek);
                 ref.doc(this.state.moreInfoBoard.id).update({
                     title:this.state.note,
                     month:this.state.moreInfoBoard.iMonth,
@@ -215,12 +198,10 @@ class MonthLog extends React.Component{
             }
             this.props.reRenderLog();
         }else{ //該月每天
-            // console.log('adjust day to do');
             this.setState(preState=>{
                 note = preState.note;
                 let {moreInfoBoard, eachDayToDos, ifShowMore} = preState;
                 eachDayToDos[moreInfoBoard.index].todos[moreInfoBoard.innerIndex].title = note;
-                console.log('adjust month-day to do');
                 if(moreInfoBoard.iMonth!=this.state.month){
                     eachDayToDos[moreInfoBoard.index].todos.splice(moreInfoBoard.index,1);
                 }
@@ -261,7 +242,6 @@ class MonthLog extends React.Component{
             moreInfoBoard.iYear = this.state.year;
             moreInfoBoard.iMonth = this.state.month;
             moreInfoBoard.list = list;
-            console.log('toggleIfShowMore','index:',index,'inner:',innerIndex,moreInfoBoard);
             if(innerIndex==null){
                 //月
                 moreInfoBoard.iDate = 0;
@@ -285,7 +265,6 @@ class MonthLog extends React.Component{
     }
     chooseList(e){
         let list = e.target.value;
-        console.log(e.target.value);
         this.setState(preState=>{
             let moreInfoBoard = preState.moreInfoBoard;
             moreInfoBoard.list = list;
@@ -295,27 +274,13 @@ class MonthLog extends React.Component{
         })
     }
     showCalen(){
-        console.log('showCalen')
         this.setState(preState=>{
-            let calenIfShow = !preState.calenIfShow;
             return{
-                calenIfShow: calenIfShow
+                calenIfShow: !preState.calenIfShow
             }
         })
     }
 
-    adjustTimeInDB(){
-        let id = this.state.moreInfoBoard.id;
-        console.log('adjustTimeInDB',this.state.moreInfoBoard.id,this.state.moreInfoBoard.iYear,this.state.moreInfoBoard.iMonth,this.state.moreInfoBoard.iDate);
-        let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        ref.where("id","==",id)
-            .get().then(querySnapshot=>{
-                querySnapshot.forEach(doc=>{
-                    console.log('adjustTimeInDB');
-                    // console.log(doc.data());
-                })
-            })
-    }
 
     showMoreInfo(){
         let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
@@ -350,7 +315,7 @@ class MonthLog extends React.Component{
                             <select className="selectList" onChange={this.chooseList}>
                                 <option value="">Choose List</option>
                                 {selectList}
-                                <option value={null}>尚未選擇</option>
+                                <option value={null}>無</option>
                             </select>
                         </div>
                     </div>
@@ -386,7 +351,6 @@ class MonthLog extends React.Component{
     }
 
     ifDone(e){
-        // console.log(this.state.month);
         let index=e.currentTarget.getAttribute("data-index");
         let title=e.currentTarget.getAttribute("data-title");
         let newStatus;
@@ -399,7 +363,6 @@ class MonthLog extends React.Component{
         ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",0).where("title","==",title)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
-                    // console.log(doc.id);
                     doc.ref.update({isDone:newStatus})
                 })
             })
@@ -604,17 +567,17 @@ class MonthLog extends React.Component{
     }
 
     backToTodayBtn(){
-        console.log('回到今天');
+        let today = new Date();
         this.setState(preState=>{
+            
             return{
-                year: new Date().getFullYear(), 
-                month: new Date().getMonth(), 
-                date: new Date().getDate(),
+                year: today.getFullYear(), 
+                month: today.getMonth(), 
+                date: today.getDate(),
             }
         })
         this.updateEachDayToDos();
-        this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),0);
-        // this.getDBdataInState(new Date().getMonth(),new Date().getFullYear(),new Date().getDate());
+        this.getDBdataInState(today.getMonth(),today.getFullYear(),0);
     }
 
     handleMonthForward(){
@@ -664,14 +627,15 @@ class MonthLog extends React.Component{
         });
     }
     componentDidUpdate(preProps){
+        if(preProps.theme !== this.props.theme){
+            console.log('change');
+        }
         if(preProps.reRender !== this.props.reRender){
-            console.log("Month Update");
             this.updateEachDayToDos();
             this.getDBdataInState(this.state.month,this.state.year,0);
         }
         if(preProps.btToday !== this.props.btToday){
             this.backToTodayBtn();
-            console.log("Month Update2");
         }
     }
     toggleIfInput(){
@@ -693,7 +657,7 @@ class MonthLog extends React.Component{
         return(
         <div className="month_todo" data-enter={'month'} onKeyDown={this.enterClick}>
             <span>
-                <input className="noScheInput"  type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange} autoFocus/>
+                <input className={`noScheInput noScheInput_${this.state.theme}`}  type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange} autoFocus/>
             </span>
             <span className="month_todo_feacture2">
                 <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
@@ -728,7 +692,6 @@ class MonthLog extends React.Component{
             state:{ year, month, date, theme, thisMonthToDos, eachDayToDos, ifInput, ifShowMore, calenIfShow, ifChangeMonth },
             method:{
                 ifChangeMonth: this.ifChangeMonth,
-                // changeMonth: this.changeMonth,
                 handleMonthBackward: this.handleMonthBackward,
                 handleMonthForward: this.handleMonthForward,
                 toggleIfInput: this.toggleIfInput,
@@ -737,7 +700,6 @@ class MonthLog extends React.Component{
                 showEachDateInput: this.showEachDateInput,
                 toggleIfShowMore: this.toggleIfShowMore,
                 deleteInDB: this.deleteInDB,
-                // calenUpdateTime: this.calenUpdateTime
             }
         }
         return <div id="month" className={`left_board left_board_${theme}`}>
@@ -751,7 +713,7 @@ class MonthLog extends React.Component{
             <ThisMonthToDos data={data}/>
             {/* 月-30天月曆 */}
             <EachDayToDos data={data}/>
-            <div className="wbgc"></div>
+            <div className={`wbgc wbgc_${theme}`}></div>
             {/* 單一事件控制面板 */}
             {ifShowMore? this.showMoreInfo(): ''}
         </div>;

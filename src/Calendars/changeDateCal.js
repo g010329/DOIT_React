@@ -5,21 +5,20 @@ import 'firebase/database';
 class ChangeDateCal extends React.Component{
     constructor(props){
         super(props);
+        let today = new Date();
         this.state={
-            calYear: new Date().getFullYear(),
-            calMonth: new Date().getMonth(),
-            calFirstDateDay: new Date(`${new Date().getFullYear()}-${new Date().getMonth()+1}-1`).getDay(), //1~7
-            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //28~31
+            calYear: today.getFullYear(),
+            calMonth: today.getMonth(),
+            calFirstDateDay: new Date(`${today.getFullYear()}-${today.getMonth()+1}-1`).getDay(), //1~7
+            calDatesOfMonth: new Date(today.getFullYear(),today.getMonth()+1,0).getDate(), //28~31
         };
         this.calMonthForward = this.calMonthForward.bind(this);
         this.calMonthBackward = this.calMonthBackward.bind(this);
     }
     calMonthForward(){
         this.setState(preState=>{
-            let calMonth = preState.calMonth;
-            let calYear = preState.calYear;
+            let {calMonth,calYear} = preState;
             if (calMonth<11){
-                // console.log(calYear,calMonth+1,new Date(calYear,calMonth+1,0).getDate());
                 return{
                     calMonth: calMonth+1,
                     calDatesOfMonth: new Date(calYear,calMonth+2,0).getDate(),
@@ -39,10 +38,8 @@ class ChangeDateCal extends React.Component{
     }
     calMonthBackward(){
         this.setState(preState=>{
-            let calMonth = preState.calMonth;
-            let calYear = preState.calYear;
+            let {calMonth,calYear} = preState;
             if(calMonth==0){
-                // console.log(calYear-1,11,new Date(calYear-1,0,0).getDate());
                 return{
                     calYear: calYear-1,
                     calMonth: 11,
@@ -50,7 +47,6 @@ class ChangeDateCal extends React.Component{
                     calFirstDateDay: new Date(`${calYear-1}-12-1`).getDay()
                 }
             }else{
-                // console.log(calYear,calMonth-1,new Date(calYear,calMonth-1,0).getDate());
                 return{
                     calMonth: calMonth-1,
                     calDatesOfMonth: new Date(calYear,calMonth,0).getDate(),

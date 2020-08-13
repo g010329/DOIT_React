@@ -6,18 +6,19 @@ import 'firebase/database';
 class Calendar extends React.Component{
     constructor(props){
         super(props);
+        let today = new Date();
         this.state={
             calenType: 'day', // 種類month week day 
             //年曆
-            yCalYear: new Date().getFullYear(), 
+            yCalYear: today.getFullYear(), 
             //日曆
-            calYear: new Date().getFullYear(),
-            calMonth: new Date().getMonth(),
-            calFirstDateDay: new Date(`${new Date().getFullYear()}-${new Date().getMonth()+1}-1`).getDay(), //1~7
-            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //28~31
+            calYear: today.getFullYear(),
+            calMonth: today.getMonth(),
+            calFirstDateDay: new Date(`${today.getFullYear()}-${today.getMonth()+1}-1`).getDay(), //1~7
+            calDatesOfMonth: new Date(today.getFullYear(),today.getMonth()+1,0).getDate(), //28~31
             //週曆
-            wCalYear: new Date().getFullYear(),
-            wCalMonth: new Date().getMonth(),
+            wCalYear: today.getFullYear(),
+            wCalMonth: today.getMonth(),
         };
         this.calWeekForward = this.calWeekForward.bind(this);
         this.calWeekBackward = this.calWeekBackward.bind(this);
@@ -119,10 +120,8 @@ class Calendar extends React.Component{
 
     setCalenType(e){
         let calenType = e.currentTarget.getAttribute("data-calenType");
-        this.setState(preState=>{
-            return{
-                calenType:calenType
-            }
+        this.setState({
+            calenType:calenType
         })
     }
 
@@ -211,7 +210,6 @@ class Calendar extends React.Component{
                             </tr>
                         </thead>
                         <tbody>
-                            {/* <tr>{this.week}</tr> */}
                             <tr>
                                 <td className="weektd" onClick={()=>this.props.calenUpdateTime(this.state.wCalYear,this.state.wCalMonth,1-day,999)}>{(1-day)>0? 1-day : ''}</td>
                                 <td className="darktd">{(2-day)>0? 2-day : ''}</td>
@@ -290,7 +288,6 @@ class Calendar extends React.Component{
                             </tr>
                         </thead>
                         <tbody>
-                            {/* <tr>{this.week}</tr> */}
                             <tr>
                                 <td className="datetd" onClick={()=>this.props.calenUpdateTime(this.state.calYear,this.state.calMonth,1-day,0)}>{(1-day)>0? 1-day : ''}</td>
                                 <td className="datetd" onClick={()=>this.props.calenUpdateTime(this.state.calYear,this.state.calMonth,2-day,0)}>{(2-day)>0? 2-day : ''}</td>

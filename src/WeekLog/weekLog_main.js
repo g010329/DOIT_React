@@ -10,17 +10,16 @@ import LogTitle from "./weekLogTitle.js";
 class WeekLog extends React.Component{
     constructor(props){
         super(props);
+        let today = new Date();
         this.inputWeek = React.createRef();
         this.testHeight = React.createRef();
         this.inputWeekDay = React.createRef();
         
         this.state={
-            year: new Date().getFullYear(), //2020
-            month: new Date().getMonth(), //7
-            date: new Date().getDate(), //3
-            // day: new Date().getDay(), //五
+            year: today.getFullYear(), //2020
+            month: today.getMonth(), //7
+            date: today.getDate(), //3
             weekNum: null,
-            // 根據今天日期取得週數
             thisWeekToDos:[
                 // {"title":1,"index":1,"ifDone":false},
                 // {"title":2,"index":1,"ifDone":false}
@@ -56,7 +55,6 @@ class WeekLog extends React.Component{
         this.handleWeekForward = this.handleWeekForward.bind(this);
         this.handleWeekBackward = this.handleWeekBackward.bind(this);
         this.handleNoteChange = this.handleNoteChange.bind(this);
-        // this.updateThisWeekToDos = this.updateThisWeekToDos.bind(this);
         this.addThisWeekToDos = this.addThisWeekToDos.bind(this);
         this.toggleIfInput = this.toggleIfInput.bind(this);
         this.showInput = this.showInput.bind(this);
@@ -82,10 +80,8 @@ class WeekLog extends React.Component{
         this.ifChangeWeek = this.ifChangeWeek.bind(this);
         this.changeWeek= this.changeWeek.bind(this);
         //List
-        this.chooseList = this.chooseList.bind(this);  
-        // input required
-        // this.handleValidation = this.handleValidation.bind(this);
-        //outside
+        this.chooseList = this.chooseList.bind(this);
+        //  
         this.handleClickOutside = this.handleClickOutside.bind(this);
         this.enterClick = this.enterClick.bind(this);
     }
@@ -149,19 +145,18 @@ class WeekLog extends React.Component{
         })
     }
     backToTodayBtn(){
-        // console.log('回到今天');
         this.setState(preState=>{
+            let today = new Date();
             return{
-                year: new Date().getFullYear(), 
-                month: new Date().getMonth(), 
-                date: new Date().getDate(),
+                year: today.getFullYear(), 
+                month: today.getMonth(), 
+                date: today.getDate(),
             }
         })
         this.setWeekNum();
         this.updateEachDayToDosOfWeek();
     }
     calenUpdateTime(year,month,date,week){
-        console.log('calenUpdateTime',year,month,date);
         if(date<1){
             return;
         }if(date>new Date(year,month+1,0).getDate() && date!==999){
@@ -173,15 +168,14 @@ class WeekLog extends React.Component{
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
                 moreInfoBoard.iWeek = null;
-                // console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
                     week = countWeekNum(new Date(`${year}-${month+1}-${date}`.replace(/\s/, 'T')));
-                    // console.log('換算後的週數',week)
+                    // 表示在選擇週數
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = week;
                 }
                 if(date==999){
-                    // console.log('表示在選擇月份')
+                    // 表示在選擇月份
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = null
                 }
@@ -226,8 +220,6 @@ class WeekLog extends React.Component{
                 moreInfoBoard.iDate = 0;
                 moreInfoBoard.list = list;
             }
-            
-            console.log(moreInfoBoard);
             return{
                 ifShowMore:!ifShowMore,
                 note : oldTitle,
@@ -274,7 +266,7 @@ class WeekLog extends React.Component{
                             <select className="selectList" onChange={this.chooseList}>
                                 <option value="">Choose List</option>
                                 {selectList}
-                                <option value={null}>尚未選擇</option>
+                                <option value={null}>無</option>
                             </select>
                         </div>
                     </div>
@@ -310,7 +302,6 @@ class WeekLog extends React.Component{
             }
         }
         if (this.state.moreInfoBoard.innerIndex == null){
-            console.log('adjust week to do');
             this.setState(preState=>{
                 note = preState.note;
                 let {moreInfoBoard, thisWeekToDos, ifShowMore} = preState;
@@ -325,14 +316,12 @@ class WeekLog extends React.Component{
                 .get().then(querySnapshot=>{
                     querySnapshot.forEach(doc=>{
                         if(this.state.moreInfoBoard.iDate!=null){
-                            console.log('111');
                             doc.ref.update(
                                 createAdjustObj()
                             ).then(()=>{
                                 this.props.reRenderLog();
                             })
                         }else{
-                            console.log('222');
                             doc.ref.update(
                                 createAdjustObjWithoutDate()
                             )
@@ -341,7 +330,6 @@ class WeekLog extends React.Component{
                     })
                 });
         }else{
-            console.log('adjust day to do');
             this.setState(preState=>{
                 let {note, moreInfoBoard, eachDayToDos, ifShowMore} = preState;
                 eachDayToDos[moreInfoBoard.index].todos[moreInfoBoard.innerIndex].title = note;
@@ -355,11 +343,9 @@ class WeekLog extends React.Component{
                 ref.update(
                     createAdjustObj()
                 ).then(()=>{
-                    console.log('111');
                     this.props.reRenderLog();
                 });
             }else{
-                console.log('222');
                 ref.update(
                     createAdjustObjWithoutDate()
                 ).then(()=>{
@@ -450,7 +436,6 @@ class WeekLog extends React.Component{
             isDone: false,
             overdue: false           
         }).then(()=>{
-            console.log('addToDB');
             this.props.reRenderLog();
         });
         
@@ -500,26 +485,12 @@ class WeekLog extends React.Component{
             let {year, month, date} = preState;
             month = format(month+1);
             date = format(date);
-            // if(month<10){
-            //     month="0"+(month+1);
-            // }
-            // if(date<10){
-            //     date="0"+date;
-                
-            // }
-            console.log(month,date);
             // 將該週未安排事件放入state
             return {weekNum:countWeekNum(new Date(`${year}-${month}-${date}`))}
         }, ()=>{
             let {year, month, date} = this.state;
             month = format(month+1);
             date = format(date);
-            // if(month<10){
-            //     month="0"+(month+1);
-            // }
-            // if(date<10){
-            //     date="0"+date;
-            // }
             this.getDBdataInState(countWeekNum(new Date(`${year}-${month}-${date}`)),year,0);
         })
     }
@@ -598,7 +569,6 @@ class WeekLog extends React.Component{
 
     toggleEachDayIfInput(eachday){
         // 取得要新增事件的那一天綁定在onClick上
-        // console.log(eachday.currentTarget.getAttribute("data-addindex"));
         let index = eachday.currentTarget.getAttribute("data-addindex");
         this.setState(preState=>{
             let eachDayToDos = preState.eachDayToDos;
@@ -625,7 +595,7 @@ class WeekLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'week'} onKeyDown={this.enterClick}>
                 <span>
-                    <input className="noScheInput" type="text" placeholder="+ ADD WEEK TASK" onChange={this.handleNoteChange} autoFocus/>
+                    <input className={`noScheInput noScheInput_${this.state.theme}`} type="text" placeholder="+ ADD WEEK TASK" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
@@ -639,7 +609,7 @@ class WeekLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'week-day'} onKeyDown={this.enterClick}>
                 <span>
-                    <input className="noScheInput" className="noScheInput" placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
+                    <input className={`noScheInput noScheInput_${this.state.theme}`} placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.turnOffEachDayIfInput}>Cancel</span>
@@ -719,20 +689,11 @@ class WeekLog extends React.Component{
 
 
     componentDidUpdate(preProps){
-        // 避免程式不斷更新，使用preProps
-        // 原本沒有使用時，props.state更新後就進到 componentDidupdate
-        // 然後因為在 componentDidupdate 裡使用 getDBdataInState，state狀態改變後又進入componentDidupdate
-        // 因此程式會一直循環印出console.log("Day Update")，database會爆掉
-        // console.log(preProps);
-        
         if(preProps.reRender !== this.props.reRender){
-            // this.updateEachDayToDosOfWeek();
-            console.log("Week Update1");
             this.setWeekNum();
             this.updateEachDayToDosOfWeek();
         }
         if(preProps.btToday !== this.props.btToday){
-            console.log("Week Update2");
             this.backToTodayBtn();
         }
     }
@@ -774,7 +735,7 @@ class WeekLog extends React.Component{
             <LogTitle data={data}/>
             <ThisWeekToDos data={data}/>
             <EachDayToDos data={data}/>
-            <div className="wbgc"></div>
+            <div className={`wbgc wbgc_${theme}`}></div>
             {/* 單一事件控制面板 */}
             {this.state.ifShowMore? this.showMoreInfo(): ''}
         </div>;

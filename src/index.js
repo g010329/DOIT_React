@@ -21,10 +21,21 @@ class App extends React.Component {
         this.handleSignUp = this.handleSignUp.bind(this);
         this.toggleSignIn = this.toggleSignIn.bind(this);
         this.onAuthStateChanged = this.onAuthStateChanged.bind(this);
+        this.changeTheme = this.changeTheme.bind(this);
     }
-    changeTheme(theme){
-        this.setState({
-            theme:theme
+    changeTheme(){
+        this.setState(preState=>{
+            let newTheme;
+            if (preState.theme === 'dk'){
+                console.log('lt');
+                newTheme = 'lt';
+            }else if(preState.theme === 'lt'){
+                console.log('dk');
+                newTheme = 'dk';
+            }
+            return{
+                theme:newTheme
+            }
         })
     }
     toggleSignIn(email,pass) {
@@ -90,19 +101,14 @@ class App extends React.Component {
                             email:this.state.email,
                             uid:user.uid
                         })
-                    console.log('第一次sign in,登入狀態');
-                    // let ref = db.collection('members').doc(`${user.uid}`);
-                    // ref.get().then(doc => {
-                    //     // currentUserData = doc.data();
-                    // }); 
-                    // state狀態的改變在這裡做
+                    // 第一次sign in,登入狀態
                     this.setState({
                         isLogin: true,
                         uid: user.uid,
                         email: user.email
                     })
                 }else{ 
-                    console.log('其他次sign in,登入狀態');
+                    //其他次sign in,登入狀態
                     let ref = db.collection('members').doc(`${user.uid}`);
                     ref.get().then(doc => {
                         // state狀態的改變在這裡做
@@ -114,7 +120,7 @@ class App extends React.Component {
                     }); ;
                 }
             } else {
-                console.log('登出狀態');
+                //登出狀態
                 this.setState(preState=>{
                     // state狀態的改變在這裡做
                     return{

@@ -1,13 +1,165 @@
 *{
-    
-    /* -webkit-box-sizing: border-box; */
-       /* -moz-box-sizing: border-box; */
-            box-sizing: border-box;
-    /* 網站使用色號 */
-    background-color: #0F4C81 #658DC6 #B5C7D3 #84898C;
-    background-color: #A58D7F #F5B895 #F3D5AD;
+    box-sizing: border-box;
     font-family: Roboto,sans-serif;
 }
+/* #F0E5DE #ABD0CE #7C7877 #D9D4CF #b6b5b5*/
+/* theme - light mode */
+
+.header_lt{
+    background-color: #FAFAFA;
+    color: #7C7877;
+    box-shadow: 0px 2px 5px #b6b5b5;
+}
+.dashboard_lt{
+    background-color: #FAFAFA;
+}
+.logout_lt{
+    background-color: #F0E5DE;
+    box-shadow: 0px 2px 5px #b6b5b5;
+    color: #7c7877;
+}
+.theme_lt{
+    /* background-color: #F0E5DE; */
+    box-shadow: 0px 2px 5px #b6b5b5;
+    color: #7c7877;
+}
+.left_board_lt{
+    color: #7C7877;
+}
+.right_board_lt{
+    color: #7C7877;
+}
+
+.bgc_lt{
+    background-color:#fafafa;
+}
+.weekday_lt{
+    background-color: #D9D4CF;
+}
+.icon_hover_span_lt{
+    color: #D9D4CF;
+}
+.icon_hover_span_lt :hover{
+    color: #7C7877;
+}
+.mf2_lt{
+    color: #fafafa;
+}
+.mf3_lt{
+    color: #D9D4CF;
+}
+.mf4_lt{
+    color: #F0E5DE;
+}
+.w_add_bt_lt{
+    color: #D9D4CF;
+}
+.week_day_today_lt{
+    border: solid 2px #b4b2b2;
+    background-color:  #D9D4CF;
+}
+.w_add_bt_lt:hover{
+    background-color: #858383;
+}
+.m_bt_lt{
+    color: #777575;
+    background-color: #ABD0CE;
+}
+.m_day_of_week_lt{
+    color: #d4cec8;
+}
+.m_add_bt_lt{
+    color: #D9D4CF;
+}
+.m_add_bt_lt:hover{
+    background-color:  #D9D4CF;
+    color: #7C7877;
+}
+.todayBgc_lt{
+    background-color: #ebe4de;
+}
+.noScheInput_lt{
+    color: #7C7877;
+}
+.week_day_title_lt{
+    color: #aaa9a9;
+}
+.today_board_lt{
+    background-color: #F0E5DE;
+    box-shadow: 0px 0px 12px #b6b5b5;
+}
+.hint_lt{
+    color: #a7a8a8;
+}
+.overdue_board_lt{
+    box-shadow: 0px 0px 12px #b6b5b5;
+    background-color: #fafafa;
+}
+.month_title_lt{
+    border-bottom: solid 1px #D9D4CF;
+}
+.weekBorder_lt{
+    border-bottom: solid 1px #D9D4CF;
+}
+.tnb1_lt{
+    color:  #7C7877;
+    background-color: #F0E5DE;
+    box-shadow: 0px 0px 3px #7C7877;
+}
+.tnb1-2_lt{
+    color:  #F0E5DE;
+    background-color: #7C7877;
+    box-shadow: 0px 0px 3px #7C7877;
+}
+.tnb2_lt{
+    color:  #7C7877;
+    box-shadow: 0 0 3px #7C7877;
+    background-color: #D9D4CF;
+    margin: 0px 55px;
+}
+.sidebar_lt{
+    background-color: rgb(204, 202, 202);
+    box-shadow: inset 0 0 5px #818181;
+    color: #585858;
+}
+.sidebar_lt a{
+    color: rgb(54, 53, 53);
+}
+.sidebar_li_lt:first-child{
+    color: #383838;
+}
+.sidebar_li_lt:hover{
+    background-color: rgb(168, 167, 167);
+}
+.wbgc_lt{
+    background-color: #FAFAFA;
+}
+
+.btDash_lt{
+    color:  #7C7877;
+    box-shadow: 0 0 0 .5px #cac9c9;
+    background-color: #D9D4CF;
+}
+.listTN_lt{
+    color: #7C7877;
+}
+.listIcon_lt{
+    color: #7C7877;
+}
+.listInfo_lt{
+    background-color: #7C7877;
+    box-shadow: 0px 0px 10px #6b6867;
+    color: #c4c3c3;
+}
+.list_lt{
+    background-color: #F0E5DE;
+    box-shadow: 0px 0px 12px #6b6867;
+}
+.listLi_lt{
+    color: #7C7877;
+}
+/* ----------------- */
+
 /* theme - dark mode */
 .header_dk{
     background-color: #272727;
@@ -21,6 +173,9 @@
     background-color: #e8e8e8;
     box-shadow: 0px 0px 15px #0e0d0d;
     color: #272727;
+}
+.weekday_dk{
+    background-color:  #1F1F1F;
 }
 .left_board_dk{
     color: #d3d0d0;
@@ -47,6 +202,10 @@
 }
 .mf4_dk{
     color: #383838;
+}
+.week_day_today_dk{
+    border: solid 1px #d8d5d5;
+    background-color:  #1F1F1F;
 }
 .w_add_bt_dk{
     color: #1F1F1F;
@@ -79,6 +238,14 @@
     background-color: #383838;
     box-shadow: 0px 0px 12px #181818;
 }
+.theme_dk{
+    background-color: #383838;
+    box-shadow: 0px 2px 5px #2e2e2e;
+    color: #7c7877;
+}
+.weekBorder_dk{
+    border-bottom: solid 1px #494949;
+}
 .hint_dk{
     color: #a7a8a8;
 }
@@ -105,6 +272,9 @@
     background-color: #222222;
     margin: 0px 55px;
 }
+.noScheInput_dk{
+    color: #e8e8e8;
+}
 .sidebar_dk{
     background-color: #858383;
     box-shadow: inset 0 0 5px #333333;
@@ -118,6 +288,32 @@
 }
 .sidebar_li_dk:hover{
     background-color: rgb(204, 202, 202);
+}
+.wbgc_dk{
+    background-color: #2C2C2C;
+}
+.btDash_dk{
+    color:  #bebcbc;
+    box-shadow: 0 0 0 .5px #e8e8e8;
+    background-color: #222222;
+}
+.listTN_dk{
+    color: #eceaea;
+}
+.listIcon_dk{
+    color: #1f1e1e;
+}
+.listInfo_dk{
+    background-color: rgb(31, 30, 30);
+    box-shadow: 0px 0px 10px #050505;
+    color: #c4c3c3;
+}
+.list_dk{
+    background-color: #525151;
+    box-shadow: 0px 0px 12px #181818;
+}
+.listLi_dk{
+    color: #e8e8e8;
 }
 /* ----------------- */
 
@@ -150,12 +346,13 @@
     display:inline-block;
     letter-spacing: 2px;
     font-size: 2rem;
-    color: #eceaea;
+    
     background-color: transparent;
     border: 0px;
     text-align: center;
     width: 60%;
 }
+
 @media(min-width:600px){
     .listTitleName{
         width: 70%;
@@ -177,31 +374,26 @@
     margin-top: 10px;
     width: 600px;
     padding: 5px 20px;
-    background-color: rgb(31, 30, 30);
-    box-shadow: 0px 0px 10px #050505;
-    color: #c4c3c3;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
 }
+
 .listInfo_div{
     text-align: center;
     width: 33%;
 }
 .list{
     margin-top: 10px;
-    /* background-color: #e8e8e8; */
-    background-color: #525151;
-    box-shadow: 0px 0px 12px #181818;
-    /* box-shadow: 0px 0px 10px #6e6e6e; */
     margin-bottom: 10px;
     border-radius: 10px;
     padding: 20px;
     width: 600px;
     min-width:300px;
 }
+
 .list2{
     opacity: .9;
     display: flex;
@@ -273,17 +465,14 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 5px;
-    color: #e8e8e8;
 }
+
 .doneCircle{
     font-size: 5px;
     margin-right: 10px;
     color: #747474;
 }
 .btDashboardbtn{
-    color:  #bebcbc;
-    box-shadow: 0 0 0 .5px #e8e8e8;
-    background-color: #222222;
     letter-spacing: 1px;
     margin-top: 20px;
     font-weight: 900;
@@ -291,13 +480,12 @@
     line-height: 25px;
     cursor: pointer;
     width: 120px;
-    /* background-color: #fff; */
     border-radius: 5px;
     text-align: center;
     line-height: 1.5rem;
-    /* box-shadow: 0px 0px 15px #111111; */
     transition: ease all .5s;
 }
+
 .btDashboardbtn:hover{
     background-color: #e8e8e8;
     color:#2c2c2c
@@ -519,10 +707,6 @@ textarea {
 
 .info_titleInput{
     line-height: 2.5rem;
-    /* background-color: #F3D5AD; */
-    /* outline: none; */
-    /* border: 0px; */
-    /* width: 260px; */
     font-size: 2rem;
 }
 .info{
@@ -530,9 +714,6 @@ textarea {
 }
 /* ------ */
 /* 小日曆 */
-*{
-    /* border: solid 1px rgb(114, 112, 112); */
-}
 /* 改變月 */
 .calenBoard button{
     border: 0;
@@ -661,14 +842,11 @@ body{
 /* 上方 header */
 header{
     position: relative;
-    /* background-color: #272727; */
     height: 48px;
     line-height: 48px;
     font-size: 25px;
-    /* color: #e8e8e8; */
     display: flex;
     justify-content: space-between;
-    /* box-shadow: 0px 3px 5px #181818; */
     z-index: 99999;
 }
 .icon_hover_span{
@@ -724,7 +902,6 @@ header{
     margin-right: 10px;
 } */
 .logout{
-    
     font-weight: 700;
     letter-spacing: 1px;
     font-size: 10px;
@@ -1096,20 +1273,15 @@ main{
     text-align: center;
 }
 
-.weekday_dk{
-    background-color:  #1F1F1F;
-}
+
 .week_day{
     line-height: 2rem;
     border-radius: 5px;
     margin: 3px 0px 10px 0px;
     padding: 5px 5px 5px 7px;
 }
-.week_day_today{
-    border: solid 1px #d8d5d5;
-    background-color:  #1F1F1F;
 
-}
+
 .w_add_bt{
     /* display: inline-block; */
     margin-left: -3px;
@@ -1149,10 +1321,9 @@ main{
     color: #c1c1c2;
 }
 .weekBorder{
-    border-bottom: solid 1px #494949;
     margin-bottom: 8px;
-
 }
+
 .month_title{
     display: flex;
     justify-content: space-between;
@@ -1293,8 +1464,8 @@ main{
 .noScheInput{
     background-color: transparent;
     border: 0px;
-    color: #e8e8e8;
 }
+
 .checkbox{
     margin-right:10px
 }
@@ -1315,8 +1486,8 @@ main{
     bottom: 0;
     right: 0;
     left: 0;
-    background-color: #2C2C2C;
 }
+
 
 
 .darktd{

@@ -89,7 +89,6 @@ class List extends React.Component{
         })
     }
     toggleShowPieChart(){
-        // console.log('pie!!');
         this.setState(preState=>{
             let showPieChart = preState.showPieChart;
             return{
@@ -103,7 +102,6 @@ class List extends React.Component{
     }
     componentDidUpdate(preProps){
         if(preProps.showWhichList !== this.props.showWhichList){
-            // console.log('list Update');
             this.getListDBdata();
         }
         
@@ -118,7 +116,6 @@ class List extends React.Component{
         ref.collection("lists").where("title","==",this.props.showWhichList).get().then(querySnapshot=>{
             querySnapshot.forEach(doc=>{
                 this.setState(preState=>{
-                    // console.log(doc.data());
                     let createdAt = preState.createdAt;
                     createdAt.year = doc.data().createdAt.toDate().getYear()+1900;
                     createdAt.month = doc.data().createdAt.toDate().getMonth();
@@ -136,14 +133,12 @@ class List extends React.Component{
         // 搜尋todos:done
         ref.collection("todos").where("list","==",this.props.showWhichList).where("isDone","==",true).get().then(querySnapshot=>{
             querySnapshot.forEach(doc=>{
-                // console.log('搜尋todos:done',doc.data());
                 doneList.push({
                     title: doc.data().title,
                     timer: doc.data().timer
                 });
                 pieChartData.push([doc.data().title, parseFloat(doc.data().timer)]);
             })
-            // console.log('done-pieChartData',pieChartData)
             this.setState({
                 doneList:doneList,
                 pieChartData: pieChartData
@@ -152,14 +147,12 @@ class List extends React.Component{
         // 搜尋todos:undone
         ref.collection("todos").where("list","==",this.props.showWhichList).where("isDone","==",false).get().then(querySnapshot=>{
             querySnapshot.forEach(doc=>{
-                // console.log('todos:undone',doc.data());
                 undoneList.push({
                     title: doc.data().title,
                     timer: doc.data().timer
                 });
                 pieChartData.push([doc.data().title, parseFloat(doc.data().timer)]);
             })
-            // console.log('undone-pieChartData',this.state.pieChartData);
             this.setState({
                 undoneList:undoneList,
                 pieChartData: pieChartData
@@ -182,14 +175,14 @@ class List extends React.Component{
             doneTotalTime+=parseFloat(done.timer);
         })
         let createdAt = this.state.createdAt;
-        let doneList = this.state.doneList.map((doneItem,index)=><div className="listLi" key={index}>
+        let doneList = this.state.doneList.map((doneItem,index)=><div className={`listLi listLi_${theme}`} key={index}>
                 <div>
                     <span className="doneCircle"><i className="fas fa-circle"/></span>
                     <span>{doneItem.title}</span>
                 </div>
                 <div>{doneItem.timer}hr</div>
             </div>)
-        let undoneList = this.state.undoneList.map((undoneItem,index)=><div className="listLi" key={index}>
+        let undoneList = this.state.undoneList.map((undoneItem,index)=><div className={`listLi listLi_${theme}`} key={index}>
                 <div>
                     <span className="doneCircle"><i className="far fa-circle"/></span>
                     <span>{undoneItem.title}</span>
@@ -242,14 +235,13 @@ class List extends React.Component{
             </div>
         let listBoard = <div className="listBoard">
                 <div className="listTitle">
-                    {/* <span className="listTitleName">{this.props.showWhichList}</span> */}
-                    <textarea ref={this.testHeight} rows="1" onInput={this.autoHeight} className="listTitleName" defaultValue={this.state.listTitle} onChange={this.handleNoteChange}/>
+                    <textarea ref={this.testHeight} rows="1" onInput={this.autoHeight} className={`listTitleName listTN_${theme}`} defaultValue={this.state.listTitle} onChange={this.handleNoteChange}/>
                     <span className="listTitleIcon" data-enter="titleName" onKeyDown={this.enterClick}>
-                        <span ref={this.adjsutLis} onClick={this.adjustListTitleInDB}><i className="fas fa-pen"></i></span>
-                        <span onClick={this.deleteListInDB}><i className="fas fa-trash"></i></span>
+                        <span className={`listIcon_${theme}`} ref={this.adjsutLis} onClick={this.adjustListTitleInDB}><i className="fas fa-pen"></i></span>
+                        <span className={`listIcon_${theme}`} onClick={this.deleteListInDB}><i className="fas fa-trash"></i></span>
                     </span>
                 </div>
-                <div className="listInfo">
+                <div className={`listInfo listInfo_${theme}`}>
                     <div className="listInfo_div">
                         <div>Created At</div>
                         <div>{createdAt.year}-{createdAt.month+1}-{createdAt.date}</div>
@@ -263,7 +255,7 @@ class List extends React.Component{
                         <div>???</div>
                     </div>
                 </div>
-                <div className="list">
+                <div className={`list list_${theme}`}>
                     <div className="doneListTop">
                         <div>
                             <span className="doneListTitle">TODO LIST</span>
@@ -279,7 +271,7 @@ class List extends React.Component{
                     {this.state.showMoreTodoList?todoListContent:''}
                     {/* {doneList} */}
                 </div>
-                <div className="list">
+                <div className={`list list_${theme}`}>
                     <div className="doneListTop">
                         <div>
                             <span className="doneListTitle">DONE LIST</span>
@@ -301,7 +293,7 @@ class List extends React.Component{
             </div>
         return <div>
             <Link to='/dashboard'>
-                <div className="btDashboardbtn">
+                <div className={`btDashboardbtn btDash_${theme}`}>
                     <span className="btDashboardbtn1"><i className="fas fa-caret-left"></i></span>
                     <span className="btDashboardbtn2">DASHBOARD</span>
                 </div>

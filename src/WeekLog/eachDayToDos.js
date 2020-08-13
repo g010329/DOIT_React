@@ -6,7 +6,7 @@ class EachDayToDos extends React.Component{
         let {toggleEachDayIfInput, showEachDayInput, toggleIfShowMore, deleteEachDay} = data.method; 
         let dayName = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
         let renderEachDayTodos = eachDayToDos.map((eachday,index)=>{
-            return <div className={eachday.month== new Date().getMonth()&&eachday.date==new Date().getDate()?"week_day week_day_today":"week_day weekday_dk"} key={index}>
+            return <div className={eachday.month== new Date().getMonth()&&eachday.date==new Date().getDate()?`week_day week_day_today_${theme}`:`week_day weekday_${theme}`} key={index}>
                 <div className="week_day_a">
                     <span className={`week_day_title week_day_title_${theme}`}>{eachday.month+1}月{eachday.date}日</span>
                     <span className={`week_day_title week_day_title_${theme}`}>{dayName[index]}</span>

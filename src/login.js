@@ -11,7 +11,7 @@ class Login extends React.Component{
         this.state = {
             email: '',
             password: '',
-            isloading:false
+            isloading: false
         }
         this.handleMailKeyInValue = this.handleMailKeyInValue.bind(this);
         this.handlePasswordKeyInValue = this.handlePasswordKeyInValue.bind(this);
@@ -38,8 +38,6 @@ class Login extends React.Component{
         }
     }
     
-        
-    
     render(){
         let loader =<div className="loader">
             <img src="./loader-1s-200px.svg"/>
@@ -49,8 +47,8 @@ class Login extends React.Component{
                 <div id="start" ref={this.loginBoard} className="login_board" data-type={'login'} onKeyDown={this.enterLogin}>
                     <div className="login_title">Log in</div>
                     <div>
-                        <div className="login_account"><input type="email" placeholder="Email Address" onChange={this.handleMailKeyInValue}></input></div>
-                        <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue}></input></div>
+                        <div className="login_account"><input type="email" placeholder="Email Address" onChange={this.handleMailKeyInValue} defaultValue="test@gmail.com"></input></div>
+                        <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue} defaultValue="test123"></input></div>
                         <div ref={this.inputLogin} className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email,this.state.password);this.setState({isloading:true})}}>LOG IN</div>
                         
                         <div className="forget">
@@ -84,11 +82,9 @@ class Login extends React.Component{
                     
                 </div>
                 <span className="header_member">
-                    {/* <div className="login">LOGIN</div> */}
                 </span>   
             </header>
             <main >
-                {/* 首頁試做 */}
                 <div className="homepage">
                     <div className="aPart">
                         <div className="hpIntro">
@@ -99,7 +95,6 @@ class Login extends React.Component{
                                 <div>Task management for busy people</div>
                                 <div>Free up your mental space</div>
                                 <div>Time Tracking, Make you More Productive</div>
-                                <div>DOIT goes wherever tou go. It works just as well on your mobile as it does on desktop.</div>
                             </div>
                             <Link
                                 activeClass="active"

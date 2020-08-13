@@ -13,19 +13,17 @@ class DayLog extends React.Component{
         this.testHeight = React.createRef();
         this.inputDay = React.createRef();
         this.saveMoreInfo = React.createRef();
+        let today = new Date();
         this.state={
-            // today:{y:new Date().getFullYear(),m:new Date().getMonth(),d:new Date().getDate()},
-            year: new Date().getFullYear(), //2020
-            month: new Date().getMonth(), //7
-            date: new Date().getDate(), //3
+            year: today.getFullYear(), 
+            month: today.getMonth(), 
+            date: today.getDate(), 
             weekNum: null,
             thisDayToDos:[
-                // {"title":1,"index":1,"ifDone":false}
             ],
             ifInput: false,
             ifShowMore: false,
             note:"",
-            // errors: {},
             timer:0,
             moreInfoBoard:{
                 oldTitle:'',
@@ -58,6 +56,8 @@ class DayLog extends React.Component{
         this.toggleIfShowMore = this.toggleIfShowMore.bind(this);
         this.showMoreInfo = this.showMoreInfo.bind(this);
         this.adjustTodo = this.adjustTodo.bind(this);
+        this.timer = this.timer.bind(this); 
+        this.chooseList = this.chooseList.bind(this); 
         // overdue
         this.getOverdueFromDB = this.getOverdueFromDB.bind(this);
         // today btn
@@ -68,11 +68,8 @@ class DayLog extends React.Component{
         //date calen
         this.setWeekNum = this.setWeekNum.bind(this);
         this.ifChangeDate = this.ifChangeDate.bind(this);
-        this.changeDate= this.changeDate.bind(this);
-        //timer
-        this.timer = this.timer.bind(this); 
-        this.chooseList = this.chooseList.bind(this);  
-        //outside
+        this.changeDate= this.changeDate.bind(this); 
+        //other
         this.handleClickOutside = this.handleClickOutside.bind(this);
         this.autoHeight = this.autoHeight.bind(this);
         this.enterClick = this.enterClick.bind(this);
@@ -81,8 +78,6 @@ class DayLog extends React.Component{
         document.removeEventListener('click', this.handleClickOutside, false);
     }
     handleClickOutside(event) {
-        // 點擊sidebar外部關閉sidebar
-        // console.log(event.target.className);
         let cN = event.target.classList;
         if(cN.contains('popUp')){
         }else{
@@ -127,7 +122,6 @@ class DayLog extends React.Component{
     }
     ifChangeDate(){
         this.setState(preState=>{
-            console.log('更換日')
             return{
                 ifChangeDate: !preState.ifChangeDate
             }
@@ -135,7 +129,6 @@ class DayLog extends React.Component{
     }
 
     calenUpdateTime(year,month,date,week){
-        console.log('calenUpdateTime',year,month,date);
         if(date<1){
             return;
         }if(date>new Date(year,month+1,0).getDate() && date!==999){
@@ -147,19 +140,16 @@ class DayLog extends React.Component{
                 moreInfoBoard.iMonth = month;
                 moreInfoBoard.iDate = date;
                 moreInfoBoard.iWeek = null;
-                console.log(week,'999 表示點選的是週曆'); 
                 if(week==999){
+                    // 999 表示點選的是週曆
                     week = countWeekNum(new Date(`${year}-${month+1}-${date}`));
-                    console.log('換算後的週數',week)
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = week;
                 }else if(date==999){
-                    console.log('表示在選擇月份')
+                    // 表示在選擇月份
                     moreInfoBoard.iDate = 0;
                     moreInfoBoard.iWeek = null
                 }
-                
-                console.log('calenUpdateTime',moreInfoBoard);
                 return{
                     moreInfoBoard:moreInfoBoard,
                     calenIfShow:false
@@ -169,15 +159,13 @@ class DayLog extends React.Component{
     }
     showCalen(){
         this.setState(preState=>{
-            let calenIfShow = !preState.calenIfShow;
             return{
-                calenIfShow: calenIfShow
+                calenIfShow: !preState.calenIfShow
             }
         })
     }
 
     backToTodayBtn(){
-        // console.log('回到今天');
         this.setState({
             year: new Date().getFullYear(), 
             month: new Date().getMonth(), 
@@ -233,7 +221,6 @@ class DayLog extends React.Component{
         let id = e.currentTarget.getAttribute("data-id");
         let list = e.currentTarget.getAttribute("data-list");
         let timer = e.currentTarget.getAttribute("data-timer");
-        console.log('list',list);
         if(type=='overdue'){
             this.setState(preState=>{
                 let {ifShowMore, moreInfoBoard} = preState;
@@ -246,7 +233,6 @@ class DayLog extends React.Component{
                 moreInfoBoard.id = id;
                 moreInfoBoard.timer = timer;
                 moreInfoBoard.list = list;
-                // console.log('toggleIfShowMore',moreInfoBoard);
                 return{
                     ifShowMore: !ifShowMore,
                     note: oldTitle,
@@ -266,7 +252,6 @@ class DayLog extends React.Component{
                 moreInfoBoard.iWeek = null;
                 moreInfoBoard.timer = timer;
                 moreInfoBoard.list = list;
-                // console.log('toggleIfShowMore',moreInfoBoard);
                 return{
                     ifShowMore: !ifShowMore,
                     note: oldTitle,
@@ -278,7 +263,6 @@ class DayLog extends React.Component{
     }
     chooseList(e){
         let list = e.target.value;
-        console.log(e.target.value);
         this.setState(preState=>{
             let moreInfoBoard = preState.moreInfoBoard;
             moreInfoBoard.list = list;
@@ -293,9 +277,7 @@ class DayLog extends React.Component{
         x.style.height = x.scrollHeight + "px";
     }
     showMoreInfo(){
-        console.log('listItems',this.props.listItems);
         let selectList = this.props.listItems.map((list,index)=><option value={list.title} data-list={list.title} key={index}>{list.title}</option>)
-        console.log('showMoreInfo',this.state.moreInfoBoard);
         let showScheTime1 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}</span>
         let showScheTime2 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-week{this.state.moreInfoBoard.iWeek}</span>
         let showScheTime3 = <span className="littleCal popUp">{this.state.moreInfoBoard.iYear}-{this.state.moreInfoBoard.iMonth+1}-{this.state.moreInfoBoard.iDate}</span>
@@ -327,7 +309,7 @@ class DayLog extends React.Component{
                                 <select className="selectList" onChange={this.chooseList}>
                                     <option value="">Choose List</option>
                                     {selectList}
-                                    <option value={null}>尚未選擇</option>
+                                    <option value={null}>無</option>
                                 </select>
                             </div>
                         </div>
@@ -354,7 +336,6 @@ class DayLog extends React.Component{
     adjustTodo(){
         this.setState(preState=>{
             let {moreInfoBoard, thisDayToDos, ifShowMore} = preState;
-            console.log(moreInfoBoard);
             if(moreInfoBoard.iDate!=this.state.date){
                 thisDayToDos.splice(moreInfoBoard.index,1);
             }
@@ -365,7 +346,6 @@ class DayLog extends React.Component{
             }
         });
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
-        console.log('adjust todo',this.state.timer);
         ref.doc(this.state.moreInfoBoard.id)
             .update({
                 title: this.state.note,
@@ -377,7 +357,6 @@ class DayLog extends React.Component{
                 list: this.state.moreInfoBoard.list
                 
             }).then(()=>{
-                console.log('update成功');
                 this.getDBdataInState(this.state.month,this.state.year,this.state.date);
                 this.getOverdueFromDB();
                 this.props.reRenderLog();
@@ -386,7 +365,6 @@ class DayLog extends React.Component{
 
 
     deleteInDB(bt){
-        console.log('delete');
         let deleteTitle = bt.currentTarget.getAttribute("data-title");
         let deleteIndex = bt.currentTarget.getAttribute("data-delete-index");
         let dataId = bt.currentTarget.getAttribute("data-id");
@@ -394,7 +372,6 @@ class DayLog extends React.Component{
         let ref = db.collection("members").doc(this.props.uid).collection("todos");
         if(dataType == 'overdue'){
             ref.doc(dataId).update({isDone:true}).then(()=>{
-                console.log('overdue刪除成功');
                 this.props.reRenderLog();
                 this.getDBdataInState(this.state.month,this.state.year,this.state.date);
                 this.setState(preState=>{
@@ -406,13 +383,10 @@ class DayLog extends React.Component{
                 });
             })
         }else{
-            // console.log('day');
             ref.where("month","==",this.state.month).where("year","==",this.state.year).where("date","==",this.state.date).where("title","==",deleteTitle)
             .get().then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
                     doc.ref.update({isDone:true}).then(()=>{
-                    // doc.ref.delete().then(()=>{
-                        console.log('日刪除成功');
                         this.props.reRenderLog();
                         this.getOverdueFromDB();
                         // 要在db刪除後再setState，否則會抓到db更新前的資料去setState
@@ -454,7 +428,6 @@ class DayLog extends React.Component{
         // 因此程式會一直循環印出console.log("Day Update")，database會爆掉
 
         if(preProps.reRender !== this.props.reRender){
-            console.log("Day Update");
             this.getDBdataInState(this.state.month,this.state.year,this.state.date);
             this.getOverdueFromDB();
         }
@@ -486,13 +459,11 @@ class DayLog extends React.Component{
 
     addThisDayToDos(){
         if(handleValidation(this.state.note)==true){
-            // alert("Form submitted");
             this.setState(preState=>{
                 let {thisDayToDos, ifInput, year, month, date} = preState;
                 let thing = preState.note;
                 this.addToDB(thing,year,month,date);
                 thisDayToDos.push({"title":thing,"index":thisDayToDos.length,"ifDone":false});
-                // console.log(list);
                 this.props.reRenderLog();
                 return{
                     thisDayToDos:thisDayToDos,
@@ -521,14 +492,14 @@ class DayLog extends React.Component{
             this.inputDay.current.click(); //觸動按鈕的點擊
         } 
         if (event.keyCode==13 && btntype=='info'){
-            this.saveMoreInfo.current.click();//觸動按鈕的點擊
+            this.saveMoreInfo.current.click(); //觸動按鈕的點擊
         } 
     }
     showInput(){
         return(
             <div className="month_todo" data-enter={'day'} onKeyDown={this.enterClick}>
                 <span>
-                    <input className="noScheInput" type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus required="required"/>
+                    <input className={`noScheInput noScheInput_${this.state.theme}`} type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus required="required"/>
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>

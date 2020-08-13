@@ -5,11 +5,12 @@ import 'firebase/database';
 class ChangeWeekCal extends React.Component{
     constructor(props){
         super(props);
+        let today = new Date();
         this.state={
-            calFirstDateDay: new Date(`${new Date().getFullYear()}-${new Date().getMonth()+1}-1`).getDay(), //1~7
-            calDatesOfMonth: new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate(), //28~31
-            wCalYear: new Date().getFullYear(),
-            wCalMonth: new Date().getMonth()
+            calFirstDateDay: new Date(`${today.getFullYear()}-${today.getMonth()+1}-1`).getDay(), //1~7
+            calDatesOfMonth: new Date(today.getFullYear(),today.getMonth()+1,0).getDate(), //28~31
+            wCalYear: today.getFullYear(),
+            wCalMonth: today.getMonth()
             
         };
         this.calWeekForward = this.calWeekForward.bind(this);
@@ -17,8 +18,7 @@ class ChangeWeekCal extends React.Component{
     }
     calWeekForward(){
         this.setState(preState=>{
-            let wCalMonth = preState.wCalMonth;
-            let wCalYear = preState.wCalYear;
+            let {wCalMonth, wCalYear} = preState;
             if (wCalMonth<11){
                 return{
                     wCalMonth: wCalMonth+1,
@@ -38,8 +38,7 @@ class ChangeWeekCal extends React.Component{
     }
     calWeekBackward(){
         this.setState(preState=>{
-            let wCalMonth = preState.wCalMonth;
-            let wCalYear = preState.wCalYear;
+            let {wCalMonth, wCalYear} = preState;
             if(wCalMonth==0){
                 return{
                     wCalYear: wCalYear-1,
@@ -59,12 +58,10 @@ class ChangeWeekCal extends React.Component{
 
 
     render(){
-        console.log(this.state.wCalMonth);
         let day = this.state.calFirstDateDay-1;
         if(day==-1){
             day=6;
         }
-        console.log(day);
         let calDatesOfMonth = this.state.calDatesOfMonth;
         let eachMonth = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         let wCalen = <div className="calentype popUp">
@@ -87,7 +84,6 @@ class ChangeWeekCal extends React.Component{
                         </tr>
                     </thead>
                     <tbody>
-                        {/* <tr>{this.week}</tr> */}
                         <tr>
                             <td className="weektd" onClick={()=>this.props.changeWeek(this.state.wCalYear,this.state.wCalMonth,1-day,999)}>{(1-day)>0? 1-day : ''}</td>
                             <td className="darktd popUp">{(2-day)>0? 2-day : ''}</td>

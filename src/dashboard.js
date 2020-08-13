@@ -22,14 +22,10 @@ class Dashboard extends React.Component{
             ifInput: false,
             showWhichList:'',
             listItems: [
-                // {title:'個人專案'},
-                // {title:'英文學習'},
-                // {title:'課程影片'}
             ],
             note:'',
             theme: this.props.theme,
             showWhichLog: 'week'
-
         };
         this.toggleNav = this.toggleNav.bind(this);
         this.getDate = this.toggleNav.bind(this);
@@ -47,22 +43,21 @@ class Dashboard extends React.Component{
         this.handleClickOutside = this.handleClickOutside.bind(this);
         this.toggleBtn = this.toggleBtn.bind(this);
     }
+
     handleNoteChange(e){
         this.setState({
             note:e.currentTarget.value
         });
-        // console.log(e.currentTarget.value);
     }
+
     reRenderLog(){
         this.setState(preState=>{
-            let reRender = preState.reRender;
-            let newRe = !reRender;
-            // console.log('重新render',newRe);
             return{
-                reRender: newRe
+                reRender: !preState.reRender
             }
         })
     }
+
     getListFromDB(){
         let ref = db.collection("members").doc(this.props.uid).collection("lists");
         let listItems = [];
@@ -71,33 +66,34 @@ class Dashboard extends React.Component{
                 listItems.push({
                     title: doc.data().title
                 });
-                // console.log(doc.data());
             });
             this.setState({listItems:listItems});
         })
     }
 
     toggleBackToToday(){
-        // console.log('toggleBackToToday');
         this.setState(preState=>{
-            let btToday = preState.btToday;
             return{
-                btToday: !btToday
+                btToday: !preState.btToday
             }
         })
+    }
+    componentDidUpdate(){
+        console.log(this.state.theme);
     }
     componentDidMount(){
         this.getListFromDB();
         document.addEventListener('click', this.handleClickOutside, false);
     }
+
     componentWillUnmount() {
         document.removeEventListener('click', this.handleClickOutside, false);
     }
-    
+
     handleClickOutside(event) {
         // 點擊sidebar外部關閉sidebar
         let sider = document.getElementById("sidebar");
-        if(event.target.className=='fas fa-bars'||event.target.className=='top_nav_logo'){
+        if(event.target.className=='fas fa-bars'|| event.target.className=='top_nav_logo'){
             return;
         }else if(this.node.contains(event.target)){
             return;
@@ -108,7 +104,8 @@ class Dashboard extends React.Component{
             })
         }
     }
-    toggleNav(e){
+
+    toggleNav(){
         let sider = document.getElementById("sidebar");
         if(sider.style.display == "block"){
             sider.style.display = "none";
@@ -119,6 +116,7 @@ class Dashboard extends React.Component{
             sider.style.display = "block";
         }
     }
+
     toggleBtn(e){
         let {theme} = this.state;
         let logBtn = e.currentTarget.getAttribute("data-btn");
@@ -135,6 +133,7 @@ class Dashboard extends React.Component{
             this.wbtn.current.className = `top_nav_btn tnb1-2_${theme}`;
         }
     }
+
     addListToDB(){
         this.setState(preState=>{
             let listItems = preState.listItems;
@@ -154,7 +153,6 @@ class Dashboard extends React.Component{
         this.setState({
             ifInput: true
         });
-        // console.log(this.state.ifInput);
     }
     enterClick(){
         if (event.keyCode==13){
@@ -164,10 +162,8 @@ class Dashboard extends React.Component{
     showList(e){
         this.setState({
             showWhichList: e.currentTarget.getAttribute("data-listtitle"),
-
         })
         this.toggleNav();
-        // console.log(e.currentTarget.getAttribute("data-listtitle"));
     }
     render(){
         let theme = this.state.theme;
@@ -181,6 +177,7 @@ class Dashboard extends React.Component{
                 </div>
             </Link>
         );
+
         let showListInput = <div className="sidebar_input" onKeyDown={this.enterClick}>
                 <span>
                     <input className="inputList" type="text"  onChange={this.handleNoteChange} placeholder="Add New List" autoFocus/>
@@ -206,6 +203,7 @@ class Dashboard extends React.Component{
                 <DayLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
             </div>
         </div>
+
         return <div>
             <div>
                 <header className={'header_'+theme}>
@@ -216,8 +214,8 @@ class Dashboard extends React.Component{
                         
                     </div>
                     <span className="header_member">
+                    <div className={`logout theme_${theme}`} onClick={this.props.changeTheme}> THEME</div>
                         <div className={`logout logout_${theme}`} onClick={this.props.toggleSignIn}>LOG OUT</div>
-                        {/* <span className="top_nav_logo"><i className="fas fa-user"></i></span> */}
                     </span>   
                 </header>
 
@@ -238,13 +236,10 @@ class Dashboard extends React.Component{
                         {/* sidebar end */}
 
                         {/* dashboard top_nav start */}
-                        {/* <div className="dashboard dashboard_dk"> */}
                         <div className={`dashboard dashboard_${theme}`}>
                             <div className="inner2_board">
                                 <Route path="/dashboard" exact>{showLogs}</Route>
-                                
                                 <div className="listNoDeco">
-                                    {/* <Route path="/dashboard"> */}
                                     <Route path="/dashboard/list">
                                         <List theme={this.state.theme} showWhichList={this.state.showWhichList} uid={this.props.uid}/>
                                     </Route>
@@ -253,10 +248,7 @@ class Dashboard extends React.Component{
                         </div>
                     </div>
                 </main>
-        
             </div>
-            
-            
         </div>;
     }
 }
