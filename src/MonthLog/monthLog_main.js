@@ -53,7 +53,6 @@ class MonthLog extends React.Component{
             },
             calenIfShow:false,
             ifChangeMonth:false,
-            theme: this.props.theme
             
         };
         this.updateEachDayToDos = this.updateEachDayToDos.bind(this);
@@ -462,7 +461,6 @@ class MonthLog extends React.Component{
         }
     }
     componentDidMount(){
-        // console.log(this.state.theme);
         this.updateEachDayToDos();
         // 將該月未安排事件放入state
         this.getDBdataInState(this.state.month,this.state.year,0);
@@ -627,9 +625,6 @@ class MonthLog extends React.Component{
         });
     }
     componentDidUpdate(preProps){
-        if(preProps.theme !== this.props.theme){
-            console.log('change');
-        }
         if(preProps.reRender !== this.props.reRender){
             this.updateEachDayToDos();
             this.getDBdataInState(this.state.month,this.state.year,0);
@@ -657,7 +652,7 @@ class MonthLog extends React.Component{
         return(
         <div className="month_todo" data-enter={'month'} onKeyDown={this.enterClick}>
             <span>
-                <input className={`noScheInput noScheInput_${this.state.theme}`}  type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange} autoFocus/>
+                <input className={`noScheInput noScheInput_${this.props.theme}`}  type="text" placeholder="+ ADD MONTH TASK" onChange={this.handleNoteChange} autoFocus/>
             </span>
             <span className="month_todo_feacture2">
                 <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
@@ -687,7 +682,8 @@ class MonthLog extends React.Component{
         } 
     }
     render(){
-        let {year, month, date, theme, thisMonthToDos, eachDayToDos, ifInput, ifShowMore, calenIfShow, ifChangeMonth} = this.state;
+        let {theme} = this.props;
+        let {year, month, date, thisMonthToDos, eachDayToDos, ifInput, ifShowMore, calenIfShow, ifChangeMonth} = this.state;
         let data = {
             state:{ year, month, date, theme, thisMonthToDos, eachDayToDos, ifInput, ifShowMore, calenIfShow, ifChangeMonth },
             method:{

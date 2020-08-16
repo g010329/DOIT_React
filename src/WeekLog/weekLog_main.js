@@ -48,7 +48,6 @@ class WeekLog extends React.Component{
             },
             calenIfShow:false,
             ifChangeWeek:false,
-            theme: this.props.theme
         };
         this.updateEachDayToDosOfWeek = this.updateEachDayToDosOfWeek.bind(this);
         this.setWeekNum = this.setWeekNum.bind(this);
@@ -595,7 +594,7 @@ class WeekLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'week'} onKeyDown={this.enterClick}>
                 <span>
-                    <input className={`noScheInput noScheInput_${this.state.theme}`} type="text" placeholder="+ ADD WEEK TASK" onChange={this.handleNoteChange} autoFocus/>
+                    <input className={`noScheInput noScheInput_${this.props.theme}`} type="text" placeholder="+ ADD WEEK TASK" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
@@ -609,7 +608,7 @@ class WeekLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'week-day'} onKeyDown={this.enterClick}>
                 <span>
-                    <input className={`noScheInput noScheInput_${this.state.theme}`} placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
+                    <input className={`noScheInput noScheInput_${this.props.theme}`} placeholder="ADD TASK" type="text" onChange={this.handleNoteChange} autoFocus/>
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.turnOffEachDayIfInput}>Cancel</span>
@@ -711,7 +710,8 @@ class WeekLog extends React.Component{
         }  
     }
     render(){
-        let { weekNum, thisWeekToDos,eachDayToDos, theme, ifInput } = this.state;
+        let { theme } = this.props; 
+        let { weekNum, thisWeekToDos,eachDayToDos, ifInput } = this.state;
         let data = {
             state: {weekNum, thisWeekToDos,eachDayToDos, theme, ifInput},
             method: {

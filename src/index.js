@@ -27,10 +27,8 @@ class App extends React.Component {
         this.setState(preState=>{
             let newTheme;
             if (preState.theme === 'dk'){
-                console.log('lt');
                 newTheme = 'lt';
             }else if(preState.theme === 'lt'){
-                console.log('dk');
                 newTheme = 'dk';
             }
             return{
@@ -137,12 +135,10 @@ class App extends React.Component {
 // togglesignin handdlesignup：做時記得登入登出
 // onAuthStateChanged: state狀態的改變在這裡做（因為登入登出後都會串到這裡）
 
-
     render() {
         if(this.state.isLogin == true){
             return <div><Redirect to ="/dashboard"/>
             <Route path="/dashboard">
-                {/* <Calendar/> */}
                 <Dashboard theme={this.state.theme} uid={this.state.uid} changeTheme={this.changeTheme.bind(this)} toggleSignIn={this.toggleSignIn.bind(this)}/>
             </Route></div>
             

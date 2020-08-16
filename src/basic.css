@@ -19,7 +19,6 @@
     color: #7c7877;
 }
 .theme_lt{
-    /* background-color: #F0E5DE; */
     box-shadow: 0px 2px 5px #b6b5b5;
     color: #7c7877;
 }
@@ -320,11 +319,6 @@
 .loader{
     z-index: 100000000;
     background-color: #222222;
-    /* position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0; */
     height: 100vh;
     width: 100vw;
     display: flex;
@@ -334,7 +328,6 @@
 
 /* ListBoard */
 .listTitle{
-    /* margin: 20px 0px; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -346,7 +339,6 @@
     display:inline-block;
     letter-spacing: 2px;
     font-size: 2rem;
-    
     background-color: transparent;
     border: 0px;
     text-align: center;
@@ -494,12 +486,6 @@
     margin-right:5px;
 }
 
-/* List */
-/* #reactgooglegraph-2{
-    width: 500px;
-    height: 300px;
-} */
-
 @media(max-width: 650px){
     .listTitle{
         width: 400px;
@@ -599,29 +585,7 @@
 .addList{
     margin-left: 10px;
 }
-/* .add{
-    width: 60px;
-    text-align: center;
-    text-shadow:
-    0 0 5px rgb(33, 136, 126),
-    0 0 10px rgb(33, 136, 126),
-    0 0 20px rgb(33, 136, 126),
-    0 0 40px rgb(33, 136, 126);
-    
-    animation:neon-shine 2s linear infinite;
-    cursor: pointer;
-}
-.cancel{
-    width: 60px;
-    text-align: center;
-    text-shadow:
-    0 0 5px rgb(158, 43, 43),
-    0 0 10px rgb(158, 43, 43),
-    0 0 20px rgb(158, 43, 43),
-    0 0 40px rgb(158, 43, 43);
-    animation:neon-shine 2s linear infinite;
-    cursor: pointer;
-} */
+
 .today_board{
     border-radius: 10px;
     padding: 20px;
@@ -653,9 +617,7 @@ textarea:focus{
     cursor:default;
 }
 /* 單一事件控制面板 */
-.infoBtns{
 
-}
 .info{
     cursor: pointer;
 }
@@ -680,9 +642,7 @@ textarea {
 .littleCal{
     margin-left: 10px;
 }
-.infoBtns{
 
-}
 .infoCancelBtn{
     display: inline-block;
     text-align: center;
@@ -737,7 +697,6 @@ textarea {
     top:170px;
     left: 40%;
     z-index: 999;
-    
     box-shadow: 0px 0px 10px #181818;
     border-radius: 10px;
 }
@@ -777,7 +736,6 @@ textarea {
 .calentype{
     border-radius: 10px;
     overflow: hidden;
-
 }
 .data-calentype{
     height: 40px;
@@ -889,18 +847,7 @@ header{
     cursor: pointer;
     
 }
-/* .login{
-    background-color: #F3D5AD;
-    color: #0F4C81;
-    font-weight: 700;
-    letter-spacing: 1px;
-    font-size: 15px;
-    width: 70px;
-    line-height: 20px;
-    text-align: center;
-    border-radius: 3px;
-    margin-right: 10px;
-} */
+
 .logout{
     font-weight: 700;
     letter-spacing: 1px;
@@ -921,14 +868,7 @@ header{
     letter-spacing: 2px;
 }
 /* 左側side(可收) */
-main{
-    /* position: absolute;
-    top: 48px;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    background-color: #c9d8e6; */
-}
+
 .side{
     background-color:  #658DC6;
     width: 200px;
@@ -1045,16 +985,12 @@ main{
 }
 .signUp_btn:hover{
     font-weight: 900;
-    /* font-size: 17px; */
-    /* color: #202020; */
-    /* background-color:#e8e8e8 ; */
 }
 
 /* 主操控頁(月計畫) */
 
 .dashboard_visual{
     display: flex;
-    /* height: 100%; */
 }
 
 /* 左側邊欄ul */
@@ -1067,7 +1003,6 @@ main{
 
 .sidebar a{
     text-decoration: none;
-
 }
 @media(min-width:1150px){
     .sidebar{
@@ -1117,20 +1052,16 @@ main{
 
 /* 主操控畫面(月) */
 .dashboard{
-    /* background-color: #2C2C2C; */
     flex: 1;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    /* padding-bottom: 100px ; */
 }
 .month_todo_feacture span{
     width: 30px;
     text-align: center;
     border-radius: 5px;
-    /* margin-left: 5px; */
     display: inline-block;
-    /* margin-right: 5px; */
     transition: all .5s ease;
     cursor: pointer;
 }
@@ -1251,9 +1182,7 @@ main{
     }
     
 }
-*{
-    /* border: solid 1px rgb(63, 62, 62); */
-}
+
 /* 月曆 */
 .monthCalendar{
     position: relative;
@@ -1266,6 +1195,7 @@ main{
 .w_add_bt{
     border-radius: 5px;
     transition: all .5s ease;
+    text-align: center;
 }
 .w_add_bt:hover{
     opacity: 0.5;
@@ -1283,7 +1213,6 @@ main{
 
 
 .w_add_bt{
-    /* display: inline-block; */
     margin-left: -3px;
 
     flex: 1;
@@ -1294,9 +1223,7 @@ main{
     display: flex;
 }
 /* 30天 */
-.month_log div:nth-child(30) div{
-    /* background-color: #424242; */
-}
+
 .month_log span{
     display: inline-block;
 }
@@ -1333,7 +1260,6 @@ main{
 
 .title_month{
     display: inline-block;
-    /* width: 200px; */
     height: 40px;
     font-size: 2rem;
     line-height: 40px;
@@ -1344,7 +1270,6 @@ main{
 }
 .title_right{
     display: inline-flex;
-    /* align-items: center; */
     height: 30px;
     font-size: 1.5rem;
     line-height: 40px;
@@ -1368,17 +1293,13 @@ main{
     margin: 0px 0px 0px 3px;
 }
 .month_day_b .month_todo{
-    /* display: flex; */
-    /* justify-content: space-between; */
     margin: 0px 0px 0px 3px;
     z-index: 10;
 }
 .month_day_b .month_todo_feacture2 span{
-    /* height: 25px; */
     margin: 3px 0px;
 }
 .month_week{
-    /* text-align: center; */
     line-height: 2rem;
     border-radius: 5px;
     background-color:  #0F4C81;
@@ -1394,7 +1315,6 @@ main{
 }
 .month_day{
     display: flex;
-    /* justify-content: space-between; */
     margin: 0px 0px 8px 0px;
     border-radius: 5px;
     overflow: hidden;
@@ -1413,9 +1333,7 @@ main{
     width: 70px;
     margin-left: 3px;
     margin-right: 10px;
-
 }
-
 
 .m_bt{
     border-radius: 3px;
@@ -1424,7 +1342,6 @@ main{
     margin: 2px 1px 2px 0px;
     cursor: pointer;
 }
-
 
 .bt_type div{
     display: inline-block;
@@ -1456,9 +1373,6 @@ main{
     display: flex;
     justify-content: space-between;
 }
-*{
-    /* border: solid 1px rgb(57, 58, 71); */
-}
 
 /* input */
 .noScheInput{
@@ -1487,8 +1401,6 @@ main{
     right: 0;
     left: 0;
 }
-
-
 
 .darktd{
     color:rgb(92, 91, 91)
@@ -1613,16 +1525,11 @@ main{
         color: #686767;
     }
 }
-*{
-    /* border: solid 1px rgb(231, 187, 187); */
-}
+
 .hpIntro{
-    
-    /* width: 400px; */
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* margin-top: 40px; */
 }
 
 .hpIntroContent{
@@ -1635,7 +1542,6 @@ main{
     width: 400px;
     display: flex;
     align-items: center;
-    /* margin: 0px 20px; */
 }
 .hpImg img{
     width: 100%;
@@ -1647,7 +1553,6 @@ main{
     align-items: center;
     width:100%;
     height: 100vh;
-    /* height: 100%; */
     background-color: #2C2C2C;
 }
 .bpartTitle{

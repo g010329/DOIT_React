@@ -24,7 +24,6 @@ class Dashboard extends React.Component{
             listItems: [
             ],
             note:'',
-            theme: this.props.theme,
             showWhichLog: 'week'
         };
         this.toggleNav = this.toggleNav.bind(this);
@@ -36,7 +35,6 @@ class Dashboard extends React.Component{
         this.handleNoteChange = this.handleNoteChange.bind(this);
         this.addListToDB = this.addListToDB.bind(this);
         this.enterClick = this.enterClick.bind(this);
-        this.ListFromDb = this.getListFromDB.bind(this);
         this.getListFromDB = this.getListFromDB.bind(this);
         this.showList = this.showList.bind(this);
         //outside
@@ -78,9 +76,7 @@ class Dashboard extends React.Component{
             }
         })
     }
-    componentDidUpdate(){
-        console.log(this.state.theme);
-    }
+
     componentDidMount(){
         this.getListFromDB();
         document.addEventListener('click', this.handleClickOutside, false);
@@ -118,7 +114,7 @@ class Dashboard extends React.Component{
     }
 
     toggleBtn(e){
-        let {theme} = this.state;
+        let {theme} = this.props;
         let logBtn = e.currentTarget.getAttribute("data-btn");
         let toggleLog = document.getElementById(`${logBtn}`);
         if (logBtn == "month"){
@@ -160,13 +156,14 @@ class Dashboard extends React.Component{
         } 
     }
     showList(e){
+        console.log(e.currentTarget.getAttribute("data-listtitle"));
         this.setState({
             showWhichList: e.currentTarget.getAttribute("data-listtitle"),
         })
         this.toggleNav();
     }
     render(){
-        let theme = this.state.theme;
+        let {theme} = this.props;
         let renderListItem = this.state.listItems.map((item,index)=>
             <Link to='/dashboard/list' data-listtitle={item.title} key={index} onClick={this.showList}>
                 <div className={`sidebar_li sidebar_li_${theme}`} >
@@ -198,9 +195,9 @@ class Dashboard extends React.Component{
             </div>
             <div className="inner_board">
             
-                <MonthLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
-                <WeekLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
-                <DayLog theme={this.state.theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <MonthLog theme={theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <WeekLog theme={theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
+                <DayLog theme={theme} listItems={this.state.listItems} btToday={this.state.btToday} uid={this.props.uid} reRender={this.state.reRender} reRenderLog={this.reRenderLog.bind(this)}/>
             </div>
         </div>
 
@@ -241,7 +238,7 @@ class Dashboard extends React.Component{
                                 <Route path="/dashboard" exact>{showLogs}</Route>
                                 <div className="listNoDeco">
                                     <Route path="/dashboard/list">
-                                        <List theme={this.state.theme} showWhichList={this.state.showWhichList} uid={this.props.uid}/>
+                                        <List theme={theme} showWhichList={this.state.showWhichList} uid={this.props.uid} getListFromDB={this.getListFromDB} />
                                     </Route>
                                 </div>
                             </div>

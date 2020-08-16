@@ -1,13 +1,8 @@
 import React from "react";
 import db from "./firebase.js";
-// import * as firebase from "firebase";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-// import 'firebase/auth';
-// import 'firebase/database';
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 // google chart
 import { Chart } from "react-google-charts";
-// import * as React from "react";
-// import { render } from "react-dom";
 
 class List extends React.Component{
     constructor(props){
@@ -21,7 +16,6 @@ class List extends React.Component{
                 date: 28,
                 day: null
             },
-            listTitle:this.props.showWhichList,
             listId:null,
             doneList:[],
             undoneList:[],
@@ -29,7 +23,8 @@ class List extends React.Component{
             showMoreTodoList: true,
             showPieChart: false,
             pieChartData:[],
-            theme:this.props.theme
+            redirect:false,
+            showWhichList: ''
         }
         this.getListDBdata = this.getListDBdata.bind(this);
         this.toggleShowMoreDoneList = this.toggleShowMoreDoneList.bind(this);
@@ -60,7 +55,10 @@ class List extends React.Component{
     deleteListInDB(){
         if (this.deleteConfirm()){
             let ref = db.collection("members").doc(this.props.uid).collection("lists");
-            ref.doc(this.state.listId).delete().then(()=>{console.log('delete list')})
+            ref.doc(this.state.listId).delete().then(()=>{
+                this.setState({redirect:true});
+                this.props.getListFromDB();
+            })
         }else{
             return;
         }
@@ -98,13 +96,18 @@ class List extends React.Component{
         
     }
     componentDidMount(){
+        this.setState({
+            showWhichList:this.props.showWhichList
+        })
         this.getListDBdata();
     }
     componentDidUpdate(preProps){
         if(preProps.showWhichList !== this.props.showWhichList){
+            this.setState({
+                showWhichList:this.props.showWhichList
+            })
             this.getListDBdata();
         }
-        
     }
 
     getListDBdata(){
@@ -165,7 +168,8 @@ class List extends React.Component{
         x.style.height = x.scrollHeight + "px";
     }
     render(){
-        let theme= this.state.theme;
+        
+        let {theme} = this.props;
         let undoneTotalTime=0;
         let undoneTimer = this.state.undoneList.map((undone,index)=>{
             undoneTotalTime+=parseFloat(undone.timer);
@@ -197,8 +201,6 @@ class List extends React.Component{
             </div>
         
         let pieChart = <Chart
-                // width={'500px'}
-                // height={'300px'}
                 chartType="PieChart"
                 loader={<div>Loading Chart</div>}
                 data={
@@ -210,9 +212,6 @@ class List extends React.Component{
                     // ['Sleep', 7]]
                     this.state.pieChartData
                 }
-                // options={{
-                //     title: 'My Daily Activities',
-                // }}
                 rootProps={{ 'data-testid': '1' }}
             />
         let chart = <div className="list2">
@@ -235,7 +234,7 @@ class List extends React.Component{
             </div>
         let listBoard = <div className="listBoard">
                 <div className="listTitle">
-                    <textarea ref={this.testHeight} rows="1" onInput={this.autoHeight} className={`listTitleName listTN_${theme}`} defaultValue={this.state.listTitle} onChange={this.handleNoteChange}/>
+                    <textarea ref={this.testHeight} rows="1" onInput={this.autoHeight} className={`listTitleName listTN_${theme}`} defaultValue={this.state.showWhichList} onChange={this.handleNoteChange}/>
                     <span className="listTitleIcon" data-enter="titleName" onKeyDown={this.enterClick}>
                         <span className={`listIcon_${theme}`} ref={this.adjsutLis} onClick={this.adjustListTitleInDB}><i className="fas fa-pen"></i></span>
                         <span className={`listIcon_${theme}`} onClick={this.deleteListInDB}><i className="fas fa-trash"></i></span>
@@ -291,15 +290,16 @@ class List extends React.Component{
                 {chart}
                 <div className={`bgc bgc_${theme}`}></div>
             </div>
-        return <div>
-            <Link to='/dashboard'>
+        let listpage = <div><Link to='/dashboard'>
                 <div className={`btDashboardbtn btDash_${theme}`}>
                     <span className="btDashboardbtn1"><i className="fas fa-caret-left"></i></span>
                     <span className="btDashboardbtn2">DASHBOARD</span>
                 </div>
             </Link>
-            {listBoard}
-            
+            {listBoard}</div>
+        let reDirect = <Redirect to={"/dashboard"}/>
+        return <div>
+            {this.state.redirect? reDirect:listpage}
             
         </div>
     }

@@ -9,8 +9,8 @@ class Login extends React.Component{
         this.loginBoard = React.createRef();
         this.signupBoard = React.createRef();
         this.state = {
-            email: '',
-            password: '',
+            email: 'test@gmail.com',
+            password: 'test123',
             isloading: false
         }
         this.handleMailKeyInValue = this.handleMailKeyInValue.bind(this);
@@ -47,8 +47,8 @@ class Login extends React.Component{
                 <div id="start" ref={this.loginBoard} className="login_board" data-type={'login'} onKeyDown={this.enterLogin}>
                     <div className="login_title">Log in</div>
                     <div>
-                        <div className="login_account"><input type="email" placeholder="Email Address" onChange={this.handleMailKeyInValue} defaultValue="test@gmail.com"></input></div>
-                        <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue} defaultValue="test123"></input></div>
+                        <div className="login_account"><input type="email" placeholder="Email Address" onChange={this.handleMailKeyInValue} value={this.state.email}></input></div>
+                        <div className="login_account"><input type="password" placeholder="Password" onChange={this.handlePasswordKeyInValue} value={this.state.password}></input></div>
                         <div ref={this.inputLogin} className="login_btn" onClick={()=>{this.props.toggleSignIn(this.state.email,this.state.password);this.setState({isloading:true})}}>LOG IN</div>
                         
                         <div className="forget">
@@ -94,7 +94,8 @@ class Login extends React.Component{
                             <div className="hpIntroContent">
                                 <div>Task management for busy people</div>
                                 <div>Free up your mental space</div>
-                                <div>Time Tracking, Make you More Productive</div>
+                                <div>Time Tracking</div>
+                                <div>Make you More Productive</div>
                             </div>
                             <Link
                                 activeClass="active"

@@ -39,7 +39,6 @@ class DayLog extends React.Component{
             ],
             calenIfShow:false,
             ifChangeDate:false,
-            theme: this.props.theme
         }
         this.handleDateForward = this.handleDateForward.bind(this);
         this.handleDateBackward = this.handleDateBackward.bind(this);
@@ -499,7 +498,7 @@ class DayLog extends React.Component{
         return(
             <div className="month_todo" data-enter={'day'} onKeyDown={this.enterClick}>
                 <span>
-                    <input className={`noScheInput noScheInput_${this.state.theme}`} type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus required="required"/>
+                    <input className={`noScheInput noScheInput_${this.props.theme}`} type="text" placeholder="+ ADD TASK" onChange={this.handleNoteChange} autoFocus required="required"/>
                 </span>
                 <span className="month_todo_feacture2">
                     <span className="cancel" onClick={this.toggleIfInput}>Cancel</span>
@@ -548,7 +547,8 @@ class DayLog extends React.Component{
         document.addEventListener('click', this.handleClickOutside, false);
     }
     render(){
-        let {year, month, date, theme, thisDayToDos, ifInput, overdue} = this.state;
+        let {theme} = this.props;
+        let {year, month, date, thisDayToDos, ifInput, overdue} = this.state;
         let data = {
             state:{
                 year, month, date, theme, thisDayToDos, ifInput, overdue
