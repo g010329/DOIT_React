@@ -25,9 +25,12 @@ Password : test123
 
 ## Features
 ### Dashboard
-![](https://i.imgur.com/xYRlaBj.png)
-![](https://i.imgur.com/qyQX3MW.png)
+Users can manage task on dash board. 
+![](https://i.imgur.com/2BtQV5M.png)
+![](https://i.imgur.com/yE0mexk.png)
 ### Time Picker
+Users can reschedule tasks with calendar UI.
+(Provides date, week, month options)
 ![](https://i.imgur.com/5zZA3rN.png)
 ### Customized List
 ![](https://i.imgur.com/3YJ22T4.png)
