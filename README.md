@@ -25,7 +25,15 @@ Password : test123
 
 ## Features
 ### Dashboard
+
+
+
+demo video:
+
+![](https://github.com/g010329/DOIT_React/blob/master/demo_add_task.gif)
+
 Users can manage task on dash board. 
+
 ![](https://i.imgur.com/2BtQV5M.png)
 ![](https://i.imgur.com/yE0mexk.png)
 ### Time Picker
