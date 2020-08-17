@@ -33,9 +33,7 @@ Users can reschedule tasks with calendar UI.
 (Provides date, week, month options)
 ![](https://i.imgur.com/5zZA3rN.png)
 ### Customized List
-![](https://i.imgur.com/3YJ22T4.png)
-
-
+![](https://i.imgur.com/t6IQtus.png)
 ### Theme Switching
 ![](https://i.imgur.com/XQGsOH8.png)
 
