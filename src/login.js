@@ -94,8 +94,8 @@ class Login extends React.Component{
                             <div className="hpIntroContent">
                                 <div>Task management for busy people</div>
                                 <div>Free up your mental space</div>
-                                <div>Time Tracking</div>
-                                <div>Make you More Productive</div>
+                                <div>Time tracking</div>
+                                <div>Make you more productive</div>
                             </div>
                             <Link
                                 activeClass="active"
