@@ -28,11 +28,11 @@
     "animate.css": "^4.1.0",
     "firebase": "^7.15.5",
     "hover.css": "^2.3.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-google-charts": "^3.0.15",
     "react-router-dom": "^5.2.0",
     "react-scroll": "^1.8.0",
-    "react-test-renderer": "^16.13.1"
+    "react-test-renderer": "^16.14.0"
   }
 }
